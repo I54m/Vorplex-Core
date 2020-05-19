@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="HikariCP-3.2.0">
+    <CLASSES>
+      <root url="jar://F:/Dependencies/HikariCP-3.2.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
