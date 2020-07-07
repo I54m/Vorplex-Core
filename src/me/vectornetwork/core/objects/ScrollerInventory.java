@@ -18,14 +18,14 @@ import java.util.UUID;
 
 public class ScrollerInventory implements Listener {
 
-    private ArrayList<Inventory> pages = new ArrayList<>();
-    private UUID id;
+    private final ArrayList<Inventory> pages = new ArrayList<>();
+    private final UUID id;
     private int currpage = 0;
-    private static HashMap<UUID, ScrollerInventory> users = new HashMap<>();
-    private onClick click;
-    private String name;
+    private static final HashMap<UUID, ScrollerInventory> users = new HashMap<>();
+    private final onClick click;
+    private final String name;
     //Running this will open a paged inventory for the specified player, with the items in the arraylist specified.
-    public ScrollerInventory(ArrayList<ItemStack> items, String name, Player p, onClick click){
+    public ScrollerInventory(ArrayList<ItemStack> items, String name, onClick click){
         this.id = UUID.randomUUID();
         this.name = name;
         this.click = click;
@@ -34,16 +34,13 @@ public class ScrollerInventory implements Listener {
         //create new blank page
         Inventory page = getBlankPage(name);
         //According to the items in the arraylist, add items to the ScrollerInventory
-        for(int i = 0;i < items.size(); i++){
+        for (ItemStack item : items) {
             //If the current page is full, add the page to the inventory's pages arraylist, and create a new page to add the items.
-            if(page.firstEmpty() == 46){
+            if (page.firstEmpty() == 46) {
                 pages.add(page);
                 page = getBlankPage(name);
-                page.addItem(items.get(i));
-            }else{
-                //Add the item to the current page as per normal
-                page.addItem(items.get(i));
             }
+            page.addItem(item);
         }
         pages.add(page);
     }
@@ -59,21 +56,18 @@ public class ScrollerInventory implements Listener {
         //create new blank page
         Inventory page = getBlankPage(name);
         //According to the items in the arraylist, add items to the ScrollerInventory
-        for(int i = 0;i < items.size(); i++){
+        for (ItemStack item : items) {
             //If the current page is full, add the page to the inventory's pages arraylist, and create a new page to add the items.
-            if(page.firstEmpty() == 46){
+            if (page.firstEmpty() == 46) {
                 pages.add(page);
                 page = getBlankPage(name);
-                page.addItem(items.get(i));
-            }else{
-                //Add the item to the current page as per normal
-                page.addItem(items.get(i));
             }
+            page.addItem(item);
         }
         pages.add(page);
 
     }
-    private Main plugin = Main.getInstance();
+    private final Main plugin = Main.getInstance();
     private static final String nextPageName = ChatColor.LIGHT_PURPLE + "Next Page";
     private static final String previousPageName = ChatColor.LIGHT_PURPLE + "Previous Page";
     //This creates a blank page with the next and prev buttons
@@ -110,14 +104,12 @@ public class ScrollerInventory implements Listener {
         if(event.getCurrentItem().getItemMeta().getDisplayName().equals(ScrollerInventory.nextPageName)){
             event.setCancelled(true);
             //If there is no next page, don't do anything
-            if(inv.currpage >= inv.pages.size()-1){
-                return;
-            }else{
+            if (inv.currpage < inv.pages.size() - 1) {
                 //Next page exists, flip the page
                 inv.currpage += 1;
                 p.openInventory(inv.pages.get(inv.currpage));
-                return;
             }
+            return;
             //if the pressed item was a previous page button
         }else if(event.getCurrentItem().getItemMeta().getDisplayName().equals(ScrollerInventory.previousPageName)){
             event.setCancelled(true);
@@ -126,8 +118,8 @@ public class ScrollerInventory implements Listener {
                 //Flip to previous page
                 inv.currpage -= 1;
                 p.openInventory(inv.pages.get(inv.currpage));
-                return;
             }
+            return;
         }
         event.setCancelled(true);
         if (event.getCurrentItem() != null) {

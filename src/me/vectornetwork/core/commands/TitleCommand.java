@@ -32,9 +32,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class TitleCommand implements CommandExecutor {
-    private Main plugin = Main.getInstance();
+    private final Main plugin = Main.getInstance();
 
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if (!(commandSender instanceof Player)) {
@@ -113,7 +114,7 @@ public class TitleCommand implements CommandExecutor {
                         if (id > 0) {
                             menu.addButton(position, new ItemStack(Material.PAPER, 1), ChatColor.translateAlternateColorCodes('&', titles.get(id)),
                                     ChatColor.LIGHT_PURPLE + "Click this to change your",
-                                    ChatColor.LIGHT_PURPLE + "equipped title to: " + ChatColor.translateAlternateColorCodes('&', titles.get(id)),
+                                    ChatColor.LIGHT_PURPLE + "equipped title to: " + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', titles.get(id)),
                                     ChatColor.WHITE + "Title id: #" + id);
                             position++;
                         }
@@ -133,7 +134,6 @@ public class TitleCommand implements CommandExecutor {
 
                     }
                     menu.open(player);
-                    return true;
                 } else {
                     ArrayList<ItemStack> items = new ArrayList<>();
                     ItemStack notitle = new ItemStack(Material.BARRIER, 1);
@@ -153,14 +153,14 @@ public class TitleCommand implements CommandExecutor {
                             im.setDisplayName(ChatColor.translateAlternateColorCodes('&', titles.get(id)));
                             List<String> lore = new ArrayList<>();
                             lore.add(ChatColor.LIGHT_PURPLE + "Click this to change your");
-                            lore.add(ChatColor.LIGHT_PURPLE + "equipped title to: " + ChatColor.translateAlternateColorCodes('&', titles.get(id)));
+                            lore.add(ChatColor.LIGHT_PURPLE + "equipped title to: " + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', titles.get(id)));
                             lore.add(ChatColor.WHITE + "Title id: #" + id);
                             im.setLore(lore);
                             item.setItemMeta(im);
                             items.add(item);
                         }
                     }
-                    new ScrollerInventory(items, ChatColor.LIGHT_PURPLE + player.getName() + "'s Unlocked Titles", player, (clicker, item, scrollerInventory) -> {
+                    ScrollerInventory inventory = new ScrollerInventory(items, ChatColor.LIGHT_PURPLE + player.getName() + "'s Unlocked Titles", (clicker, item, scrollerInventory) -> {
                         if (clicker == player) {
                             if (item == null || !item.hasItemMeta()) return false;
                             if (item.getItemMeta().hasDisplayName()) {
@@ -209,8 +209,9 @@ public class TitleCommand implements CommandExecutor {
                         }
                         return false;
                     });
-                    return true;
+                    inventory.open(player);
                 }
+                return true;
             }
             switch (strings[0]) {
                 case "create": {
@@ -511,7 +512,7 @@ public class TitleCommand implements CommandExecutor {
                             if (id > 0) {
                                 menu.addButton(position, new ItemStack(Material.PAPER, 1), ChatColor.translateAlternateColorCodes('&', titles.get(id)),
                                         ChatColor.LIGHT_PURPLE + "Click this to change " + targetName + "'s",
-                                        ChatColor.LIGHT_PURPLE + "equipped title to: " + ChatColor.translateAlternateColorCodes('&', titles.get(id)),
+                                        ChatColor.LIGHT_PURPLE + "equipped title to: " + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', titles.get(id)),
                                         ChatColor.WHITE + "Title id: " + "#" + id);
                                 position++;
                             }
@@ -550,16 +551,16 @@ public class TitleCommand implements CommandExecutor {
                                 im.setDisplayName(ChatColor.translateAlternateColorCodes('&', titles.get(id)));
                                 List<String> lore = new ArrayList<>();
                                 lore.add(ChatColor.LIGHT_PURPLE + "Click this to change " + targetName + "'s");
-                                lore.add(ChatColor.LIGHT_PURPLE + "equipped title to: " + ChatColor.translateAlternateColorCodes('&', titles.get(id)));
+                                lore.add(ChatColor.LIGHT_PURPLE + "equipped title to: " + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', titles.get(id)));
                                 lore.add(ChatColor.WHITE + "Title id: " + "#" + id);
                                 im.setLore(lore);
                                 item.setItemMeta(im);
                                 items.add(item);
                             }
                         }
-                        new ScrollerInventory(items, ChatColor.LIGHT_PURPLE + targetName + "'s Unlocked Titles", player, (clicker, item, scrollerInventory) -> {
+                        ScrollerInventory inventory = new ScrollerInventory(items, ChatColor.LIGHT_PURPLE + player.getName() + "'s Unlocked Titles", (clicker, item, scrollerInventory) -> {
                             if (clicker == player) {
-                                if (item == null || !item.hasItemMeta() || item.getItemMeta() == null) return false;
+                                if (item == null || !item.hasItemMeta()) return false;
                                 if (item.getItemMeta().hasDisplayName()) {
                                     List<String> lore = item.getItemMeta().getLore();
                                     int titleid;
@@ -571,7 +572,7 @@ public class TitleCommand implements CommandExecutor {
                                         return true;
                                     }
                                     try {
-                                        String sql = "SELECT * FROM `vectorcore_equippedtitles` WHERE UUID='" + targetUUID.toString() + "';";
+                                        String sql = "SELECT * FROM `vectorcore_equippedtitles` WHERE UUID='" + clicker.getUniqueId().toString() + "';";
                                         PreparedStatement stmt = plugin.connection.prepareStatement(sql);
                                         ResultSet results = stmt.executeQuery();
                                         String rawTitle = plugin.titles.get(titleid);
@@ -582,14 +583,14 @@ public class TitleCommand implements CommandExecutor {
                                         if (rawTitle.contains("`"))
                                             rawTitle = rawTitle.replace("`", "%bcktck%");
                                         if (results.next()) {
-                                            String sql1 = "UPDATE `vectorcore_equippedtitles` SET `UUID`='" + targetUUID.toString() + "', `TitleID`='" + titleid
-                                                    + "', `RawTitle`='" + rawTitle + "' WHERE `UUID`='" + targetUUID.toString() + "';";
+                                            String sql1 = "UPDATE `vectorcore_equippedtitles` SET `UUID`='" + clicker.getUniqueId().toString() + "', `TitleID`='" + titleid
+                                                    + "', `RawTitle`='" + rawTitle + "' WHERE `UUID`='" + player.getUniqueId().toString() + "';";
                                             PreparedStatement stmt1 = plugin.connection.prepareStatement(sql1);
                                             stmt1.executeUpdate();
                                             stmt1.close();
                                         } else {
                                             String sql1 = "INSERT INTO `vectorcore_equippedtitles` (`UUID`, `TitleID`, `RawTitle`)" +
-                                                    " VALUES ('" + targetUUID.toString() + "','" + titleid + "','" + rawTitle + "');";
+                                                    " VALUES ('" + player.getUniqueId().toString() + "','" + titleid + "','" + rawTitle + "');";
                                             PreparedStatement stmt1 = plugin.connection.prepareStatement(sql1);
                                             stmt1.executeUpdate();
                                             stmt1.close();
@@ -599,13 +600,14 @@ public class TitleCommand implements CommandExecutor {
                                         clicker.sendMessage(plugin.prefix + ChatColor.RED + "An Error occurred in our database and we were unable to equip that title!");
                                         return true;
                                     }
-                                    plugin.equippedTitles.put(targetUUID, plugin.titles.get(titleid));
-                                    clicker.sendMessage(plugin.prefix + ChatColor.LIGHT_PURPLE + "Set " + TARGETNAME + "'s equipped title to: " + ChatColor.translateAlternateColorCodes('&', item.getItemMeta().getDisplayName()));
+                                    plugin.equippedTitles.put(clicker.getUniqueId(), plugin.titles.get(titleid));
+                                    clicker.sendMessage(plugin.prefix + ChatColor.LIGHT_PURPLE + "Set your equipped title to: " + ChatColor.translateAlternateColorCodes('&', item.getItemMeta().getDisplayName()));
                                     return true;
                                 }
                             }
                             return false;
                         });
+                        inventory.open(player);
                     }
                     return true;
                 }

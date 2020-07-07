@@ -155,7 +155,7 @@ public class GiftsCommand implements CommandExecutor {
                 }
                 return false;
             };
-            new ScrollerInventory(items, ChatColor.LIGHT_PURPLE + player.getName() + "'s Gifts", player, onClick).open(player);
+            new ScrollerInventory(items, ChatColor.LIGHT_PURPLE + player.getName() + "'s Gifts", onClick).open(player);
             return false;
         }
     }
