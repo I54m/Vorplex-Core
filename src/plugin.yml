@@ -1,7 +1,7 @@
 name: Vector-Core
-version: 1.9
+version: 1.10
 api-version: 1.13
-author: 54mpenguin
+author: I54m
 website: https://vectornetwork.me
 description: The Core Plugin for Vector Network.
 main: me.vectornetwork.core.Main
