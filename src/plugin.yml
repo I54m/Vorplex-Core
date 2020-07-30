@@ -1,10 +1,10 @@
-name: Vector-Core
+name: Vorplex-Core
 version: 1.10
 api-version: 1.13
 author: I54m
-website: https://vectornetwork.me
-description: The Core Plugin for Vector Network.
-main: me.vectornetwork.core.Main
+website: https://vorplex.net
+description: The Core Plugin for Vorplex.
+main: net.vorplex.core.Main
 softdepend:
   - LuckPerms
   - Votifier
@@ -18,12 +18,12 @@ softdepend:
 commands:
   vote:
     description: open the book gui for the vote links.
-  vectorcorereload:
-    description: reload the config for vector core.
+  vorplexcorereload:
+    description: reload the config for vorplex core.
     aliases:
       - vcreload
       - corereload
-      - vectorreload
+      - vorplexreload
   autorestart:
     description: Main Command for the auto restart module.
     aliases:
@@ -65,28 +65,28 @@ commands:
 ####################################################################################[Permissions]#########################################################################################
 
 permissions:
-  vectorcore.autorestart.admin:
+  vorplexcore.autorestart.admin:
     description: Allows the user to use /autorestart commands.
     default: op
-  vectorcore.joinmessages.*:
+  vorplexcore.joinmessages.*:
     description: Main permission node for permission based join messages.
     default: op
-  vectorcore.customjoinmessages:
+  vorplexcore.customjoinmessages:
     description: Main permission node for custom join messages.
     default: op
-  vectorcore.customjoinmessages.admin:
+  vorplexcore.customjoinmessages.admin:
     description: Allows the user to change other's join messages.
     default: op
-  vectorcore.leavemessages.*:
+  vorplexcore.leavemessages.*:
     description: Main permission node for permission based leave messages.
     default: op
-  vectorcore.customleavemessages:
+  vorplexcore.customleavemessages:
     description: Main permission node for custom leave messages.
     default: op
-  vectorcore.customleavemessages.admin:
+  vorplexcore.customleavemessages.admin:
     description: Allows the user to change other's leave messages.
     default: op
-  vectorcore.titles.*:
+  vorplexcore.titles.*:
     description: Main permission node for titles.
     default: op
   vectorcore.gifts.send:

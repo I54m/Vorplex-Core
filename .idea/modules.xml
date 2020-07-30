@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/VectorCore.iml" filepath="$PROJECT_DIR$/VectorCore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VorplexCore.iml" filepath="$PROJECT_DIR$/VorplexCore.iml" />
     </modules>
   </component>
 </project>

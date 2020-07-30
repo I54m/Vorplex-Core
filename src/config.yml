@@ -3,10 +3,10 @@ MySQL:
   #host use 127.0.0.1 or localhost for localhost
   host: localhost
   #name of the database you want the plugin to use (will create it if it doesn't exist)
-  database: vectorcoredb
+  database: vorplexcoredb
   #username and password you want to plugin to use to access the MYSql database
-  username: vectorcore
-  password: vectorcore
+  username: vorplexcore
+  password: vorplexcore
   #the port must be an integer, default is 3306
   port: 3306
   #Extra arguments to use in the sql url
@@ -14,8 +14,8 @@ MySQL:
 
 
 Prefixes:
-  plugin: "&5[&d&lVector-Core&5] "
-  autorestart-module: "&5[&dVector-Restart&5] "
+  plugin: "&5[&d&lvorplex-Core&5] "
+  autorestart-module: "&5[&dvorplex-Restart&5] "
 
 #/vote links module
 VoteBookGUI:
@@ -45,7 +45,7 @@ VoteRewards:
 
 #Server re-router module
 #permission: vorplexcore.server.switch
-VectorServer:
+VorplexServer:
   enabled: true
   #These are the servers defined in your bungeecord config (case sensitive)
   serverslist:
@@ -56,7 +56,7 @@ VectorServer:
   sendingtoservermessage: "&d&lSending you to %server%."
 
 #auto restart module
-#permission: vectorcore.autorestart.admin
+#permission: vorplexcore.autorestart.admin
 AutoRestart:
   enabled: true
   schedule:
@@ -141,7 +141,7 @@ Announcer:
 Hub:
   enabled: true
   #%player% will be replaced with the players name
-  join-title-message: "&3&lVector &b&lNetwork:&7Welcome &c%player%&7. Enjoy your stay!:20:50:20"
+  join-title-message: "&3&lVorplex &b&lNetwork:&7Welcome &c%player%&7. Enjoy your stay!:20:50:20"
 
 #give player's the ability to change their donor rank prefix between all prefixes they have.
 RankTitle:
@@ -154,13 +154,13 @@ RankTitle:
 #player Title module (allows players to have global titles - Requires MYSQL connection)
 Titles:
   enabled: true
-  #Permission for a title: vectorcore.titles.<title id>
+  #Permission for a title: vorplexcore.titles.<title id>
   #admin permissions:
-  #vectorcore.titles.create (/title create)
-  #vectorcore.titles.delete (/title delete)
-  #vectorcore.titles.help (/title help)
-  #vectorcore.titles.clear (/title clear)
-  #vectorcore.titles.set (/title set)
+  #vorplexcore.titles.create (/title create)
+  #vorplexcore.titles.delete (/title delete)
+  #vorplexcore.titles.help (/title help)
+  #vorplexcore.titles.clear (/title clear)
+  #vorplexcore.titles.set (/title set)
 
 
 #join messages module
@@ -173,11 +173,11 @@ JoinMessages:
   permissionbasedjoinmessages:
     enabled: true
     messages:
-      #permissions are as follows: vectorcore.joinmessages.<permission defined here>
+      #permissions are as follows: vorplexcore.joinmessages.<permission defined here>
       permission1: "&6&lWelcome %title%%prefix%%name%!"
       permission2: "&6&ljoin message 2"
       permission3: "&6&ljoin message 3"
-  #allows players to make their own join messages - permission: vectorcore.customjoinmessages & vectorcore.customjoinmessages.admin for clear command(Requires mysql connection)
+  #allows players to make their own join messages - permission: vorplexcore.customjoinmessages & vorplexcore.customjoinmessages.admin for clear command(Requires mysql connection)
   customjoinmessages:
     enabled: true
     #the maximum length for join messages (excludes color codes)(maximum 64)
@@ -193,18 +193,18 @@ LeaveMessages:
   permissionbasedleavemessages:
     enabled: true
     messages:
-      #permissions are as follows: vectorcore.leavemessages.<permission defined here>
+      #permissions are as follows: vorplexcore.leavemessages.<permission defined here>
       permission1: "&6&lGoodbye %title%%prefix%%name%!"
       permission2: "&6&lleave message 2"
       permission3: "&6&lleave message 3"
-  #allows players to make their own leave messages - permission: vectorcore.customleavemessages & vectorcore.customleavemessages.admin for clear command(Requires mysql connection)
+  #allows players to make their own leave messages - permission: vorplexcore.customleavemessages & vorplexcore.customleavemessages.admin for clear command(Requires mysql connection)
   customleavemessages:
     enabled: true
     #the maximum length for leave messages (excludes color codes)(maximum 64)
     maxlength: 64
 
 #Gifts module - allows players to send each other items
-#requires permissions: vectorcore.gifts.send to be able to send gifts & vectorcore.gifts.claim to be able to claim gifts
+#requires permissions: vorplexcore.gifts.send to be able to send gifts & vorplexcore.gifts.claim to be able to claim gifts
 Gifts:
   enabled: true
 
