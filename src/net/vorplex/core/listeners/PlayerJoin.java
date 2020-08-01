@@ -1,13 +1,13 @@
 package net.vorplex.core.listeners;
 
 import com.earth2me.essentials.spawn.EssentialsSpawn;
+import net.luckperms.api.context.ContextManager;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.query.QueryOptions;
 import net.vorplex.core.Main;
 import net.vorplex.core.util.NameFetcher;
 import net.vorplex.core.util.UUIDFetcher;
 import net.vorplex.core.util.UserFetcher;
-import net.luckperms.api.context.ContextManager;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.query.QueryOptions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -31,9 +31,8 @@ public class PlayerJoin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.setJoinMessage("");
         Player player = event.getPlayer();
-        UUIDFetcher.updateStoredUUID(player.getName(), player.getUniqueId().toString().replace("-", ""));
-        if (!NameFetcher.hasNameStored(player.getUniqueId().toString().replace("-", "")))
-            NameFetcher.storeName(player.getUniqueId().toString().replace("-", ""), player.getName());
+        UUIDFetcher.updateStoredUUID(player.getName(), player.getUniqueId());
+        NameFetcher.updateStoredName(player.getUniqueId(), player.getName());
         if (plugin.getConfig().getBoolean("Announcer.enabled")) {
             if (!Main.announce) {
                 Main.announce = true;
