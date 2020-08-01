@@ -1,12 +1,12 @@
 package net.vorplex.core.commands;
 
+import net.luckperms.api.context.ContextManager;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.query.QueryOptions;
 import net.vorplex.core.Main;
 import net.vorplex.core.util.NameFetcher;
 import net.vorplex.core.util.UUIDFetcher;
 import net.vorplex.core.util.UserFetcher;
-import net.luckperms.api.context.ContextManager;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.query.QueryOptions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -128,12 +128,12 @@ public class JoinMessageCommand implements CommandExecutor {
                 player.sendMessage(plugin.prefix + ChatColor.RED + "Usage: /joinmessage clear <player> - clear a player's join message.");
                 return false;
             }
-            String targetuuid = null;
+            UUID targetuuid = null;
             Player findTarget = Bukkit.getPlayerExact(strings[0]);
-            Future<String> future = null;
+            Future<UUID> future = null;
             ExecutorService executorService = null;
             if (findTarget != null) {
-                targetuuid = findTarget.getUniqueId().toString().replace("-", "");
+                targetuuid = findTarget.getUniqueId();
             } else {
                 UUIDFetcher uuidFetcher = new UUIDFetcher();
                 uuidFetcher.fetch(strings[1]);
@@ -155,17 +155,16 @@ public class JoinMessageCommand implements CommandExecutor {
                 player.sendMessage(plugin.prefix + ChatColor.RED + "That is not a player's name!");
                 return false;
             }
-            UUID targetUUID = UUIDFetcher.formatUUID(targetuuid);
-            String targetName = NameFetcher.getName(targetuuid.replace("-", ""));
+            String targetName = NameFetcher.getName(targetuuid);
             if (targetName == null) {
                 targetName = strings[0];
             }
             try{
-                String sql1 = "DELETE FROM `vorplexcore_joinmessages` WHERE UUID='" + targetUUID.toString() + "'";
+                String sql1 = "DELETE FROM `vorplexcore_joinmessages` WHERE UUID='" + targetuuid.toString() + "'";
                 PreparedStatement stmt1 = plugin.connection.prepareStatement(sql1);
                 stmt1.executeUpdate();
                 stmt1.close();
-                plugin.customJoinMessages.remove(targetUUID);
+                plugin.customJoinMessages.remove(targetuuid);
                 player.sendMessage(plugin.prefix + ChatColor.GREEN + "Cleared join message for player: " + targetName + "!");
             }catch (SQLException sqle){
                 sqle.printStackTrace();

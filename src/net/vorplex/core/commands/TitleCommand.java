@@ -1,14 +1,14 @@
 package net.vorplex.core.commands;
 
+import net.luckperms.api.context.ContextManager;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.query.QueryOptions;
 import net.vorplex.core.Main;
 import net.vorplex.core.objects.IconMenu;
 import net.vorplex.core.objects.ScrollerInventory;
 import net.vorplex.core.util.NameFetcher;
 import net.vorplex.core.util.UUIDFetcher;
 import net.vorplex.core.util.UserFetcher;
-import net.luckperms.api.context.ContextManager;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.query.QueryOptions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -338,12 +338,12 @@ public class TitleCommand implements CommandExecutor {
                         player.sendMessage(ChatColor.RED + "Usage: /title clear <player>");
                         return false;
                     } else {
-                        String targetuuid = null;
+                        UUID targetuuid = null;
                         Player findTarget = Bukkit.getPlayerExact(strings[0]);
-                        Future<String> future = null;
+                        Future<UUID> future = null;
                         ExecutorService executorService = null;
                         if (findTarget != null) {
-                            targetuuid = findTarget.getUniqueId().toString().replace("-", "");
+                            targetuuid = findTarget.getUniqueId();
                         } else {
                             UUIDFetcher uuidFetcher = new UUIDFetcher();
                             uuidFetcher.fetch(strings[1]);
@@ -361,21 +361,20 @@ public class TitleCommand implements CommandExecutor {
                             }
                             executorService.shutdown();
                         }
-                        UUID targetUUID = UUIDFetcher.formatUUID(targetuuid);
                         if (targetuuid == null) {
                             player.sendMessage(plugin.prefix + ChatColor.RED + "That is not a player's name!");
                             return false;
                         }
-                        String targetName = NameFetcher.getName(targetuuid.replace("-", ""));
+                        String targetName = NameFetcher.getName(targetuuid);
                         if (targetName == null) {
                             targetName = strings[0];
                         }
                         player.sendMessage(plugin.prefix + ChatColor.GREEN + "Cleared Title for player: " + targetName + "!");
-                        String sql1 = "DELETE FROM `vorplexcore_equippedtitles` WHERE UUID='" + targetUUID.toString() + "'";
+                        String sql1 = "DELETE FROM `vorplexcore_equippedtitles` WHERE UUID='" + targetuuid.toString() + "'";
                         PreparedStatement stmt1 = plugin.connection.prepareStatement(sql1);
                         stmt1.executeUpdate();
                         stmt1.close();
-                        plugin.equippedTitles.remove(targetUUID);
+                        plugin.equippedTitles.remove(targetuuid);
                         return true;
                     }
                 }
@@ -388,12 +387,12 @@ public class TitleCommand implements CommandExecutor {
                         player.sendMessage(ChatColor.RED + "Usage: /title set <player>");
                         return false;
                     }
-                    String targetuuid = null;
+                    UUID targetuuid = null;
                     Player findTarget = Bukkit.getPlayerExact(strings[0]);
-                    Future<String> future = null;
+                    Future<UUID> future = null;
                     ExecutorService executorService = null;
                     if (findTarget != null) {
-                        targetuuid = findTarget.getUniqueId().toString().replace("-", "");
+                        targetuuid = findTarget.getUniqueId();
                     } else {
                         UUIDFetcher uuidFetcher = new UUIDFetcher();
                         uuidFetcher.fetch(strings[1]);
@@ -415,15 +414,14 @@ public class TitleCommand implements CommandExecutor {
                         player.sendMessage(plugin.prefix + ChatColor.RED + "That is not a player's name!");
                         return false;
                     }
-                    UUID targetUUID = UUIDFetcher.formatUUID(targetuuid);
-                    String targetName = NameFetcher.getName(targetuuid.replace("-", ""));
+                    String targetName = NameFetcher.getName(targetuuid);
                     if (targetName == null) {
                         targetName = strings[0];
                     }
-                    User user = plugin.luckPermsAPI.getUserManager().getUser(targetUUID);
+                    User user = plugin.luckPermsAPI.getUserManager().getUser(targetuuid);
                     if (user == null) {
                         UserFetcher userFetcher = new UserFetcher();
-                        userFetcher.setUuid(targetUUID);
+                        userFetcher.setUuid(targetuuid);
                         ExecutorService executorService1 = Executors.newSingleThreadExecutor();
                         Future<User> userFuture = executorService1.submit(userFetcher);
                         try {
@@ -451,6 +449,7 @@ public class TitleCommand implements CommandExecutor {
                         return false;
                     }
                     final String TARGETNAME = targetName;
+                    final UUID TARGETUUID = targetuuid;
                     if (titles.size() <= 56) {
                         IconMenu menu = new IconMenu(ChatColor.LIGHT_PURPLE + targetName + "'s Unlocked Titles", 1, (clicker, menu1, slot, item) -> {
                             if (clicker == player) {
@@ -467,7 +466,7 @@ public class TitleCommand implements CommandExecutor {
                                         return false;
                                     }
                                     try {
-                                        String sql = "SELECT * FROM `vorplexcore_equippedtitles` WHERE UUID='" + targetUUID.toString() + "';";
+                                        String sql = "SELECT * FROM `vorplexcore_equippedtitles` WHERE UUID='" + TARGETUUID.toString() + "';";
                                         PreparedStatement stmt = plugin.connection.prepareStatement(sql);
                                         ResultSet results = stmt.executeQuery();
                                         String rawTitle = plugin.titles.get(titleid);
@@ -478,14 +477,14 @@ public class TitleCommand implements CommandExecutor {
                                         if (rawTitle.contains("`"))
                                             rawTitle = rawTitle.replace("`", "%bcktck%");
                                         if (results.next()) {
-                                            String sql1 = "UPDATE `vorplexcore_equippedtitles` SET `UUID`='" + targetUUID.toString() + "', `TitleID`='" + titleid
-                                                    + "', `RawTitle`='" + rawTitle + "' WHERE `UUID`='" + targetUUID.toString() + "';";
+                                            String sql1 = "UPDATE `vorplexcore_equippedtitles` SET `UUID`='" + TARGETUUID.toString() + "', `TitleID`='" + titleid
+                                                    + "', `RawTitle`='" + rawTitle + "' WHERE `UUID`='" + TARGETUUID.toString() + "';";
                                             PreparedStatement stmt1 = plugin.connection.prepareStatement(sql1);
                                             stmt1.executeUpdate();
                                             stmt1.close();
                                         } else {
                                             String sql1 = "INSERT INTO `vorplexcore_equippedtitles` (`UUID`, `TitleID`, `RawTitle`)" +
-                                                    " VALUES ('" + targetUUID.toString() + "','" + titleid + "','" + rawTitle + "');";
+                                                    " VALUES ('" + TARGETUUID.toString() + "','" + titleid + "','" + rawTitle + "');";
                                             PreparedStatement stmt1 = plugin.connection.prepareStatement(sql1);
                                             stmt1.executeUpdate();
                                             stmt1.close();
@@ -496,7 +495,7 @@ public class TitleCommand implements CommandExecutor {
                                         return true;
                                     }
                                     menu1.close(clicker);
-                                    plugin.equippedTitles.put(targetUUID, plugin.titles.get(titleid));
+                                    plugin.equippedTitles.put(TARGETUUID, plugin.titles.get(titleid));
                                     clicker.sendMessage(plugin.prefix + ChatColor.LIGHT_PURPLE + "Set " + TARGETNAME + "'s equipped title to: " + ChatColor.translateAlternateColorCodes('&', item.getItemMeta().getDisplayName()));
                                     return true;
                                 }
