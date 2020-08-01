@@ -6,10 +6,10 @@ import java.util.UUID;
 
 public class Gift {
 
-    private ItemStack item;
-    private UUID sender;
+    private final ItemStack item;
+    private final UUID sender;
 
-    public Gift(ItemStack item, UUID sender){
+    public Gift(ItemStack item, UUID sender) {
         this.item = item;
         this.sender = sender;
     }

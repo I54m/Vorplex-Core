@@ -1,6 +1,7 @@
 package net.vorplex.core.objects;
 
 import net.vorplex.core.Main;
+import net.vorplex.core.commands.GiftCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -32,22 +33,27 @@ public class IconMenu implements Listener {
         Main plugin = Main.getInstance();
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
+
     public void setSize(int size) {
         this.size = size * 9;
         this.items = Arrays.copyOf(items, this.size);
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     @EventHandler
     public void onPluginDisable(PluginDisableEvent event) {
         for (Player p : this.getViewers())
             close(p);
     }
+
     public void open(Player p) {
         p.openInventory(getInventory(p));
         viewing.add(p.getName());
     }
+
     private Inventory getInventory(Player p) {
         Inventory inv = Bukkit.createInventory(p, size, name);
         for (int i = 0; i < items.length; i++)
@@ -55,16 +61,19 @@ public class IconMenu implements Listener {
                 inv.setItem(i, items[i]);
         return inv;
     }
+
     public void close(Player p) {
         if (p.getOpenInventory().getTitle().equals(name))
             p.closeInventory();
     }
+
     private List<Player> getViewers() {
         List<Player> viewers = new ArrayList<>();
         for (String s : viewing)
             viewers.add(Bukkit.getPlayer(s));
         return viewers;
     }
+
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (viewing.contains(event.getWhoClicked().getName())) {
@@ -76,21 +85,28 @@ public class IconMenu implements Listener {
             }
         }
     }
+
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+        if (GiftCommand.inProgress.containsKey(player.getUniqueId())) {
+            if (Main.getInstance().old)
+                player.getInventory().setItemInHand(GiftCommand.inProgress.get(player.getUniqueId()));
+            else player.getInventory().setItemInMainHand(GiftCommand.inProgress.get(player.getUniqueId()));
+            player.updateInventory();
+        }
         if (viewing.contains(event.getPlayer().getName()))
             viewing.remove(event.getPlayer().getName());
     }
+
     public void addButton(int position, ItemStack item, String name, String... lore) {
         items[position] = getItem(item, name, lore);
     }
+
     public void addButton(int position, ItemStack item) {
         items[position] = item;
     }
-    public void removeButton(int position) {
-        items[position] = null;
 
-    }
     private ItemStack getItem(ItemStack item, String name, String... lore) {
         ItemMeta im = item.getItemMeta();
         im.setDisplayName(name);
@@ -98,6 +114,7 @@ public class IconMenu implements Listener {
         item.setItemMeta(im);
         return item;
     }
+
     public interface onClick {
         boolean click(Player clicker, IconMenu menu, int slot, ItemStack item);
     }

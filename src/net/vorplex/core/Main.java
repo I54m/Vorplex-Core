@@ -2,17 +2,17 @@ package net.vorplex.core;
 
 import be.maximvdw.placeholderapi.PlaceholderAPI;
 import com.zaxxer.hikari.HikariDataSource;
+import net.luckperms.api.LuckPerms;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.vorplex.core.autorestart.Config;
 import net.vorplex.core.autorestart.Scheduler;
 import net.vorplex.core.commands.*;
 import net.vorplex.core.listeners.*;
 import net.vorplex.core.objects.Gift;
 import net.vorplex.core.util.BookUtils;
-import net.luckperms.api.LuckPerms;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -532,6 +532,8 @@ public class Main extends JavaPlugin {
                 for (final String keys : section.getKeys(false)) {
                     ArrayList<Gift> gifts = new ArrayList<>();
                     ConfigurationSection section2 = config.getConfigurationSection("gifts." + keys);
+                    if (section2 == null)
+                        throw new NullPointerException("Could not load gifts from file: Missing gifts configuration section!");
                     for (String giftno : section2.getKeys(false)) {
                         UUID sender = UUID.fromString(config.getString("gifts." + keys + "." + giftno + ".sender"));
                         ItemStack item = config.getItemStack("gifts." + keys + "." + giftno + ".item");

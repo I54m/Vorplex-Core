@@ -1,10 +1,10 @@
 package net.vorplex.core.commands;
 
 import net.vorplex.core.Main;
-import net.vorplex.core.util.NameFetcher;
 import net.vorplex.core.objects.Gift;
 import net.vorplex.core.objects.IconMenu;
 import net.vorplex.core.objects.ScrollerInventory;
+import net.vorplex.core.util.NameFetcher;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class GiftsCommand implements CommandExecutor {
 
-    private Main plugin = Main.getInstance();
+    private final Main plugin = Main.getInstance();
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
@@ -54,6 +54,7 @@ public class GiftsCommand implements CommandExecutor {
                             clicker.sendMessage(plugin.prefix + ChatColor.RED + "Your inventory is full, please remove some items before redeeming a gift!");
                             return true;
                         }
+                        menu1.close(player);
                         clicker.getInventory().addItem(gift.getItem());
                         clicker.sendMessage(plugin.prefix + ChatColor.GREEN + item.getItemMeta().getDisplayName() + ChatColor.LIGHT_PURPLE + " Redeemed!");
                         ArrayList<Gift> giftsLeft = new ArrayList<>(plugin.gifts.get(player.getUniqueId()));
@@ -63,9 +64,7 @@ public class GiftsCommand implements CommandExecutor {
                             return true;
                         }else {
                             plugin.gifts.put(player.getUniqueId(), giftsLeft);
-                            menu1.close(clicker);
-                            menu1.removeButton(slot);
-                            menu1.open(clicker);
+                            openGiftMenu(player);
                         }
                     }
                 }
@@ -138,6 +137,7 @@ public class GiftsCommand implements CommandExecutor {
                             clicker.sendMessage(plugin.prefix + ChatColor.RED + "Your inventory is full, please remove some items before redeeming a gift!");
                             return true;
                         }
+                        clicker.closeInventory();
                         clicker.getInventory().addItem(gift.getItem());
                         clicker.sendMessage(plugin.prefix + ChatColor.GREEN + item.getItemMeta().getDisplayName() + ChatColor.LIGHT_PURPLE + " Redeemed!");
                         ArrayList<Gift> giftsLeft = new ArrayList<>(plugin.gifts.get(clicker.getUniqueId()));
@@ -147,9 +147,7 @@ public class GiftsCommand implements CommandExecutor {
                             return true;
                         }else {
                             plugin.gifts.put(clicker.getUniqueId(), giftsLeft);
-                            clicker.closeInventory();
-                            scrollerInventory.recalculate(items);
-                            scrollerInventory.open(clicker);
+                            openGiftMenu(player);
                         }
                     }
                 }

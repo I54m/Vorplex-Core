@@ -13,76 +13,85 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class GiftCommand implements CommandExecutor {
 
-    private Main plugin = Main.getInstance();
-    private boolean old = plugin.old;
+    public static Map<UUID, ItemStack> inProgress = new HashMap<>();
+    private final Main plugin = Main.getInstance();
+    private final boolean old = plugin.old;
 
     @SuppressWarnings("deprecation")
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if (!(commandSender instanceof Player)){
+        if (!(commandSender instanceof Player)) {
             commandSender.sendMessage("You must be a player to use this command!");
             return false;
         }
         Player player = (Player) commandSender;
-        if (!player.hasPermission("vorplexcore.gifts.send")){
+        if (!player.hasPermission("vorplexcore.gifts.send")) {
             player.sendMessage(plugin.prefix + ChatColor.RED + "you do not have permission to use this command!");
             return false;
         }
-        if (strings.length < 1){
+        if (strings.length < 1) {
             player.sendMessage(plugin.prefix + ChatColor.RED + "Send a player the item in your main hand as a gift, Usage: /gift <player>");
             return false;
         }
-        ItemStack itemgift = old ? player.getItemInHand() : player.getInventory().getItemInMainHand().clone();
-        if (itemgift == null || itemgift.getType() == Material.AIR){
+        ItemStack itemgift = old ? player.getItemInHand().clone() : player.getInventory().getItemInMainHand().clone();
+        if (itemgift == null || itemgift.getType() == Material.AIR) {
             player.sendMessage(plugin.prefix + ChatColor.RED + "You must be holding an item in your main hand to gift a player");
             return false;
         }
         Player receiver = Bukkit.getPlayer(strings[0]);
-        if (receiver == null){
+        if (receiver == null) {
             player.sendMessage(plugin.prefix + ChatColor.RED + "That is not an online player's name!");
             return false;
         }
-        if (receiver == player){
+        if (receiver.getUniqueId().equals(player.getUniqueId())) {
             player.sendMessage(plugin.prefix + ChatColor.RED + "You cannot send yourself a gift!");
             return false;
         }
-        if (plugin.gifts.containsKey(receiver.getUniqueId())){
+        if (plugin.gifts.containsKey(receiver.getUniqueId())) {
             ArrayList<Gift> gifts = new ArrayList<>(plugin.gifts.get(receiver.getUniqueId()));
-            for (Gift gift:gifts) {
-                if (gift.getSender().equals(player.getUniqueId())){
+            for (Gift gift : gifts) {
+                if (gift.getSender().equals(player.getUniqueId())) {
                     player.sendMessage(plugin.prefix + ChatColor.RED + receiver.getName() + " already has an unopened gift from you!");
                     return false;
                 }
             }
         }
+        inProgress.put(player.getUniqueId(), itemgift);
+        if (old) player.getInventory().getItemInHand().setType(Material.AIR);
+        else player.getInventory().getItemInMainHand().setType(Material.AIR);
+        player.updateInventory();
         final ItemStack deny = old ? new ItemStack(Material.valueOf("WOOL"), 1, (short) 14) : new ItemStack(Material.RED_WOOL);
-        final ItemStack confirm =  old ? new ItemStack(Material.valueOf("WOOL"), 1, (short) 5) : new ItemStack(Material.LIME_WOOL);
-        IconMenu menu = new IconMenu(ChatColor.RED + "/Gift confirmation", 3, (clicker, menu1, slot, item) ->{
+        final ItemStack confirm = old ? new ItemStack(Material.valueOf("WOOL"), 1, (short) 5) : new ItemStack(Material.LIME_WOOL);
+        IconMenu menu = new IconMenu(ChatColor.RED + "/Gift confirmation", 3, (clicker, menu1, slot, item) -> {
             if (clicker == player) {
                 if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return false;
                 if (item.getItemMeta().getDisplayName().contains(ChatColor.GREEN + "Confirm") && (old ? item.getType() == confirm.getType() && item.getDurability() == confirm.getDurability() : item.getType() == confirm.getType())) {
                     clicker.sendMessage(plugin.prefix + ChatColor.GREEN + "Gifting item to " + receiver.getName());
                     Gift gift = new Gift(itemgift, player.getUniqueId());
-                    if (plugin.gifts.containsKey(receiver.getUniqueId())){
+                    if (plugin.gifts.containsKey(receiver.getUniqueId())) {
                         ArrayList<Gift> gifts = new ArrayList<>(plugin.gifts.get(receiver.getUniqueId()));
                         gifts.add(gift);
                         plugin.gifts.put(receiver.getUniqueId(), gifts);
-                    }else{
+                    } else {
                         ArrayList<Gift> gifts = new ArrayList<>();
                         gifts.add(gift);
                         plugin.gifts.put(receiver.getUniqueId(), gifts);
                     }
                     if (receiver.isOnline())
                         receiver.sendMessage(plugin.prefix + ChatColor.GREEN + clicker.getName() + " has sent you a gift! Do /gifts to claim it!");
-                    if (old) clicker.getItemInHand().setAmount(0);
-                    else clicker.getInventory().getItemInMainHand().setAmount(0);
-                    clicker.updateInventory();
                     return true;
-                }else if (item.getItemMeta().getDisplayName().contains(ChatColor.RED + "Deny") && (old ? item.getType() == deny.getType() && item.getDurability() == deny.getDurability() : item.getType() == deny.getType())) {
+                } else if (item.getItemMeta().getDisplayName().contains(ChatColor.RED + "Deny") && (old ? item.getType() == deny.getType() && item.getDurability() == deny.getDurability() : item.getType() == deny.getType())) {
                     clicker.sendMessage(plugin.prefix + ChatColor.RED + "Cancelled gifting item to " + receiver.getName());
+                    if (old) player.getInventory().setItemInHand(inProgress.get(clicker.getUniqueId()));
+                    else player.getInventory().setItemInMainHand(inProgress.get(clicker.getUniqueId()));
+                    inProgress.remove(clicker.getUniqueId());
+                    player.updateInventory();
                     return true;
                 }
             }
@@ -113,7 +122,6 @@ public class GiftCommand implements CommandExecutor {
         menu.addButton(18, deny, ChatColor.RED + "Deny");
         menu.addButton(19, deny, ChatColor.RED + "Deny");
         menu.addButton(20, deny, ChatColor.RED + "Deny");
-
 
 
         menu.addButton(24, confirm, ChatColor.GREEN + "Confirm");
