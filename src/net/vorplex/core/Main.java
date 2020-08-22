@@ -23,6 +23,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import us.myles.ViaVersion.api.Via;
+import us.myles.ViaVersion.api.ViaAPI;
 
 import java.io.File;
 import java.sql.Connection;
@@ -41,7 +43,7 @@ public class Main extends JavaPlugin {
     public static Main instance;
     public static boolean announce;
     private static int previousMessageNumber;
-    private File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
+    private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
 
     private int cacheTaskid;
 
@@ -54,7 +56,7 @@ public class Main extends JavaPlugin {
     public Map<UUID, ArrayList<Gift>> gifts = new HashMap<>();
 
     private HikariDataSource hikari;
-    private String host, username, password, extraArguments;
+    public ViaAPI viaVersionApi;
     private static String database;
     private int port;
     public Connection connection;
@@ -77,7 +79,7 @@ public class Main extends JavaPlugin {
             Bukkit.getServer().getVersion().contains("1.10") ||
             Bukkit.getServer().getVersion().contains("1.11") ||
             Bukkit.getServer().getVersion().contains("1.12");
-
+    private String host, username;
 
     @Override
     public void onEnable() {
@@ -153,7 +155,10 @@ public class Main extends JavaPlugin {
             }, 720, (getConfig().getInt("Announcer.Interval") * 20));
             getLogger().info("Enabled Auto Announcer Module");
         }
-        if (getConfig().getBoolean("Announcer.enabled") || getConfig().getBoolean("JoinMessages.enabled") || getConfig().getBoolean("Hub.enabled"))
+        if (getConfig().getBoolean("Announcer.enabled") ||
+                getConfig().getBoolean("JoinMessages.enabled") ||
+                getConfig().getBoolean("Hub.enabled") ||
+                (getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join") && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")))
             Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
 
         if (getConfig().getBoolean("Hub.enabled")) {
@@ -237,6 +242,23 @@ public class Main extends JavaPlugin {
                 getLogger().info("ERROR: Could not enable Gifts Module, GiftsStorage.yml could not be loaded!!");
             }
         }
+        if (getConfig().getBoolean("ViaVersion.enable-scoreboard-placeholder") ||
+                getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join")) {
+            viaVersionApi = Via.getAPI();
+            if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && getConfig().getBoolean("ViaVersion.enable-scoreboard-placeholder")) {
+                PlaceholderAPI.registerPlaceholder(this, "vorplex_scoreboardversion", (event) -> {
+                    if (event.isOnline() && event.getPlayer() != null) {
+                        Player player = event.getPlayer();
+                        UUID uuid = player.getUniqueId();
+                        if (viaVersionApi.getPlayerVersion(uuid) < 393) return "legacy_default";
+                        else return "default";
+                    }
+                    return "legacy_default";
+                });
+            } else {
+                getLogger().severe("ViaVersion not detected, unable to enable viaversion module!");
+            }
+        }
         Bukkit.getPluginManager().registerEvents(new PlayerDeath(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerKick(), this);
         if (hikari != null || connection != null) {
@@ -311,9 +333,9 @@ public class Main extends JavaPlugin {
             host = getConfig().getString("MySQL.host");
             database = getConfig().getString("MySQL.database");
             username = getConfig().getString("MySQL.username");
-            password = getConfig().getString("MySQL.password");
+            String password = getConfig().getString("MySQL.password");
             port = getConfig().getInt("MySQL.port");
-            extraArguments = getConfig().getString("MySQL.extraArguments");
+            String extraArguments = getConfig().getString("MySQL.extraArguments");
             hikari = new HikariDataSource();
             hikari.addDataSourceProperty("serverName", host);
             hikari.addDataSourceProperty("port", port);
@@ -323,7 +345,7 @@ public class Main extends JavaPlugin {
             hikari.addDataSourceProperty("useServerPrepStmts", true);
             hikari.setPassword(password);
             hikari.setUsername(username);
-            hikari.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.extraArguments);
+            hikari.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + extraArguments);
             hikari.setPoolName("Vorplex-Core");
             hikari.setMaximumPoolSize(10);
             hikari.setMinimumIdle(10);
