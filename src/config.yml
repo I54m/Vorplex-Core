@@ -13,6 +13,11 @@ MySQL:
   extraArguments: ?useSSL=false
 
 
+ViaVersion:
+  enable-scoreboard-placeholder: true
+  enable-legacy-warning-on-join: true
+  legacy-warning: "&c&lDetected legacy client version! It is recommended that you update to a 1.13+ client for the best experience!"
+
 Prefixes:
   plugin: "&5[&d&lvorplex-Core&5] "
   autorestart-module: "&5[&dvorplex-Restart&5] "
