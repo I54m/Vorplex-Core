@@ -1,5 +1,5 @@
 name: Vorplex-Core
-version: 1.10
+version: 1.11
 api-version: 1.13
 author: I54m
 website: https://vorplex.net
@@ -12,6 +12,13 @@ softdepend:
   - MVdWPlaceholderAPI
   - SuperVanish
   - PremiumVanish
+  - ViaVersion
+loadbefore:
+  - FeatherBoard
+
+
+
+
 
 #######################################################################################[Commands]######################################################################
 
