@@ -1,12 +1,12 @@
 package net.vorplex.core.commands;
 
-import net.vorplex.core.Main;
-import net.vorplex.core.objects.IconMenu;
-import net.vorplex.core.util.UserFetcher;
 import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
+import net.vorplex.core.Main;
+import net.vorplex.core.objects.IconMenu;
+import net.vorplex.core.util.UserFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

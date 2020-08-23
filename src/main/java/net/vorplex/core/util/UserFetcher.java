@@ -1,8 +1,8 @@
 package net.vorplex.core.util;
 
-import net.vorplex.core.Main;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
+import net.vorplex.core.Main;
 
 import java.util.UUID;
 import java.util.concurrent.Callable;

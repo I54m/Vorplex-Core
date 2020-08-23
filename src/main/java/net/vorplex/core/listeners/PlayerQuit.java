@@ -1,32 +1,35 @@
 package net.vorplex.core.listeners;
 
-import de.myzelyam.api.vanish.PlayerHideEvent;
-import net.vorplex.core.Main;
-import net.vorplex.core.util.UserFetcher;
 import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
+import net.vorplex.core.Main;
+import net.vorplex.core.util.UserFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-public class PlayerHide implements Listener {
-
+public class PlayerQuit implements Listener {
 
     private Main plugin = Main.getInstance();
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerVanish(PlayerHideEvent event) {
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event){
+        event.setQuitMessage("");
+        if(Bukkit.getOnlinePlayers().toArray().length <= 0){
+            Main.announce = false;
+            Bukkit.getLogger().info("Detected no players online! disabling announcements to save resources!");
+        }
         Player player = event.getPlayer();
-        if (plugin.getConfig().getBoolean("LeaveMessages.enabled")) {
+        if (plugin.getConfig().getBoolean("LeaveMessages.enabled")){
             User user = plugin.luckPermsAPI.getUserManager().getUser(player.getName());
             if (user == null) {
                 UserFetcher userFetcher = new UserFetcher();
@@ -35,13 +38,13 @@ public class PlayerHide implements Listener {
                 Future<User> userFuture = executorService.submit(userFetcher);
                 try {
                     user = userFuture.get(5, TimeUnit.SECONDS);
-                } catch (Exception e) {
+                }catch (Exception e){
                     executorService.shutdown();
                     player.sendMessage(ChatColor.RED + "We were unable to fetch your permission information please try again later!");
                     return;
                 }
                 executorService.shutdown();
-                if (user == null) {
+                if(user == null){
                     throw new IllegalStateException();
                 }
             }
@@ -55,14 +58,12 @@ public class PlayerHide implements Listener {
                         String placeholder;
                         if (plugin.equippedTitles.containsKey(player.getUniqueId()) && plugin.equippedTitles.get(player.getUniqueId()) != null) {
                             placeholder = ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', plugin.equippedTitles.get(player.getUniqueId())) + ChatColor.DARK_GRAY + "]"+ ChatColor.RESET + " " +
-                                    prefix + ChatColor.RESET + " " + player.getName();
+                                    prefix + player.getName();
                         } else {
-                            placeholder = prefix + ChatColor.RESET + " " + player.getName();
+                            placeholder = prefix + player.getName();
                         }
                         String leavemessage = plugin.customLeaveMessages.get(player.getUniqueId()).replace("%me%", placeholder).replace("\n", "");
-                        for (Player all : Bukkit.getOnlinePlayers()) {
-                            all.sendMessage(ChatColor.translateAlternateColorCodes('&', leavemessage));
-                        }
+                        event.setQuitMessage(ChatColor.translateAlternateColorCodes('&', leavemessage));
                         return;
                     }
                 }
@@ -76,9 +77,7 @@ public class PlayerHide implements Listener {
                         } else {
                             leavemessage = leavemessage.replace("%title%", "");
                         }
-                        for (Player all : Bukkit.getOnlinePlayers()) {
-                            all.sendMessage(ChatColor.translateAlternateColorCodes('&', leavemessage));
-                        }
+                        event.setQuitMessage(ChatColor.translateAlternateColorCodes('&', leavemessage));
                         break;
                     }
                 }

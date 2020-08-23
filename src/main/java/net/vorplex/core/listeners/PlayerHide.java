@@ -1,11 +1,11 @@
 package net.vorplex.core.listeners;
 
-import de.myzelyam.api.vanish.PlayerShowEvent;
-import net.vorplex.core.Main;
-import net.vorplex.core.util.UserFetcher;
+import de.myzelyam.api.vanish.PlayerHideEvent;
 import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
+import net.vorplex.core.Main;
+import net.vorplex.core.util.UserFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -18,14 +18,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-public class PlayerShow implements Listener {
+public class PlayerHide implements Listener {
+
 
     private Main plugin = Main.getInstance();
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerUnvanish(PlayerShowEvent event) {
+    public void onPlayerVanish(PlayerHideEvent event) {
         Player player = event.getPlayer();
-        if (plugin.getConfig().getBoolean("JoinMessages.enabled")) {
+        if (plugin.getConfig().getBoolean("LeaveMessages.enabled")) {
             User user = plugin.luckPermsAPI.getUserManager().getUser(player.getName());
             if (user == null) {
                 UserFetcher userFetcher = new UserFetcher();
@@ -48,9 +49,9 @@ public class PlayerShow implements Listener {
             QueryOptions queryOptions = cm.getQueryOptions(user).orElse(cm.getStaticQueryOptions());
             String prefix = user.getCachedData().getMetaData(queryOptions).getPrefix();
             if (prefix == null) prefix = "";
-            if (plugin.getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
-                if (player.hasPermission("vorplexcore.customjoinmessages")) {
-                    if (plugin.customJoinMessages.containsKey(player.getUniqueId())) {
+            if (plugin.getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
+                if (player.hasPermission("vorplexcore.customleavemessages")) {
+                    if (plugin.customLeaveMessages.containsKey(player.getUniqueId())) {
                         String placeholder;
                         if (plugin.equippedTitles.containsKey(player.getUniqueId()) && plugin.equippedTitles.get(player.getUniqueId()) != null) {
                             placeholder = ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', plugin.equippedTitles.get(player.getUniqueId())) + ChatColor.DARK_GRAY + "]"+ ChatColor.RESET + " " +
@@ -58,25 +59,25 @@ public class PlayerShow implements Listener {
                         } else {
                             placeholder = prefix + ChatColor.RESET + " " + player.getName();
                         }
-                        String joinmessage = plugin.customJoinMessages.get(player.getUniqueId()).replace("%me%", placeholder).replace("\n", "");
+                        String leavemessage = plugin.customLeaveMessages.get(player.getUniqueId()).replace("%me%", placeholder).replace("\n", "");
                         for (Player all : Bukkit.getOnlinePlayers()) {
-                            all.sendMessage(ChatColor.translateAlternateColorCodes('&', joinmessage));
+                            all.sendMessage(ChatColor.translateAlternateColorCodes('&', leavemessage));
                         }
                         return;
                     }
                 }
             }
-            if (plugin.getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
-                for (String permission : plugin.permissionJoinMessages.keySet()) {
-                    if (player.hasPermission("vorplexcore.joinmessages." + permission)) {
-                        String joinmessage = plugin.permissionJoinMessages.get(permission).replace("%name%", ChatColor.RESET + " " + player.getName()).replace("%prefix%", prefix);
+            if (plugin.getConfig().getBoolean("LeaveMessages.permissionbasedleavemessages.enabled")) {
+                for (String permission : plugin.permissionLeaveMessages.keySet()) {
+                    if (player.hasPermission("vorplexcore.leavemessages." + permission)) {
+                        String leavemessage = plugin.permissionLeaveMessages.get(permission).replace("%name%", ChatColor.RESET + " " + player.getName()).replace("%prefix%", prefix);
                         if (plugin.equippedTitles.containsKey(player.getUniqueId()) && plugin.equippedTitles.get(player.getUniqueId()) != null) {
-                            joinmessage = joinmessage.replace("%title%", ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', plugin.equippedTitles.get(player.getUniqueId())) + ChatColor.DARK_GRAY + "]"+ ChatColor.RESET + " ");
+                            leavemessage = leavemessage.replace("%title%", ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', plugin.equippedTitles.get(player.getUniqueId())) + ChatColor.DARK_GRAY + "]"+ ChatColor.RESET + " ");
                         } else {
-                            joinmessage = joinmessage.replace("%title%", "");
+                            leavemessage = leavemessage.replace("%title%", "");
                         }
                         for (Player all : Bukkit.getOnlinePlayers()) {
-                            all.sendMessage(ChatColor.translateAlternateColorCodes('&', joinmessage));
+                            all.sendMessage(ChatColor.translateAlternateColorCodes('&', leavemessage));
                         }
                         break;
                     }
