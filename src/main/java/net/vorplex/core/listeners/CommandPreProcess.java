@@ -1,6 +1,5 @@
 package net.vorplex.core.listeners;
 
-import com.sun.istack.internal.NotNull;
 import net.vorplex.core.Main;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -8,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
