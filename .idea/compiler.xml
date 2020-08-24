@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="VorplexCore" target="1.5" />
+      <module name="VorplexCore" target="8" />
     </bytecodeTargetLevel>
   </component>
 </project>
