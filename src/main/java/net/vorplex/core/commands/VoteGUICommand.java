@@ -40,7 +40,7 @@ public class VoteGUICommand implements CommandExecutor {
                     .append("\n------------------").strikethrough(true).bold(false).color(ChatColor.BLACK)
                     .append("\nVote for the server to gain rewards!\n").strikethrough(false).color(ChatColor.BLACK);
             for (String id : plugin.getConfig().getConfigurationSection("VoteBookGUI.votelinks").getKeys(false)){
-                text.append("\n➤ ").strikethrough(false).bold(true).color(ChatColor.BLACK)
+                text.append("\n>> ").strikethrough(false).bold(true).color(ChatColor.BLACK)
                         .append("Link " + id).strikethrough(false).bold(false).color(ChatColor.DARK_GREEN)
                         .event(new ClickEvent(ClickEvent.Action.OPEN_URL, plugin.getConfig().getString("VoteBookGUI.votelinks." + id)))
                         .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Go to vote link " + id + "!").create()));
