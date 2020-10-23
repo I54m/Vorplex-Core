@@ -68,6 +68,10 @@ commands:
     description: Send a player a gift.
   gifts:
     description: See and claim gifts sent to you by other players.
+  buy:
+    description: show the store link.
+  discord:
+    description: show the discord link.
 
 ####################################################################################[Permissions]#########################################################################################
 

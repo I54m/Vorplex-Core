@@ -91,6 +91,10 @@ public class Main extends JavaPlugin {
         PREFIX_NO_COLOR = ChatColor.stripColor(PREFIX);
         this.getCommand("vorplexcorereload").setExecutor(this);
         //load modules
+        if (this.getConfig().getBoolean("buycommand.enabled"))
+            this.getCommand("buy").setExecutor(new BuyCommand());
+        if (this.getConfig().getBoolean("discordcommand.enabled"))
+            this.getCommand("discord").setExecutor(new DiscordCommand());
         if (this.getConfig().getBoolean("VoteBookGUI.enabled")) {
             this.getCommand("vote").setExecutor(new VoteGUICommand());
             BookUtils.init();

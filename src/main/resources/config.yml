@@ -213,6 +213,16 @@ LeaveMessages:
 Gifts:
   enabled: true
 
+#Buy command
+buycommand:
+  enabled: true
+  message: "&6&lStore: &b&nhttps://store.vorplex.net"
+
+#Discord command
+discordcommand:
+  enabled: true
+  message: "&6&discord: &b&nhttps://discord.vorplex.net"
+
 
 
 
