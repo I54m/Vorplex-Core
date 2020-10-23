@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: us.myles:viaversion-bukkit:3.1.1-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-bukkit/3.1.1-SNAPSHOT/viaversion-bukkit-3.1.1-20200824.125711-455.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-bukkit/3.1.1-SNAPSHOT/viaversion-bukkit-3.1.1-20200902.134813-459.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-bukkit/3.1.1-SNAPSHOT/viaversion-bukkit-3.1.1-20200824.125711-455-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-bukkit/3.1.1-SNAPSHOT/viaversion-bukkit-3.1.1-20200902.134813-459-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-bukkit/3.1.1-SNAPSHOT/viaversion-bukkit-3.1.1-20200824.125711-455-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-bukkit/3.1.1-SNAPSHOT/viaversion-bukkit-3.1.1-20200902.134813-459-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

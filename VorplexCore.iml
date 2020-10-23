@@ -47,7 +47,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.vexsoftware:nuvotifier-universal:2.3.4" level="project" />
     <orderEntry type="library" name="Maven: be.maximvdw:MVdWPlaceholderAPI:3.1.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: be.maximvdw:MVdWUpdater:1.6.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.MyzelYam:SuperVanish:6.1.8" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: us.myles:viaversion:3.1.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: us.myles:viaversion-common:3.1.1-SNAPSHOT" level="project" />
