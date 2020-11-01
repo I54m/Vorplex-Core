@@ -63,11 +63,10 @@ public class GiftCommand implements CommandExecutor {
             }
         }
         inProgress.put(player.getUniqueId(), itemgift);
-        if (old) player.getInventory().getItemInHand().setType(Material.AIR);
-        else player.getInventory().getItemInMainHand().setType(Material.AIR);
+        player.getInventory().remove(itemgift);
         player.updateInventory();
-        final ItemStack deny = old ? new ItemStack(Material.valueOf("WOOL"), 1, (short) 14) : new ItemStack(Material.RED_WOOL);
-        final ItemStack confirm = old ? new ItemStack(Material.valueOf("WOOL"), 1, (short) 5) : new ItemStack(Material.LIME_WOOL);
+        final ItemStack deny = old ? new ItemStack(Material.valueOf("WOOL"), 1, (short) 14) : new ItemStack(Material.RED_STAINED_GLASS_PANE);
+        final ItemStack confirm = old ? new ItemStack(Material.valueOf("WOOL"), 1, (short) 5) : new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         IconMenu menu = new IconMenu(ChatColor.RED + "/Gift confirmation", 3, (clicker, menu1, slot, item) -> {
             if (clicker == player) {
                 if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return false;
@@ -85,6 +84,7 @@ public class GiftCommand implements CommandExecutor {
                     }
                     if (receiver.isOnline())
                         receiver.sendMessage(plugin.prefix + ChatColor.GREEN + clicker.getName() + " has sent you a gift! Do /gifts to claim it!");
+                    inProgress.remove(clicker.getUniqueId());
                     return true;
                 } else if (item.getItemMeta().getDisplayName().contains(ChatColor.RED + "Deny") && (old ? item.getType() == deny.getType() && item.getDurability() == deny.getDurability() : item.getType() == deny.getType())) {
                     clicker.sendMessage(plugin.prefix + ChatColor.RED + "Cancelled gifting item to " + receiver.getName());
@@ -105,7 +105,7 @@ public class GiftCommand implements CommandExecutor {
 
         menu.addButton(4, new ItemStack(Material.PAPER), ChatColor.RED + "WARNING!!!",
                 ChatColor.WHITE + "Confirming this action will", ChatColor.WHITE + "send " + receiver.getName() + " the item in",
-                ChatColor.WHITE + "your main hand (below).", ChatColor.WHITE + "This cannot be undone!!");
+                ChatColor.WHITE + "your main hand (below).", ChatColor.RED + "This cannot be undone!!");
 
         menu.addButton(6, confirm, ChatColor.GREEN + "Confirm");
         menu.addButton(7, confirm, ChatColor.GREEN + "Confirm");
