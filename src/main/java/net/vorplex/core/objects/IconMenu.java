@@ -1,7 +1,6 @@
 package net.vorplex.core.objects;
 
 import net.vorplex.core.Main;
-import net.vorplex.core.commands.GiftCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -88,13 +87,6 @@ public class IconMenu implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        Player player = (Player) event.getPlayer();
-        if (GiftCommand.inProgress.containsKey(player.getUniqueId())) {
-            if (Main.getInstance().old)
-                player.getInventory().setItemInHand(GiftCommand.inProgress.get(player.getUniqueId()));
-            else player.getInventory().setItemInMainHand(GiftCommand.inProgress.get(player.getUniqueId()));
-            player.updateInventory();
-        }
         if (viewing.contains(event.getPlayer().getName()))
             viewing.remove(event.getPlayer().getName());
     }
