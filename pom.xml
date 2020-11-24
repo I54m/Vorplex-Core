@@ -6,7 +6,7 @@
 
     <groupId>net.vorplex</groupId>
     <artifactId>VorplexCore</artifactId>
-    <version>1.12.1</version>
+    <version>1.12.2</version>
     <properties>
         <timestamp>${maven.build.timestamp}</timestamp>
         <maven.build.timestamp.format>dd-MM-yy HH:mm:ss</maven.build.timestamp.format>
@@ -162,7 +162,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.2-R0.1-SNAPSHOT</version>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
