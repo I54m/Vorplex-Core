@@ -13,7 +13,9 @@ public class BookUtils {
     private static Constructor<?> serializerConstructor;
     private static Object bookKey;
     private static Constructor<?> titleConstructor;
+    private static Object enumHand;
     private static boolean old;
+    private static boolean openBookAPI = false;
 
 
     public static void init() {
@@ -28,11 +30,11 @@ public class BookUtils {
             if (old) {
                 bookKey = "MC|BOpen";
                 titleConstructor = NMSUtils.getNMSClass("PacketPlayOutCustomPayload").getConstructor(String.class, NMSUtils.getNMSClass("PacketDataSerializer"));
-            } else {
+            } else if (Bukkit.getServer().getVersion().contains("1.13")) {
                 Constructor<?> keyConstructor = NMSUtils.getNMSClass("MinecraftKey").getConstructor(String.class);
                 bookKey = keyConstructor.newInstance("minecraft:book_open");
                 titleConstructor = NMSUtils.getNMSClass("PacketPlayOutCustomPayload").getConstructor(NMSUtils.getNMSClass("MinecraftKey"), NMSUtils.getNMSClass("PacketDataSerializer"));
-            }
+            } else openBookAPI = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,24 +42,23 @@ public class BookUtils {
 
 
     public static void openBook(ItemStack book, Player p) {
-        int slot = p.getInventory().getHeldItemSlot();
-        ItemStack oldItem = p.getInventory().getItem(slot) != null ? p.getInventory().getItem(slot).clone() : new ItemStack(Material.AIR);
-        p.getInventory().setItem(slot, book);
+        if (!openBookAPI) {
+            ItemStack oldItem = p.getInventory().getItemInMainHand().getType() != Material.AIR ? p.getInventory().getItemInMainHand().clone() : new ItemStack(Material.AIR);
+            p.getInventory().setItemInMainHand(book);
+            ByteBuf buf = Unpooled.buffer(256);
+            buf.setByte(0, (byte) 0);
+            buf.writerIndex(1);
 
-        ByteBuf buf = Unpooled.buffer(256);
-        buf.setByte(0, (byte) 0);
-        buf.writerIndex(1);
+            try {
+                Object packetDataSerializer = serializerConstructor.newInstance(buf);
 
-        try {
-            Object packetDataSerializer = serializerConstructor.newInstance(buf);
+                Object payload = titleConstructor.newInstance(old ? bookKey : bookKey, packetDataSerializer);
 
-            Object payload = titleConstructor.newInstance(old ? (String) bookKey : bookKey, packetDataSerializer);
-
-            NMSUtils.sendPacket(p, payload);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        p.getInventory().setItem(slot, oldItem);
+                NMSUtils.sendPacket(p, payload);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            p.getInventory().setItemInMainHand(oldItem);
+        } else p.openBook(book);
     }
 }
