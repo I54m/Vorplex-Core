@@ -147,6 +147,7 @@ Hub:
   enabled: true
   #%player% will be replaced with the players name
   join-title-message: "&3&lVorplex &b&lNetwork:&7Welcome &c%player%&7. Enjoy your stay!:20:50:20"
+  oxygen-helmet-enabled: true
 
 #give player's the ability to change their donor rank prefix between all prefixes they have.
 RankTitle:

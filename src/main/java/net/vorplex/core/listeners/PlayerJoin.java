@@ -11,11 +11,13 @@ import net.vorplex.core.util.UserFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,6 +66,9 @@ public class PlayerJoin implements Listener {
                     player.sendTitle(ChatColor.translateAlternateColorCodes('&', args[0]), ChatColor.translateAlternateColorCodes('&', args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]));
             } catch (NumberFormatException nfe) {
                 player.sendMessage(ChatColor.RED + "Error: Last three arguments in the title must be numbers!!");
+            }
+            if (plugin.getConfig().getBoolean("Hub.oxygen-helmet-enabled")) {
+                player.getInventory().setHelmet(new ItemStack(Material.GLASS, 1));
             }
         }
         if (plugin.getConfig().getBoolean("JoinMessages.enabled")) {
