@@ -66,7 +66,6 @@ public class RankTitleCommand implements CommandExecutor {
                 Map<Integer, String> GroupPrefixes = possiblegroup.getCachedData().getMetaData(queryOptions).getPrefixes();
                 for (int priority : GroupPrefixes.keySet()) {
                     if (priority < plugin.getConfig().getInt("RankTitle.priority-to-add-prefixes")) {
-                        if (prefixes.containsKey(priority)) continue;
                         if (!prefixes.containsValue(GroupPrefixes.get(priority)))
                             prefixes.put(priority, GroupPrefixes.get(priority));
                     }
