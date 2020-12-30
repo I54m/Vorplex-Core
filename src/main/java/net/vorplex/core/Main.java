@@ -21,6 +21,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import us.myles.ViaVersion.api.Via;
@@ -169,6 +170,13 @@ public class Main extends JavaPlugin {
             if (Bukkit.getPluginManager().isPluginEnabled("EssentialsSpawn")) {
                 essentials = true;
                 getLogger().info("Essentials spawn detected, using as adapter for spawn teleporting!");
+            }
+            if (getConfig().getBoolean("Hub.oxygen-helmet-enabled")) {
+                ItemMeta im = PlayerJoin.oxygenHelmet.getItemMeta();
+                im.setDisplayName(ChatColor.WHITE + "Oxygen Helmet");
+                im.setLore(Arrays.asList(ChatColor.WHITE + "It's probably best to keep this on..."));
+                PlayerJoin.oxygenHelmet.setItemMeta(im);
+                Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);
             }
             getLogger().info("Enabled Hub Module");
         }
