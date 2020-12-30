@@ -30,12 +30,12 @@ public class RankTitleCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if (!(commandSender instanceof Player)){
+        if (!(commandSender instanceof Player)) {
             commandSender.sendMessage("You must be a player to use this command!");
             return false;
         }
         Player player = (Player) commandSender;
-        if (!player.hasPermission("vorplexcore.ranktitles")){
+        if (!player.hasPermission("vorplexcore.ranktitles")) {
             player.sendMessage(plugin.prefix + ChatColor.RED + "You do not have permission to use this command!");
             return false;
         }
@@ -47,13 +47,13 @@ public class RankTitleCommand implements CommandExecutor {
             Future<User> userFuture = executorService.submit(userFetcher);
             try {
                 user = userFuture.get(5, TimeUnit.SECONDS);
-            }catch (Exception e){
+            } catch (Exception e) {
                 executorService.shutdown();
                 player.sendMessage(ChatColor.RED + "We were unable to fetch your permission information please try again later!");
                 return false;
             }
             executorService.shutdown();
-            if(user == null){
+            if (user == null) {
                 throw new IllegalStateException();
             }
         }
@@ -61,12 +61,14 @@ public class RankTitleCommand implements CommandExecutor {
         QueryOptions queryOptions = cm.getQueryOptions(user).orElse(cm.getStaticQueryOptions());
         Set<Group> groups = plugin.luckPermsAPI.getGroupManager().getLoadedGroups();
         TreeMap<Integer, String> prefixes = new TreeMap<>();
-        for (Group possiblegroup : groups){
-            if (player.hasPermission("group." + possiblegroup.getName())){
-                SortedMap<Integer, String> GroupPrefixes = possiblegroup.getCachedData().getMetaData(queryOptions).getPrefixes();
-                for (int priority : GroupPrefixes.keySet()){
+        for (Group possiblegroup : groups) {
+            if (player.hasPermission("group." + possiblegroup.getName())) {
+                Map<Integer, String> GroupPrefixes = possiblegroup.getCachedData().getMetaData(queryOptions).getPrefixes();
+                for (int priority : GroupPrefixes.keySet()) {
                     if (priority < plugin.getConfig().getInt("RankTitle.priority-to-add-prefixes")) {
-                        prefixes.put(prefixes.size() + 1, GroupPrefixes.get(priority));
+                        if (prefixes.containsKey(priority)) continue;
+                        if (!prefixes.containsValue(GroupPrefixes.get(priority)))
+                            prefixes.put(priority, GroupPrefixes.get(priority));
                     }
                 }
             }
