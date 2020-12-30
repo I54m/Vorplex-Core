@@ -267,7 +267,7 @@ public class Main extends JavaPlugin {
                     }
                     return "legacy_default";
                 });
-            } else {
+            } else if (!Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
                 getLogger().severe("ViaVersion not detected, unable to enable viaversion module!");
             }
         }
