@@ -106,9 +106,9 @@ public class LeaveMessageCommand implements CommandExecutor {
                     if (prefix == null) prefix = "";
                     String placeholder;
                     if (plugin.equippedTitles.containsKey(player.getUniqueId())) {
-                        placeholder = plugin.equippedTitles.get(player.getUniqueId()) + " " + prefix + " " + player.getName();
+                        placeholder = ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', plugin.equippedTitles.get(player.getUniqueId())) + ChatColor.DARK_GRAY + "]" + ChatColor.RESET + " " + prefix + ChatColor.RESET + " " + player.getName();
                     } else {
-                        placeholder = prefix + " " + player.getName();
+                        placeholder = prefix + ChatColor.RESET + " " + player.getName();
                     }
                     player.sendMessage(plugin.prefix + ChatColor.GREEN + "Set your leave message to: " + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', leavemessage.toString().replace("%me%", placeholder).replace("\n", "")));
                     return true;

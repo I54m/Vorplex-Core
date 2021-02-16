@@ -57,10 +57,10 @@ public class PlayerQuit implements Listener {
                     if (plugin.customLeaveMessages.containsKey(player.getUniqueId())) {
                         String placeholder;
                         if (plugin.equippedTitles.containsKey(player.getUniqueId()) && plugin.equippedTitles.get(player.getUniqueId()) != null) {
-                            placeholder = ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', plugin.equippedTitles.get(player.getUniqueId())) + ChatColor.DARK_GRAY + "]"+ ChatColor.RESET + " " +
-                                    prefix + player.getName();
+                            placeholder = ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', plugin.equippedTitles.get(player.getUniqueId())) + ChatColor.DARK_GRAY + "]" + ChatColor.RESET + " " +
+                                    prefix + ChatColor.RESET + " " + player.getName();
                         } else {
-                            placeholder = prefix + player.getName();
+                            placeholder = prefix + ChatColor.RESET + " " + player.getName();
                         }
                         String leavemessage = plugin.customLeaveMessages.get(player.getUniqueId()).replace("%me%", placeholder).replace("\n", "");
                         event.setQuitMessage(ChatColor.translateAlternateColorCodes('&', leavemessage));
