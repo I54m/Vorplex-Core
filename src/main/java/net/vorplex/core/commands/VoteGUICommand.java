@@ -50,6 +50,7 @@ public class VoteGUICommand implements CommandExecutor {
                 pages = (List<Object>) NMSUtils.getBukkitClass("inventory.CraftMetaBook").getDeclaredField("pages").get(bookMeta);
             } catch (ReflectiveOperationException ex) {
                 ex.printStackTrace();
+                fallbackChatMethod(player);
                 return false;
             }
             for (Class<?> clazz : NMSUtils.getNMSClass("IChatBaseComponent").getDeclaredClasses()) {
@@ -61,6 +62,8 @@ public class VoteGUICommand implements CommandExecutor {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    fallbackChatMethod(player);
+                    return false;
                 }
             }
             bookMeta.setTitle("/vote GUI");
@@ -71,6 +74,19 @@ public class VoteGUICommand implements CommandExecutor {
             return true;
         }
         return false;
+    }
+
+    private void fallbackChatMethod(Player player) {
+        player.sendMessage(ChatColor.RED + "An error occurred in creating the gui, using fallback chat method.");
+        player.spigot().sendMessage(new ComponentBuilder("        Vote").strikethrough(false).bold(true).color(ChatColor.DARK_GREEN)
+                .append("\n------------------").strikethrough(true).bold(false).color(ChatColor.WHITE)
+                .append("\nVote for the server to gain rewards!").strikethrough(false).color(ChatColor.WHITE).create());
+        for (String id : plugin.getConfig().getConfigurationSection("VoteBookGUI.votelinks").getKeys(false)) {
+            player.spigot().sendMessage(new ComponentBuilder("\n>> ").strikethrough(false).bold(true).color(ChatColor.WHITE)
+                    .append("Link " + id).strikethrough(false).bold(false).color(ChatColor.DARK_GREEN)
+                    .event(new ClickEvent(ClickEvent.Action.OPEN_URL, plugin.getConfig().getString("VoteBookGUI.votelinks." + id)))
+                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Go to vote link " + id + "!").create())).create());
+        }
     }
 }
 
