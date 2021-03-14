@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: us.myles:viaversion-velocity:3.1.1-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-velocity/3.1.1-SNAPSHOT/viaversion-velocity-3.1.1-20200902.134814-459.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-velocity/3.1.1-SNAPSHOT/viaversion-velocity-3.1.1-20200821.193609-451.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-velocity/3.1.1-SNAPSHOT/viaversion-velocity-3.1.1-20200902.134814-459-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-velocity/3.1.1-SNAPSHOT/viaversion-velocity-3.1.1-20200821.193609-451-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-velocity/3.1.1-SNAPSHOT/viaversion-velocity-3.1.1-20200902.134814-459-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-velocity/3.1.1-SNAPSHOT/viaversion-velocity-3.1.1-20200821.193609-451-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
