@@ -104,7 +104,7 @@ public class TitleCommand implements CommandExecutor {
                             }
                         }
                         return false;
-                    });
+                    }, (closer, menu1) -> true);
                     int position = 1;
                     menu.addButton(0, new ItemStack(Material.BARRIER, 1), ChatColor.GRAY + "" + ChatColor.ITALIC + "*no title*",
                             ChatColor.LIGHT_PURPLE + "Click this to unequip your title.",
@@ -501,7 +501,7 @@ public class TitleCommand implements CommandExecutor {
                                 }
                             }
                             return false;
-                        });
+                        }, (closer, menu1) -> true);
                         int position = 1;
                         menu.addButton(0, new ItemStack(Material.BARRIER, 1), ChatColor.GRAY + "" + ChatColor.ITALIC + "*no title*",
                                 ChatColor.LIGHT_PURPLE + "Click this to unequip " + targetName + "'s title.",

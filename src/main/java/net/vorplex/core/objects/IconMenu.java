@@ -22,13 +22,15 @@ public class IconMenu implements Listener {
     private String name;
     private int size;
     private onClick click;
+    private onClose close;
     private ItemStack[] items;
 
-    public IconMenu(String name, int size, onClick click) {
+    public IconMenu(String name, int size, onClick click, onClose close) {
         this.name = name;
         this.size = size * 9;
         items = new ItemStack[this.size];
         this.click = click;
+        this.close = close;
         Main plugin = Main.getInstance();
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -89,6 +91,10 @@ public class IconMenu implements Listener {
     public void onInventoryClose(InventoryCloseEvent event) {
         if (viewing.contains(event.getPlayer().getName()))
             viewing.remove(event.getPlayer().getName());
+        Player p = (Player) event.getPlayer();
+        if (close.close(p, this))
+            close(p);
+
     }
 
     public void addButton(int position, ItemStack item, String name, String... lore) {
@@ -111,4 +117,7 @@ public class IconMenu implements Listener {
         boolean click(Player clicker, IconMenu menu, int slot, ItemStack item);
     }
 
+    public interface onClose {
+        boolean close(Player closer, IconMenu menu);
+    }
 }

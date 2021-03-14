@@ -62,14 +62,14 @@ public class GiftsCommand implements CommandExecutor {
                         if (giftsLeft.isEmpty()) {
                             plugin.gifts.remove(player.getUniqueId());
                             return true;
-                        }else {
+                        } else {
                             plugin.gifts.put(player.getUniqueId(), giftsLeft);
                             openGiftMenu(player);
                         }
                     }
                 }
                 return false;
-            });
+            }, (closer, menu1) -> true);
             int position = 0;
             for (Gift gift : gifts) {
                 ItemStack giftclone = gift.getItem().clone();
