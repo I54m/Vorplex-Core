@@ -89,12 +89,11 @@ public class IconMenu implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (viewing.contains(event.getPlayer().getName()))
-            viewing.remove(event.getPlayer().getName());
-        Player p = (Player) event.getPlayer();
-        if (close.close(p, this))
-            close(p);
-
+        if (viewing.contains(event.getPlayer().getName())) {
+            Player p = (Player) event.getPlayer();
+            close.close(p, this);
+            viewing.remove(p.getName());
+        }
     }
 
     public void addButton(int position, ItemStack item, String name, String... lore) {
@@ -118,6 +117,6 @@ public class IconMenu implements Listener {
     }
 
     public interface onClose {
-        boolean close(Player closer, IconMenu menu);
+        void close(Player closer, IconMenu menu);
     }
 }
