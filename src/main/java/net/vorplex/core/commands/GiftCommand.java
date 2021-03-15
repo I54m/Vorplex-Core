@@ -98,11 +98,10 @@ public class GiftCommand implements CommandExecutor {
             return false;
         }, (closer, menu1) -> {
             closer.sendMessage(plugin.prefix + ChatColor.RED + "Cancelled gifting item to " + receiver.getName());
-            if (old) player.getInventory().setItemInHand(inProgress.get(closer.getUniqueId()));
-            else player.getInventory().setItemInMainHand(inProgress.get(closer.getUniqueId()));
+            if (old) closer.getInventory().setItemInHand(inProgress.get(closer.getUniqueId()));
+            else closer.getInventory().setItemInMainHand(inProgress.get(closer.getUniqueId()));
             inProgress.remove(closer.getUniqueId());
-            player.updateInventory();
-            return true;
+            closer.updateInventory();
         });
 
 

@@ -89,7 +89,8 @@ public class RankTitleCommand implements CommandExecutor {
                     }
                 }
                 return false;
-            }, (closer, menu1) -> true);
+            }, (closer, menu1) -> {
+            });
             int position = 0;
             for (int id : (prefixes).navigableKeySet()) {
                 menu.addButton(position, new ItemStack(Material.PAPER, 1), ChatColor.translateAlternateColorCodes('&', prefixes.get(id)), ChatColor.LIGHT_PURPLE + "Click this to change your selected prefix to: ", ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', prefixes.get(id)));

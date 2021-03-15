@@ -69,7 +69,8 @@ public class GiftsCommand implements CommandExecutor {
                     }
                 }
                 return false;
-            }, (closer, menu1) -> true);
+            }, (closer, menu1) -> {
+            });
             int position = 0;
             for (Gift gift : gifts) {
                 ItemStack giftclone = gift.getItem().clone();
