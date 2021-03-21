@@ -64,9 +64,10 @@ public class IconMenu implements Listener {
     }
 
     public void close(Player p) {
-        if (p.getOpenInventory().getTitle().equals(name))
+        if (p.getOpenInventory().getTitle().equals(name)) {
+            viewing.remove(p.getName());
             p.closeInventory();
-        viewing.remove(p.getName());
+        }
     }
 
     private List<Player> getViewers() {
