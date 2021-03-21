@@ -66,6 +66,10 @@ public class GiftCommand implements CommandExecutor {
                 return false;
             }
             executorService.shutdown();
+            if (receiverUUID == null) {
+                player.sendMessage(plugin.prefix + ChatColor.RED + "That is not a player's name!");
+                return false;
+            }
         } else receiverUUID = receiver.getUniqueId();
         String receiverName = NameFetcher.getName(receiverUUID);
 
