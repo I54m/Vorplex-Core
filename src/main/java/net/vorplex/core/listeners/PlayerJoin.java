@@ -29,6 +29,14 @@ public class PlayerJoin implements Listener {
     private final Main plugin = Main.getInstance();
     public static ItemStack oxygenHelmet = new ItemStack(Material.GLASS, 1);
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerJoinHighest(PlayerJoinEvent event) {
+        if (plugin.getConfig().getBoolean("Hub.oxygen-helmet-enabled")) {
+            event.getPlayer().getInventory().setHelmet(oxygenHelmet);
+            event.getPlayer().updateInventory();
+        }
+    }
+
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -68,8 +76,6 @@ public class PlayerJoin implements Listener {
             } catch (NumberFormatException nfe) {
                 player.sendMessage(ChatColor.RED + "Error: Last three arguments in the title must be numbers!!");
             }
-            if (plugin.getConfig().getBoolean("Hub.oxygen-helmet-enabled"))
-                player.getInventory().setHelmet(oxygenHelmet);
         }
         if (plugin.getConfig().getBoolean("JoinMessages.enabled")) {
             User user = plugin.luckPermsAPI.getUserManager().getUser(player.getName());
