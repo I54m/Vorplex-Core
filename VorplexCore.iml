@@ -46,9 +46,16 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-params:5.6.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-engine:5.6.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.6.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.vexsoftware:nuvotifier-universal:2.3.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.NuVotifier.NuVotifier:nuvotifier-bukkit:2.7.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.NuVotifier.NuVotifier:nuvotifier-api:2.7.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.NuVotifier.NuVotifier:nuvotifier-common:2.7.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-handler:4.1.49.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-resolver:4.1.49.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-transport:4.1.49.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-codec:4.1.49.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-transport-native-epoll:linux-x86_64:4.1.49.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-transport-native-unix-common:4.1.49.Final" level="project" />
     <orderEntry type="library" name="Maven: be.maximvdw:MVdWPlaceholderAPI:3.1.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: be.maximvdw:MVdWUpdater:1.6.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.MyzelYam:SuperVanish:6.1.8" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: us.myles:viaversion:3.1.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: us.myles:viaversion-common:3.1.1-SNAPSHOT" level="project" />

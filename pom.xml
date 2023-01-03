@@ -34,13 +34,12 @@
         <repository>
             <id>mvdw-software</id>
             <name>MVdW Public Repositories</name>
-            <url>http://repo.mvdw-software.be/content/groups/public/</url>
+            <url>https://repo.mvdw-software.com/content/groups/public/</url>
         </repository>
 
         <repository>
-            <id>nuvotifier-repo</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/nuvotifier/maven/</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
 
         <repository>
@@ -123,9 +122,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.vexsoftware</groupId>
-            <artifactId>nuvotifier-universal</artifactId>
-            <version>2.3.4</version>
+            <groupId>com.github.NuVotifier.NuVotifier</groupId>
+            <artifactId>nuvotifier-bukkit</artifactId>
+            <version>2.7.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -141,6 +140,10 @@
                 <exclusion>
                     <groupId>org.spigotmc</groupId>
                     <artifactId>spigot</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>be.maximvdw</groupId>
+                    <artifactId>MVdWUpdater</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

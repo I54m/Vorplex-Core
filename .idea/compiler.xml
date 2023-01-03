@@ -11,7 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="VorplexCore" target="8" />
+      <module name="VorplexCore" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

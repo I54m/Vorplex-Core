@@ -27,9 +27,9 @@
       <option name="url" value="https://hub.spigotmc.org/nexus/content/repositories/snapshots/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="central" />
-      <option name="name" value="Maven Central repository" />
-      <option name="url" value="https://repo1.maven.org/maven2" />
+      <option name="id" value="mvdw-software" />
+      <option name="name" value="MVdW Public Repositories" />
+      <option name="url" value="http://repo.mvdw-software.be/content/groups/public/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="nuvotifier-repo" />
@@ -37,14 +37,24 @@
       <option name="url" value="https://dl.bintray.com/nuvotifier/maven/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="Maven Central repository" />
+      <option name="url" value="https://repo1.maven.org/maven2" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="mvdw-software" />
       <option name="name" value="MVdW Public Repositories" />
-      <option name="url" value="http://repo.mvdw-software.be/content/groups/public/" />
+      <option name="url" value="https://repo.mvdw-software.com/content/groups/public/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="jboss.community" />
       <option name="name" value="JBoss Community repository" />
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="mvdw-software" />
+      <option name="name" value="MVdW Public Repositories" />
+      <option name="url" value="http://repo.mvdw-software.com/content/groups/public/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="dmulloy2-repo" />

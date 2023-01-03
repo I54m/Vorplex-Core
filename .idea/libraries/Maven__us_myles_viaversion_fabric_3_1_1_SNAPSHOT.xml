@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: us.myles:viaversion-fabric:3.1.1-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-fabric/3.1.1-SNAPSHOT/viaversion-fabric-3.1.1-20200812.120609-440.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-fabric/3.1.1-SNAPSHOT/viaversion-fabric-3.1.1-20200822.095412-454.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-fabric/3.1.1-SNAPSHOT/viaversion-fabric-3.1.1-20200812.120609-440-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-fabric/3.1.1-SNAPSHOT/viaversion-fabric-3.1.1-20200822.095412-454-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-fabric/3.1.1-SNAPSHOT/viaversion-fabric-3.1.1-20200812.120609-440-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/us/myles/viaversion-fabric/3.1.1-SNAPSHOT/viaversion-fabric-3.1.1-20200822.095412-454-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
