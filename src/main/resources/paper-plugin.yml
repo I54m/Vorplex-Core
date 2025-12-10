@@ -1,0 +1,125 @@
+name: Vorplex-Core
+version: ${project.version}
+api-version: '1.21.8'
+author: I54m
+website: https://vorplex.net
+description: The Core Plugin for Vorplex.
+main: net.vorplex.core.VorplexCore
+bootstrap: net.vorplex.core.plugin.PaperBootstrap
+loader: net.vorplex.core.plugin.PaperLoader
+dependencies:
+  server:
+    LuckPerms:
+      load: BEFORE
+      required: true
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+    Votifier:
+      load: BEFORE
+      required: false
+    nuVotifier:
+      load: BEFORE
+      required: false
+    SuperVanish:
+      load: BEFORE
+      required: false
+    PremiumVanish:
+      load: BEFORE
+      required: false
+
+
+
+
+#######################################################################################[Commands]######################################################################
+
+commands:
+  vote:
+    description: open the book gui for the vote links.
+  vorplexcorereload:
+    description: reload the config for vorplex core.
+    aliases:
+      - vcreload
+      - corereload
+      - vorplexreload
+  autorestart:
+    description: Main Command for the auto restart module.
+    aliases:
+      - re
+      - autore
+  ranktitle:
+    description: Change a player's rank prefix.
+    aliases:
+      - titlerank
+      - titleranks
+      - titlesrank
+      - titlesranks
+      - rankstitles
+      - ranktitles
+      - rankstitle
+  title:
+    description: Main command for the titles module.
+    aliases:
+      - titles
+      - tag
+      - tags
+  joinmessage:
+    description: Main command for custom join messages.
+    aliases:
+      - joinm
+      - jmessage
+      - joinmsg
+  leavemessage:
+    description: Main command for custom leave messages.
+    aliases:
+      - leavem
+      - lmessage
+      - leavemsg
+  gift:
+    description: Send a player a gift.
+  gifts:
+    description: See and claim gifts sent to you by other players.
+  buy:
+    description: show the store link.
+  discord:
+    description: show the discord link.
+
+####################################################################################[Permissions]#########################################################################################
+
+permissions:
+  vorplexcore.autorestart.admin:
+    description: Allows the user to use /autorestart commands.
+    default: op
+  vorplexcore.joinmessages.*:
+    description: Main permission node for permission based join messages.
+    default: op
+  vorplexcore.customjoinmessages:
+    description: Main permission node for custom join messages.
+    default: op
+  vorplexcore.customjoinmessages.admin:
+    description: Allows the user to change other's join messages.
+    default: op
+  vorplexcore.leavemessages.*:
+    description: Main permission node for permission based leave messages.
+    default: op
+  vorplexcore.customleavemessages:
+    description: Main permission node for custom leave messages.
+    default: op
+  vorplexcore.customleavemessages.admin:
+    description: Allows the user to change other's leave messages.
+    default: op
+  vorplexcore.titles.*:
+    description: Main permission node for titles.
+    default: op
+  vectorcore.gifts.send:
+    description: Send other players a gift.
+    default: op
+  vectorcore.gifts.claim:
+    description: claim gifts that players have sent you.
+    default: op
+  vectorcore.ranktitles:
+    description: allows players to change their rank prefix.
+    default: op
+  vorplexcore.server.switch:
+    description: Allows the user to use the /server command.
+    default: true
