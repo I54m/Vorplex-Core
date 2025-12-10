@@ -13,8 +13,8 @@ MySQL:
   extraArguments: ?useSSL=false
 
 Prefixes:
-  plugin: "&5[&d&lvorplex-Core&5] "
-  autorestart-module: "&5[&dvorplex-Restart&5] "
+  plugin: "&5[&d&lVorplex-Core&5] "
+  autorestart-module: "&5[&dVorplex-Restart&5] "
 
 #/vote links module
 VoteBookGUI:
