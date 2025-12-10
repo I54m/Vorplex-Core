@@ -1,6 +1,10 @@
 package net.vorplex.core;
 
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.Getter;
+import lombok.Setter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.luckperms.api.LuckPerms;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -38,6 +42,8 @@ public class VorplexCore extends JavaPlugin {
     public static String PREFIX = null;
     public static String PREFIX_NO_COLOR = null;
 
+    @Getter
+    @Setter
     public static VorplexCore instance;
     public static boolean announce;
     private static int previousMessageNumber;
@@ -58,14 +64,6 @@ public class VorplexCore extends JavaPlugin {
     private int port;
     public Connection connection;
 
-    public static VorplexCore getInstance() {
-        return instance;
-    }
-
-    private void setInstance(VorplexCore instance) {
-        VorplexCore.instance = instance;
-    }
-
     public Config config = null;
     public LuckPerms luckPermsAPI = null;
 
@@ -80,6 +78,22 @@ public class VorplexCore extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        long startTime = System.nanoTime();
+        getComponentLogger().info("");
+        getComponentLogger().info(Component.text("██╗   ██╗ ██████╗ ██████╗ ██████╗ ██╗     ███████╗██╗  ██╗").color(NamedTextColor.LIGHT_PURPLE));
+        getComponentLogger().info(Component.text("██║   ██║██╔═══██╗██╔══██╗██╔══██╗██║     ██╔════╝╚██╗██╔╝").color(NamedTextColor.LIGHT_PURPLE));
+        getComponentLogger().info(Component.text("██║   ██║██║   ██║██████╔╝██████╔╝██║     █████╗   ╚███╔╝").color(NamedTextColor.LIGHT_PURPLE));
+        getComponentLogger().info(Component.text("╚██╗ ██╔╝██║   ██║██╔══██╗██╔═══╝ ██║     ██╔══╝   ██╔██╗").color(NamedTextColor.LIGHT_PURPLE));
+        getComponentLogger().info(Component.text(" ╚████╔╝ ╚██████╔╝██║  ██║██║     ███████╗███████╗██╔╝ ██╗").color(NamedTextColor.LIGHT_PURPLE));
+        getComponentLogger().info(Component.text("  ╚═══╝   ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚══════╝╚══════╝╚═╝  ╚═╝").color(NamedTextColor.LIGHT_PURPLE));
+        getComponentLogger().info(Component.text("                  __   __   __   ___").color(NamedTextColor.DARK_PURPLE));
+        getComponentLogger().info(Component.text("                 /  ` /  \\ |__) |__").color(NamedTextColor.DARK_PURPLE));
+        getComponentLogger().info(Component.text("                 \\__, \\__/ |  \\ |___").color(NamedTextColor.DARK_PURPLE));
+        getComponentLogger().info("───────────────────────────────────────────────────────────");
+        getComponentLogger().info(Component.text("Developed by I54m").color(NamedTextColor.RED));
+        getComponentLogger().info(Component.text("v" + getPluginMeta().getVersion() + " Running on " + getServer().getVersion()).color(NamedTextColor.RED));
+        getComponentLogger().info("───────────────────────────────────────────────────────────");
+
         setInstance(this);
         saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
@@ -273,6 +287,8 @@ public class VorplexCore extends JavaPlugin {
             setupmysql();
             startCaching();
         }
+        getComponentLogger().info(Component.text("Plugin loaded in: " + (System.nanoTime() - startTime) / 1000000 + "ms!").color(NamedTextColor.GREEN));
+        getComponentLogger().info("───────────────────────────────────────────────────────────");
     }
 
     @Override
