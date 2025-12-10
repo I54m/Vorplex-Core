@@ -46,6 +46,13 @@
     <dependencies>
 
         <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.21.8-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.cronutils</groupId>
             <artifactId>cron-utils</artifactId>
             <version>9.2.1</version>
@@ -71,6 +78,10 @@
                 <exclusion>
                     <groupId>commons-lang</groupId>
                     <artifactId>commons-lang</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -123,12 +134,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>org.junit.jupiter</groupId>-->
-        <!--            <artifactId>junit-jupiter</artifactId>-->
-        <!--            <version>6.1.0-M1</version>-->
-        <!--            <scope>test</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>6.1.0-M1</version>
+            <scope>test</scope>
+        </dependency>
 
         <dependency>
             <groupId>com.github.NuVotifier.NuVotifier</groupId>
@@ -159,17 +170,11 @@
         </dependency>
 
         <dependency>
-            <groupId>io.papermc.paper</groupId>
-            <artifactId>paper-api</artifactId>
-            <version>1.21.8-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.2.7.Final</version>
+            <scope>compile</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>io.netty</groupId>-->
-        <!--            <artifactId>netty-buffer</artifactId>-->
-        <!--            <version>4.1.118.Final</version>-->
-        <!--            <scope>compile</scope>-->
-        <!--        </dependency>-->
 
     </dependencies>
 
@@ -178,7 +183,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.6.0</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <finalName>${project.name}-${project.version}</finalName>
@@ -238,7 +243,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.6.3</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -254,7 +259,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.13.0</version>
+                    <version>3.14.1</version>
                     <configuration>
                         <release>21</release>
                     </configuration>
@@ -270,7 +275,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M5</version>
+                    <version>3.5.4</version>
                 </plugin>
             </plugins>
         </pluginManagement>
