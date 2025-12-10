@@ -1,6 +1,6 @@
 package net.vorplex.core.objects;
 
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,7 +31,7 @@ public class IconMenu implements Listener {
         items = new ItemStack[this.size];
         this.click = click;
         this.close = close;
-        Main plugin = Main.getInstance();
+        VorplexCore plugin = VorplexCore.getInstance();
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 

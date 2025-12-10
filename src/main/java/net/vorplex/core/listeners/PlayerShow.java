@@ -4,7 +4,7 @@ import de.myzelyam.api.vanish.PlayerShowEvent;
 import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import net.vorplex.core.util.UserFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerShow implements Listener {
 
-    private Main plugin = Main.getInstance();
+    private VorplexCore plugin = VorplexCore.getInstance();
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerUnvanish(PlayerShowEvent event) {

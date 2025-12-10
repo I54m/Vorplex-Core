@@ -3,7 +3,7 @@ package net.vorplex.core.listeners;
 import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import net.vorplex.core.util.UserFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,13 +19,13 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerQuit implements Listener {
 
-    private Main plugin = Main.getInstance();
+    private VorplexCore plugin = VorplexCore.getInstance();
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         event.setQuitMessage("");
         if(Bukkit.getOnlinePlayers().toArray().length <= 0){
-            Main.announce = false;
+            VorplexCore.announce = false;
             Bukkit.getLogger().info("Detected no players online! disabling announcements to save resources!");
         }
         Player player = event.getPlayer();

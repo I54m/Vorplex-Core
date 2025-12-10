@@ -3,7 +3,7 @@ package net.vorplex.core.commands;
 import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import net.vorplex.core.objects.IconMenu;
 import net.vorplex.core.objects.ScrollerInventory;
 import net.vorplex.core.util.NameFetcher;
@@ -32,7 +32,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class TitleCommand implements CommandExecutor {
-    private final Main plugin = Main.getInstance();
+    private final VorplexCore plugin = VorplexCore.getInstance();
 
 
     @SuppressWarnings("NullableProblems")

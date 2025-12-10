@@ -6,7 +6,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import net.md_5.bungee.chat.ComponentSerializer;
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import net.vorplex.core.util.BookUtils;
 import net.vorplex.core.util.NMSUtils;
 import org.bukkit.Material;
@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 public class VoteGUICommand implements CommandExecutor {
-    private static final Main plugin = Main.getInstance();
+    private static final VorplexCore plugin = VorplexCore.getInstance();
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, String[] strings) {

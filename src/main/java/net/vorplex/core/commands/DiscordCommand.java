@@ -1,6 +1,6 @@
 package net.vorplex.core.commands;
 
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class DiscordCommand implements CommandExecutor {
 
-    private final Main plugin = Main.getInstance();
+    private final VorplexCore plugin = VorplexCore.getInstance();
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {

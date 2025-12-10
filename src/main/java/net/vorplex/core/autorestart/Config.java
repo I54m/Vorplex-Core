@@ -4,7 +4,7 @@ import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -58,19 +58,19 @@ public class Config {
                 new CronParser(definition).parse(cronTime);
             } catch (IllegalArgumentException ex) {
                 valid = false;
-                Bukkit.getLogger().warning(Main.PREFIX_NO_COLOR + "Cron time format is invalid: " + cronTime);
-                Bukkit.getLogger().warning(Main.PREFIX_NO_COLOR + "Error: " + ex.getMessage());
+                Bukkit.getLogger().warning(VorplexCore.PREFIX_NO_COLOR + "Cron time format is invalid: " + cronTime);
+                Bukkit.getLogger().warning(VorplexCore.PREFIX_NO_COLOR + "Error: " + ex.getMessage());
             }
         }
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static FileConfiguration loadCFG(String fileName) {
-        File file = new File(Main.instance.getDataFolder(), fileName);
+        File file = new File(VorplexCore.instance.getDataFolder(), fileName);
         File dir = file.getParentFile(); if (!dir.isDirectory()) dir.mkdirs();
         if (!file.isFile())
             try {
-                InputStream is = Main.class.getResourceAsStream("/" + file.getName());
+                InputStream is = VorplexCore.class.getResourceAsStream("/" + file.getName());
                 OutputStream os = new FileOutputStream(file);
                 byte[] data = new byte[is.available()];
                 is.read(data); os.write(data);

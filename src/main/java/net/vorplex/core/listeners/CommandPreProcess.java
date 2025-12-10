@@ -1,6 +1,6 @@
 package net.vorplex.core.listeners;
 
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class CommandPreProcess implements Listener {
-    private static Main plugin = Main.getPlugin(Main.class);
+    private static VorplexCore plugin = VorplexCore.getPlugin(VorplexCore.class);
     public static List<String> servers = plugin.getConfig().getStringList("VorplexServer.serverslist");
 
     private static void sendPluginMessage(@NotNull Player player, String channel, @NotNull String... messages) {

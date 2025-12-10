@@ -1,7 +1,7 @@
 package net.vorplex.core.listeners;
 
 import com.vexsoftware.votifier.model.VotifierEvent;
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -12,7 +12,7 @@ import java.util.List;
 
 public class PlayerVote implements Listener {
 
-    private Main plugin = Main.getInstance();
+    private VorplexCore plugin = VorplexCore.getInstance();
 
     @EventHandler
     public void onPlayerVote(VotifierEvent event){

@@ -2,7 +2,7 @@ package net.vorplex.core.util;
 
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -17,7 +17,7 @@ public class UserFetcher implements Callable<User> {
 
     @Override
     public User call() throws Exception {
-        UserManager userManager = Main.getInstance().luckPermsAPI.getUserManager();
+        UserManager userManager = VorplexCore.getInstance().luckPermsAPI.getUserManager();
         CompletableFuture<User> userFuture = userManager.loadUser(uuid);
         return userFuture.join();
     }

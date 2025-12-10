@@ -6,7 +6,7 @@ import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitTask;
@@ -18,7 +18,7 @@ import java.util.List;
 public class Scheduler {
     public static List<BukkitTask> tasks = new ArrayList<>();
     public static ZonedDateTime nextTime;
-    private static Main plugin = Main.getInstance();
+    private static VorplexCore plugin = VorplexCore.getInstance();
 
     public static void start(Config config) {
         if (!config.valid) return;
@@ -26,7 +26,7 @@ public class Scheduler {
         tasks = new ArrayList<>();
 
         scheduleNotify(config, delayTicks);
-        tasks.add(Bukkit.getScheduler().runTaskLater(Main.instance, () ->{
+        tasks.add(Bukkit.getScheduler().runTaskLater(VorplexCore.instance, () -> {
             Bukkit.getServer().savePlayers();
             for (World world : Bukkit.getServer().getWorlds()) {
                 world.save();
@@ -52,7 +52,7 @@ public class Scheduler {
                 long notifyDelay = initDelayTicks - entry.getKey() * 20;
                 if (notifyDelay < 1) return;
 
-                tasks.add(Bukkit.getScheduler().runTaskLater(Main.instance, () -> {
+                tasks.add(Bukkit.getScheduler().runTaskLater(VorplexCore.instance, () -> {
                     Bukkit.getOnlinePlayers().forEach(player -> {
                         player.sendMessage(message);
                         if (sound) player.playSound(player.getLocation(), config.notifySound, 1.0f, 1.0f);
@@ -68,7 +68,7 @@ public class Scheduler {
                 long notifyDelay = initDelayTicks - entry.getKey() * 20;
                 if (notifyDelay < 1) return;
 
-                tasks.add(Bukkit.getScheduler().runTaskLater(Main.instance, () -> {
+                tasks.add(Bukkit.getScheduler().runTaskLater(VorplexCore.instance, () -> {
                     Bukkit.getOnlinePlayers().forEach(player -> {
                         if (plugin.old) player.sendTitle(titleMessage.title, titleMessage.subtitle);
                         else player.sendTitle(

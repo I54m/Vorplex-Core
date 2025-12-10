@@ -1,6 +1,6 @@
 package net.vorplex.core.objects;
 
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,26 +24,7 @@ public class ScrollerInventory implements Listener {
     private static final HashMap<UUID, ScrollerInventory> users = new HashMap<>();
     private final onClick click;
     private final String name;
-    //Running this will open a paged inventory for the specified player, with the items in the arraylist specified.
-    public ScrollerInventory(ArrayList<ItemStack> items, String name, onClick click){
-        this.id = UUID.randomUUID();
-        this.name = name;
-        this.click = click;
-        Main plugin = Main.getInstance();
-        Bukkit.getPluginManager().registerEvents(this, plugin);
-        //create new blank page
-        Inventory page = getBlankPage(name);
-        //According to the items in the arraylist, add items to the ScrollerInventory
-        for (ItemStack item : items) {
-            //If the current page is full, add the page to the inventory's pages arraylist, and create a new page to add the items.
-            if (page.firstEmpty() == 46) {
-                pages.add(page);
-                page = getBlankPage(name);
-            }
-            page.addItem(item);
-        }
-        pages.add(page);
-    }
+    private final VorplexCore plugin = VorplexCore.getInstance();
 
     public void open(Player p){
         //open page 0 for the specified player
@@ -67,7 +48,27 @@ public class ScrollerInventory implements Listener {
         pages.add(page);
 
     }
-    private final Main plugin = Main.getInstance();
+
+    //Running this will open a paged inventory for the specified player, with the items in the arraylist specified.
+    public ScrollerInventory(ArrayList<ItemStack> items, String name, onClick click){
+        this.id = UUID.randomUUID();
+        this.name = name;
+        this.click = click;
+        VorplexCore plugin = VorplexCore.getInstance();
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+        //create new blank page
+        Inventory page = getBlankPage(name);
+        //According to the items in the arraylist, add items to the ScrollerInventory
+        for (ItemStack item : items) {
+            //If the current page is full, add the page to the inventory's pages arraylist, and create a new page to add the items.
+            if (page.firstEmpty() == 46) {
+                pages.add(page);
+                page = getBlankPage(name);
+            }
+            page.addItem(item);
+        }
+        pages.add(page);
+    }
     private static final String nextPageName = ChatColor.LIGHT_PURPLE + "Next Page";
     private static final String previousPageName = ChatColor.LIGHT_PURPLE + "Previous Page";
     //This creates a blank page with the next and prev buttons

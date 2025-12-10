@@ -1,6 +1,5 @@
 package net.vorplex.core;
 
-import be.maximvdw.placeholderapi.PlaceholderAPI;
 import com.zaxxer.hikari.HikariDataSource;
 import net.luckperms.api.LuckPerms;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -24,8 +23,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import us.myles.ViaVersion.api.Via;
-import us.myles.ViaVersion.api.ViaAPI;
 
 import java.io.File;
 import java.sql.Connection;
@@ -34,14 +31,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class Main extends JavaPlugin {
+public class VorplexCore extends JavaPlugin {
 
     public String prefix = null;
 
     public static String PREFIX = null;
     public static String PREFIX_NO_COLOR = null;
 
-    public static Main instance;
+    public static VorplexCore instance;
     public static boolean announce;
     private static int previousMessageNumber;
     private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
@@ -57,17 +54,16 @@ public class Main extends JavaPlugin {
     public Map<UUID, ArrayList<Gift>> gifts = new HashMap<>();
 
     private HikariDataSource hikari;
-    public ViaAPI viaVersionApi;
     private static String database;
     private int port;
     public Connection connection;
 
-    private void setInstance(Main instance) {
-        Main.instance = instance;
+    public static VorplexCore getInstance() {
+        return instance;
     }
 
-    public static Main getInstance() {
-        return instance;
+    private void setInstance(VorplexCore instance) {
+        VorplexCore.instance = instance;
     }
 
     public Config config = null;
@@ -185,26 +181,26 @@ public class Main extends JavaPlugin {
             getLogger().info("Enabled Rank Title Module");
         }
         if (getConfig().getBoolean("Titles.enabled")) {
-            if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
-                setupSQLConnection();
-                Bukkit.getPluginCommand("title").setExecutor(new TitleCommand());
-                PlaceholderAPI.registerPlaceholder(this, "vorplex_titles", (event) -> {
-                    if (event.isOnline() && event.getPlayer() != null) {
-                        Player player = event.getPlayer();
-                        UUID uuid = player.getUniqueId();
-                        if (equippedTitles.containsKey(uuid) && equippedTitles.get(uuid) != null) {
-                            if (equippedTitles.get(uuid).isEmpty()) return "";
-                            else
-                                return ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', equippedTitles.get(uuid)) + ChatColor.DARK_GRAY + "]" + ChatColor.RESET + " ";
-                        }
-                    }
-                    return "";
-                });
-                titles.put(0, "");
-                getLogger().info("Enabled Title Module");
-            } else {
-                getLogger().warning("MVdWPlaceholderAPI not detected, title module will not be enabled!");
-            }
+//            if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
+//                setupSQLConnection();
+//                Bukkit.getPluginCommand("title").setExecutor(new TitleCommand());
+//                PlaceholderAPI.registerPlaceholder(this, "vorplex_titles", (event) -> {
+//                    if (event.isOnline() && event.getPlayer() != null) {
+//                        Player player = event.getPlayer();
+//                        UUID uuid = player.getUniqueId();
+//                        if (equippedTitles.containsKey(uuid) && equippedTitles.get(uuid) != null) {
+//                            if (equippedTitles.get(uuid).isEmpty()) return "";
+//                            else
+//                                return ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', equippedTitles.get(uuid)) + ChatColor.DARK_GRAY + "]" + ChatColor.RESET + " ";
+//                        }
+//                    }
+//                    return "";
+//                });
+//                titles.put(0, "");
+//                getLogger().info("Enabled Title Module");
+//            } else {
+//                getLogger().warning("MVdWPlaceholderAPI not detected, title module will not be enabled!");
+//            }
         }
         if (getConfig().getBoolean("JoinMessages.enabled")) {
             getLogger().info("Enabled Join Messages Module");
@@ -254,23 +250,23 @@ public class Main extends JavaPlugin {
                 getLogger().info("ERROR: Could not enable Gifts Module, GiftsStorage.yml could not be loaded!!");
             }
         }
-        if (getConfig().getBoolean("ViaVersion.enable-scoreboard-placeholder") ||
-                getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join")) {
-            viaVersionApi = Via.getAPI();
-            if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && getConfig().getBoolean("ViaVersion.enable-scoreboard-placeholder")) {
-                PlaceholderAPI.registerPlaceholder(this, "vorplex_scoreboardversion", (event) -> {
-                    if (event.isOnline() && event.getPlayer() != null) {
-                        Player player = event.getPlayer();
-                        UUID uuid = player.getUniqueId();
-                        if (viaVersionApi.getPlayerVersion(uuid) < 393) return "legacy_default";
-                        else return "default";
-                    }
-                    return "legacy_default";
-                });
-            } else if (!Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
-                getLogger().severe("ViaVersion not detected, unable to enable viaversion module!");
-            }
-        }
+//        if (getConfig().getBoolean("ViaVersion.enable-scoreboard-placeholder") ||
+//                getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join")) {
+//            viaVersionApi = Via.getAPI();
+//            if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && getConfig().getBoolean("ViaVersion.enable-scoreboard-placeholder")) {
+//                PlaceholderAPI.registerPlaceholder(this, "vorplex_scoreboardversion", (event) -> {
+//                    if (event.isOnline() && event.getPlayer() != null) {
+//                        Player player = event.getPlayer();
+//                        UUID uuid = player.getUniqueId();
+//                        if (viaVersionApi.getPlayerVersion(uuid) < 393) return "legacy_default";
+//                        else return "default";
+//                    }
+//                    return "legacy_default";
+//                });
+//            } else if (!Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
+//                getLogger().severe("ViaVersion not detected, unable to enable viaversion module!");
+//            }
+//        }
         Bukkit.getPluginManager().registerEvents(new PlayerDeath(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerKick(), this);
         if (hikari != null || connection != null) {

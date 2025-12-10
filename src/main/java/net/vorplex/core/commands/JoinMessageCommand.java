@@ -3,7 +3,7 @@ package net.vorplex.core.commands;
 import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import net.vorplex.core.util.NameFetcher;
 import net.vorplex.core.util.UUIDFetcher;
 import net.vorplex.core.util.UserFetcher;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 public class JoinMessageCommand implements CommandExecutor {
 
-    private Main plugin = Main.getInstance();
+    private VorplexCore plugin = VorplexCore.getInstance();
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {

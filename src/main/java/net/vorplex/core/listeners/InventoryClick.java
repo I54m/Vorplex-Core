@@ -1,6 +1,6 @@
 package net.vorplex.core.listeners;
 
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -32,8 +32,8 @@ public class InventoryClick implements Listener {
             player.setFoodLevel(1);
             event.setCancelled(true);
             player.getInventory().setHelmet(new ItemStack(Material.AIR));
-            Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> player.stopSound(Sound.ITEM_ELYTRA_FLYING), 20);
-            Bukkit.getScheduler().runTaskLater(Main.getInstance(), () -> {
+            Bukkit.getScheduler().runTaskLater(VorplexCore.getInstance(), () -> player.stopSound(Sound.ITEM_ELYTRA_FLYING), 20);
+            Bukkit.getScheduler().runTaskLater(VorplexCore.getInstance(), () -> {
                 player.getInventory().setHelmet(PlayerJoin.oxygenHelmet);
                 player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, 100, 1.5f);
                 player.sendMessage(ChatColor.RED + "Best to keep your helmet on! You don't want to suffocate, do you?");

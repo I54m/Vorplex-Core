@@ -4,7 +4,7 @@ import com.earth2me.essentials.spawn.EssentialsSpawn;
 import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
-import net.vorplex.core.Main;
+import net.vorplex.core.VorplexCore;
 import net.vorplex.core.util.NameFetcher;
 import net.vorplex.core.util.UUIDFetcher;
 import net.vorplex.core.util.UserFetcher;
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerJoin implements Listener {
 
-    private final Main plugin = Main.getInstance();
+    private final VorplexCore plugin = VorplexCore.getInstance();
     public static ItemStack oxygenHelmet = new ItemStack(Material.GLASS, 1);
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -45,8 +45,8 @@ public class PlayerJoin implements Listener {
         UUIDFetcher.updateStoredUUID(player.getName(), player.getUniqueId());
         NameFetcher.updateStoredName(player.getUniqueId(), player.getName());
         if (plugin.getConfig().getBoolean("Announcer.enabled")) {
-            if (!Main.announce) {
-                Main.announce = true;
+            if (!VorplexCore.announce) {
+                VorplexCore.announce = true;
                 Bukkit.getLogger().info("Detected players online! enabling announcements!");
             }
         }
