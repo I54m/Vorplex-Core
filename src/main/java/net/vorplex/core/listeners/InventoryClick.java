@@ -26,8 +26,8 @@ public class InventoryClick implements Listener {
             player.playSound(player.getLocation(), Sound.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, 100, 0.5f);
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 5));
             player.playSound(player.getLocation(), Sound.ITEM_ELYTRA_FLYING, 100, 1);
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, 5));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 5));
+//            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, 5));
+//            player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 5));
             player.damage(5);
             player.setFoodLevel(1);
             event.setCancelled(true);

@@ -1,6 +1,6 @@
 package net.vorplex.core.listeners;
 
-import com.earth2me.essentials.spawn.EssentialsSpawn;
+//import com.earth2me.essentials.spawn.EssentialsSpawn;
 import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
@@ -52,13 +52,13 @@ public class PlayerJoin implements Listener {
         }
         if (plugin.getConfig().getBoolean("Hub.enabled")) {
             Location location;
-            if (plugin.essentials) {
-                location = EssentialsSpawn.getPlugin(EssentialsSpawn.class).getSpawn("default");
-            } else {
+//            if (plugin.essentials) {
+//                location = EssentialsSpawn.getPlugin(EssentialsSpawn.class).getSpawn("default");
+//            } else {
                 location = player.getWorld().getSpawnLocation().clone();
                 location.setPitch(10.5f);
                 location.setYaw(180f);
-            }
+//            }
             player.teleport(location);
             String titlestring = plugin.getConfig().getString("Hub.join-title-message");
             String[] args = titlestring.split(":");
@@ -130,10 +130,10 @@ public class PlayerJoin implements Listener {
                 }
             }
         }
-        if (plugin.getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join")) {
-            if (plugin.viaVersionApi != null)
-                if (plugin.viaVersionApi.getPlayerVersion(player.getUniqueId()) < 393)
-                    Bukkit.getScheduler().runTaskLater(plugin, () -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("ViaVersion.legacy-warning", "&c&lDetected legacy client version! It is recommended that you update to a 1.13+ client for the best experience!"))), 5 * 20);
-        }
+//        if (plugin.getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join")) {
+//            if (plugin.viaVersionApi != null)
+//                if (plugin.viaVersionApi.getPlayerVersion(player.getUniqueId()) < 393)
+//                    Bukkit.getScheduler().runTaskLater(plugin, () -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("ViaVersion.legacy-warning", "&c&lDetected legacy client version! It is recommended that you update to a 1.13+ client for the best experience!"))), 5 * 20);
+//        }
     }
 }
