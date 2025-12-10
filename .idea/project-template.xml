@@ -1,3 +1,0 @@
-<template>
-  <input-field default="me.fiftyfour.plugin">IJ_BASE_PACKAGE</input-field>
-</template>
