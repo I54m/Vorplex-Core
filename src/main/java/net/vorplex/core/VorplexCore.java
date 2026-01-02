@@ -1,6 +1,7 @@
 package net.vorplex.core;
 
 import com.zaxxer.hikari.HikariDataSource;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
@@ -92,8 +93,11 @@ public class VorplexCore extends JavaPlugin {
         PREFIX_NO_COLOR = ChatColor.stripColor(PREFIX);
         this.getCommand("vorplexcorereload").setExecutor(this);
         //load modules
-        if (this.getConfig().getBoolean("buycommand.enabled"))
-            this.getCommand("buy").setExecutor(new BuyCommand());
+        if (this.getConfig().getBoolean("buycommand.enabled")) {
+            getComponentLogger().info(Component.text("Enabling Buy Command...").color(NamedTextColor.GREEN));
+            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands ->
+                    commands.registrar().register(BuyCommand.COMMAND_NODE));
+        }
 //        if (this.getConfig().getBoolean("discordcommand.enabled"))
 //            this.getCommand("discord").setExecutor(new DiscordCommand());
 //        if (this.getConfig().getBoolean("VoteBookGUI.enabled")) {
