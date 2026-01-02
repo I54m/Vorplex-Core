@@ -211,7 +211,7 @@ Gifts:
 #Buy command
 buycommand:
   enabled: true
-  message: "&6&lStore: &b&nhttps://store.vorplex.net"
+  message: "<gold><bold>Store:</bold></gold> <light_blue><underline>https://store.vorplex.net</underline></light_blue>"
 
 #Discord command
 discordcommand:
