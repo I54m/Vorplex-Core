@@ -1,22 +1,19 @@
 package net.vorplex.core.commands;
 
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import net.vorplex.core.VorplexCore;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
 
-public class BuyCommand implements CommandExecutor {
+public class BuyCommand {
 
-    private final VorplexCore plugin = VorplexCore.getInstance();
-
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        String rawMessage = plugin.getConfig().getString("buycommand.message");
-        if (rawMessage == null)
-            commandSender.sendMessage("discordcommand.message is null! or config was not loaded correctly!");
-        else commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', rawMessage));
-        return true;
-    }
+    public static final LiteralCommandNode<CommandSourceStack> COMMAND_NODE = Commands.literal("buy")
+            .executes((ctx) -> {
+                String rawMessage = VorplexCore.getInstance().getConfig().getString("buycommand.message");
+                if (rawMessage == null)
+                    ctx.getSource().getSender().sendMessage("buycommand.message is null! or config was not loaded correctly!");
+                else ctx.getSource().getSender().sendRichMessage(rawMessage);
+                return Command.SINGLE_SUCCESS;
+            }).build();
 }
