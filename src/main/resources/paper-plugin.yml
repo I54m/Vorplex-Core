@@ -28,62 +28,6 @@ dependencies:
       load: BEFORE
       required: false
 
-
-
-
-#######################################################################################[Commands]######################################################################
-
-commands:
-  vote:
-    description: open the book gui for the vote links.
-  vorplexcorereload:
-    description: reload the config for vorplex core.
-    aliases:
-      - vcreload
-      - corereload
-      - vorplexreload
-  autorestart:
-    description: Main Command for the auto restart module.
-    aliases:
-      - re
-      - autore
-  ranktitle:
-    description: Change a player's rank prefix.
-    aliases:
-      - titlerank
-      - titleranks
-      - titlesrank
-      - titlesranks
-      - rankstitles
-      - ranktitles
-      - rankstitle
-  title:
-    description: Main command for the titles module.
-    aliases:
-      - titles
-      - tag
-      - tags
-  joinmessage:
-    description: Main command for custom join messages.
-    aliases:
-      - joinm
-      - jmessage
-      - joinmsg
-  leavemessage:
-    description: Main command for custom leave messages.
-    aliases:
-      - leavem
-      - lmessage
-      - leavemsg
-  gift:
-    description: Send a player a gift.
-  gifts:
-    description: See and claim gifts sent to you by other players.
-  buy:
-    description: show the store link.
-  discord:
-    description: show the discord link.
-
 ####################################################################################[Permissions]#########################################################################################
 
 permissions:
