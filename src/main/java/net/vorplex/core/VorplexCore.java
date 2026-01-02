@@ -1,6 +1,9 @@
 package net.vorplex.core;
 
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.zaxxer.hikari.HikariDataSource;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +15,6 @@ import net.vorplex.core.commands.BuyCommand;
 import net.vorplex.core.objects.Gift;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -67,6 +68,59 @@ public class VorplexCore extends JavaPlugin {
             Bukkit.getServer().getVersion().contains("1.12");
     private String host, username;
 
+    public final LiteralCommandNode<CommandSourceStack> RELOAD_COMMAND_NODE = Commands.literal("vorplexcorereload")
+            .requires(ctx -> ctx.getSender().isOp())
+            .executes((ctx) -> {
+                reloadConfig();
+//                Scheduler.stop();
+//                Scheduler.start(new Config());
+//                if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
+//                    permissionJoinMessages.clear();
+//                    for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
+//                        permissionJoinMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("JoinMessages.permissionbasedjoinmessages.messages." + permission)));
+//                    }
+//                }
+//                if (getConfig().getBoolean("LeaveMessages.permissionbasedleavemessages.enabled")) {
+//                    permissionLeaveMessages.clear();
+//                    for (String permission : getConfig().getConfigurationSection("LeaveMessages.permissionbasedleavemessages.messages").getKeys(false)) {
+//                        permissionLeaveMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("LeaveMessages.permissionbasedleavemessages.messages." + permission)));
+//                    }
+//                }
+//                if (getConfig().getBoolean("Titles.enabled")) {
+//                    cacheTitles();
+//                }
+//                if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
+//                    cacheJoinMessages();
+//                }
+//                if (getConfig().getBoolean("LeaveMessages.customLeavemessages.enabled")) {
+//                    cacheLeaveMessages();
+//                }
+                        ctx.getSource().getSender().sendMessage(prefix + ChatColor.GREEN + "Config reloaded!");
+                        return com.mojang.brigadier.Command.SINGLE_SUCCESS;
+                    }
+            ).build();
+
+    @Override
+    public void onDisable() {
+//        Scheduler.stop();
+//        try {
+//            if (hikari != null && !hikari.isClosed()) {
+//                getLogger().info("Closing Storage....");
+//                Bukkit.getScheduler().cancelTask(cacheTaskid);
+//                hikari.close();
+//                connection = null;
+//                hikari = null;
+//                getLogger().info("Storage Closed");
+//            }
+//            if (getConfig().getBoolean("Gifts.enabled")) {
+//                saveGifts();
+//            }
+//        } catch (Exception e) {
+//            getLogger().severe("Could not Close Storage!");
+//            e.printStackTrace();
+//        }
+    }
+
     @Override
     public void onEnable() {
         long startTime = System.nanoTime();
@@ -91,7 +145,7 @@ public class VorplexCore extends JavaPlugin {
         prefix = ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("Prefixes.plugin", "&5[&d&lVorplex-Core&5] "));
         PREFIX = ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("Prefixes.autorestart-module", "&5[&dVorplex-Restart&5] "));
         PREFIX_NO_COLOR = ChatColor.stripColor(PREFIX);
-        this.getCommand("vorplexcorereload").setExecutor(this);
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(this.RELOAD_COMMAND_NODE, List.of("corereload", "vcreload", "vorplexrelaod")));
         //load modules
         if (this.getConfig().getBoolean("buycommand.enabled")) {
             getComponentLogger().info(Component.text("Enabling Buy Command...").color(NamedTextColor.GREEN));
@@ -285,65 +339,6 @@ public class VorplexCore extends JavaPlugin {
         getComponentLogger().info("───────────────────────────────────────────────────────────");
     }
 
-    @Override
-    public void onDisable() {
-//        Scheduler.stop();
-//        try {
-//            if (hikari != null && !hikari.isClosed()) {
-//                getLogger().info("Closing Storage....");
-//                Bukkit.getScheduler().cancelTask(cacheTaskid);
-//                hikari.close();
-//                connection = null;
-//                hikari = null;
-//                getLogger().info("Storage Closed");
-//            }
-//            if (getConfig().getBoolean("Gifts.enabled")) {
-//                saveGifts();
-//            }
-//        } catch (Exception e) {
-//            getLogger().severe("Could not Close Storage!");
-//            e.printStackTrace();
-//        }
-    }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("vorplexcorereload") || label.equalsIgnoreCase("vorplexreload") ||
-                label.equalsIgnoreCase("corereload") || label.equalsIgnoreCase("vcreload")) {
-            if (sender.isOp()) {
-                reloadConfig();
-//                Scheduler.stop();
-//                Scheduler.start(new Config());
-//                if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
-//                    permissionJoinMessages.clear();
-//                    for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
-//                        permissionJoinMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("JoinMessages.permissionbasedjoinmessages.messages." + permission)));
-//                    }
-//                }
-//                if (getConfig().getBoolean("LeaveMessages.permissionbasedleavemessages.enabled")) {
-//                    permissionLeaveMessages.clear();
-//                    for (String permission : getConfig().getConfigurationSection("LeaveMessages.permissionbasedleavemessages.messages").getKeys(false)) {
-//                        permissionLeaveMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("LeaveMessages.permissionbasedleavemessages.messages." + permission)));
-//                    }
-//                }
-//                if (getConfig().getBoolean("Titles.enabled")) {
-//                    cacheTitles();
-//                }
-//                if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
-//                    cacheJoinMessages();
-//                }
-//                if (getConfig().getBoolean("LeaveMessages.customLeavemessages.enabled")) {
-//                    cacheLeaveMessages();
-//                }
-                sender.sendMessage(prefix + ChatColor.GREEN + "Config reloaded!");
-                return true;
-            } else {
-                sender.sendMessage(ChatColor.RED + "You do not have permission for this command!");
-            }
-            return false;
-        }
-        return false;
-    }
 
     private void setupSQLConnection() {
         if (hikari == null || connection == null) {
