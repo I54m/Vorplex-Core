@@ -6,26 +6,16 @@ import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.luckperms.api.LuckPerms;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.vorplex.core.autorestart.Config;
-import net.vorplex.core.autorestart.Scheduler;
-import net.vorplex.core.commands.*;
-import net.vorplex.core.listeners.*;
+import net.vorplex.core.commands.BuyCommand;
 import net.vorplex.core.objects.Gift;
-import net.vorplex.core.util.BookUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -104,97 +94,97 @@ public class VorplexCore extends JavaPlugin {
         //load modules
         if (this.getConfig().getBoolean("buycommand.enabled"))
             this.getCommand("buy").setExecutor(new BuyCommand());
-        if (this.getConfig().getBoolean("discordcommand.enabled"))
-            this.getCommand("discord").setExecutor(new DiscordCommand());
-        if (this.getConfig().getBoolean("VoteBookGUI.enabled")) {
-            this.getCommand("vote").setExecutor(new VoteGUICommand());
-            BookUtils.init();
-            getLogger().info("Enabled Vote Book Module");
-        }
-        if (this.getConfig().getBoolean("VoteRewards.enabled")) {
-            this.getServer().getPluginManager().registerEvents(new PlayerVote(), this);
-            getLogger().info("Enabled Vote Rewards Module");
-        }
-        if (this.getConfig().getBoolean("AutoRestart.enabled")) {
-            getCommand("autorestart").setExecutor(new AutoRe());
-            config = new Config();
-            Scheduler.start(config);
-            getLogger().info("Enabled Auto Restart Module");
-        }
-        if (this.getConfig().getBoolean("VorplexServer.enabled")) {
-            this.getServer().getPluginManager().registerEvents(new CommandPreProcess(), this);
-            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-            getLogger().info("Enabled Server Module");
-        }
-        RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
-        if (provider != null)
-            luckPermsAPI = provider.getProvider();
-        else {
-            getLogger().severe("Luckperms not detected! Disabling plugin!");
-            this.setEnabled(false);
-            return;
-        }
-
-        if (getConfig().getBoolean("Announcer.enabled")) {
-            announce = false;
-            getLogger().info("Detected no players online! disabling announcements to save resources!");
-            Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-                if (announce) {
-                    String message;
-                    int messageNumber;
-                    int maxMesages;
-                    maxMesages = getConfig().getInt("Announcer.NumberOfMessages");
-                    if (getConfig().getBoolean("Announcer.Random"))
-                        messageNumber = (int) ((Math.random() * maxMesages) + 1);
-                    else {
-                        messageNumber = previousMessageNumber + 1;
-                        if (previousMessageNumber >= maxMesages)
-                            previousMessageNumber = 0;
-                        else previousMessageNumber++;
-                    }
-                    message = getConfig().getString("Announcer.Messages." + messageNumber + ".text");
-                    String prefix = getConfig().getString("Announcer.Prefix");
-
-                    ClickEvent.Action clickEventAction = ClickEvent.Action.valueOf(getConfig().getString("Announcer.Messages." + messageNumber + ".clickevent.action"));
-                    String clickEventValue = ChatColor.translateAlternateColorCodes('&', getConfig().getString("Announcer.Messages." + messageNumber + ".clickevent.value"));
-                    HoverEvent.Action hoverEventAction = HoverEvent.Action.valueOf(getConfig().getString("Announcer.Messages." + messageNumber + ".hoverevent.action"));
-                    BaseComponent[] hoverEventValue = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', getConfig().getString("Announcer.Messages." + messageNumber + ".hoverevent.value")));
-                    TextComponent messagetext = new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', prefix) + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', message)));
-                    messagetext.setHoverEvent(new HoverEvent(hoverEventAction, hoverEventValue));
-                    messagetext.setClickEvent(new ClickEvent(clickEventAction, clickEventValue));
-                    for (Player players : Bukkit.getOnlinePlayers()) {
-                        players.spigot().sendMessage(messagetext);
-                    }
-                }
-            }, 720, (getConfig().getInt("Announcer.Interval") * 20));
-            getLogger().info("Enabled Auto Announcer Module");
-        }
-        if (getConfig().getBoolean("Announcer.enabled") ||
-                getConfig().getBoolean("JoinMessages.enabled") ||
-                getConfig().getBoolean("Hub.enabled") ||
-                (getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join") && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")))
-            Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
-
-        if (getConfig().getBoolean("Hub.enabled")) {
-            if (Bukkit.getPluginManager().isPluginEnabled("EssentialsSpawn")) {
-                essentials = true;
-                getLogger().info("Essentials spawn detected, using as adapter for spawn teleporting!");
-            }
-            if (getConfig().getBoolean("Hub.oxygen-helmet-enabled")) {
-                ItemMeta im = PlayerJoin.oxygenHelmet.getItemMeta();
-                im.setDisplayName(ChatColor.WHITE + "Oxygen Helmet");
-                im.setLore(Arrays.asList(ChatColor.WHITE + "It's probably best to keep this on..."));
-                PlayerJoin.oxygenHelmet.setItemMeta(im);
-                Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);
-            }
-            getLogger().info("Enabled Hub Module");
-        }
-        if (getConfig().getBoolean("RankTitle.enabled")) {
-            Bukkit.getPluginCommand("ranktitle").setExecutor(new RankTitleCommand());
-            getLogger().info("Enabled Rank Title Module");
-        }
-        if (getConfig().getBoolean("Titles.enabled")) {
+//        if (this.getConfig().getBoolean("discordcommand.enabled"))
+//            this.getCommand("discord").setExecutor(new DiscordCommand());
+//        if (this.getConfig().getBoolean("VoteBookGUI.enabled")) {
+//            this.getCommand("vote").setExecutor(new VoteGUICommand());
+//            BookUtils.init();
+//            getLogger().info("Enabled Vote Book Module");
+//        }
+//        if (this.getConfig().getBoolean("VoteRewards.enabled")) {
+//            this.getServer().getPluginManager().registerEvents(new PlayerVote(), this);
+//            getLogger().info("Enabled Vote Rewards Module");
+//        }
+//        if (this.getConfig().getBoolean("AutoRestart.enabled")) {
+//            getCommand("autorestart").setExecutor(new AutoRe());
+//            config = new Config();
+//            Scheduler.start(config);
+//            getLogger().info("Enabled Auto Restart Module");
+//        }
+//        if (this.getConfig().getBoolean("VorplexServer.enabled")) {
+//            this.getServer().getPluginManager().registerEvents(new CommandPreProcess(), this);
+//            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+//            getLogger().info("Enabled Server Module");
+//        }
+//        RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+//        if (provider != null)
+//            luckPermsAPI = provider.getProvider();
+//        else {
+//            getLogger().severe("Luckperms not detected! Disabling plugin!");
+//            this.setEnabled(false);
+//            return;
+//        }
+//
+//        if (getConfig().getBoolean("Announcer.enabled")) {
+//            announce = false;
+//            getLogger().info("Detected no players online! disabling announcements to save resources!");
+//            Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
+//            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+//                if (announce) {
+//                    String message;
+//                    int messageNumber;
+//                    int maxMesages;
+//                    maxMesages = getConfig().getInt("Announcer.NumberOfMessages");
+//                    if (getConfig().getBoolean("Announcer.Random"))
+//                        messageNumber = (int) ((Math.random() * maxMesages) + 1);
+//                    else {
+//                        messageNumber = previousMessageNumber + 1;
+//                        if (previousMessageNumber >= maxMesages)
+//                            previousMessageNumber = 0;
+//                        else previousMessageNumber++;
+//                    }
+//                    message = getConfig().getString("Announcer.Messages." + messageNumber + ".text");
+//                    String prefix = getConfig().getString("Announcer.Prefix");
+//
+//                    ClickEvent.Action clickEventAction = ClickEvent.Action.valueOf(getConfig().getString("Announcer.Messages." + messageNumber + ".clickevent.action"));
+//                    String clickEventValue = ChatColor.translateAlternateColorCodes('&', getConfig().getString("Announcer.Messages." + messageNumber + ".clickevent.value"));
+//                    HoverEvent.Action hoverEventAction = HoverEvent.Action.valueOf(getConfig().getString("Announcer.Messages." + messageNumber + ".hoverevent.action"));
+//                    BaseComponent[] hoverEventValue = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', getConfig().getString("Announcer.Messages." + messageNumber + ".hoverevent.value")));
+//                    TextComponent messagetext = new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', prefix) + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', message)));
+//                    messagetext.setHoverEvent(new HoverEvent(hoverEventAction, hoverEventValue));
+//                    messagetext.setClickEvent(new ClickEvent(clickEventAction, clickEventValue));
+//                    for (Player players : Bukkit.getOnlinePlayers()) {
+//                        players.spigot().sendMessage(messagetext);
+//                    }
+//                }
+//            }, 720, (getConfig().getInt("Announcer.Interval") * 20));
+//            getLogger().info("Enabled Auto Announcer Module");
+//        }
+//        if (getConfig().getBoolean("Announcer.enabled") ||
+//                getConfig().getBoolean("JoinMessages.enabled") ||
+//                getConfig().getBoolean("Hub.enabled") ||
+//                (getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join") && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")))
+//            Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
+//
+//        if (getConfig().getBoolean("Hub.enabled")) {
+//            if (Bukkit.getPluginManager().isPluginEnabled("EssentialsSpawn")) {
+//                essentials = true;
+//                getLogger().info("Essentials spawn detected, using as adapter for spawn teleporting!");
+//            }
+//            if (getConfig().getBoolean("Hub.oxygen-helmet-enabled")) {
+//                ItemMeta im = PlayerJoin.oxygenHelmet.getItemMeta();
+//                im.setDisplayName(ChatColor.WHITE + "Oxygen Helmet");
+//                im.setLore(Arrays.asList(ChatColor.WHITE + "It's probably best to keep this on..."));
+//                PlayerJoin.oxygenHelmet.setItemMeta(im);
+//                Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);
+//            }
+//            getLogger().info("Enabled Hub Module");
+//        }
+//        if (getConfig().getBoolean("RankTitle.enabled")) {
+//            Bukkit.getPluginCommand("ranktitle").setExecutor(new RankTitleCommand());
+//            getLogger().info("Enabled Rank Title Module");
+//        }
+//        if (getConfig().getBoolean("Titles.enabled")) {
 //            if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
 //                setupSQLConnection();
 //                Bukkit.getPluginCommand("title").setExecutor(new TitleCommand());
@@ -215,55 +205,55 @@ public class VorplexCore extends JavaPlugin {
 //            } else {
 //                getLogger().warning("MVdWPlaceholderAPI not detected, title module will not be enabled!");
 //            }
-        }
-        if (getConfig().getBoolean("JoinMessages.enabled")) {
-            getLogger().info("Enabled Join Messages Module");
-            if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
-                for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
-                    permissionJoinMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("JoinMessages.permissionbasedjoinmessages.messages." + permission)));
-                }
-                getLogger().info("Enabled Permission Based Join Messages");
-            }
-            if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
-                setupSQLConnection();
-                Bukkit.getPluginCommand("joinmessage").setExecutor(new JoinMessageCommand());
-                getLogger().info("Enabled Custom Join Messages");
-            }
-            if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
-                if (getConfig().getBoolean("JoinMessages.SendOnUnVanish"))
-                    Bukkit.getPluginManager().registerEvents(new PlayerShow(), this);
-            }
-        }
-        if (getConfig().getBoolean("LeaveMessages.enabled")) {
-            getLogger().info("Enabled Leave Messages Module");
-            if (getConfig().getBoolean("LeaveMessages.permissionbasedleavemessages.enabled")) {
-                for (String permission : getConfig().getConfigurationSection("LeaveMessages.permissionbasedleavemessages.messages").getKeys(false)) {
-                    permissionLeaveMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("LeaveMessages.permissionbasedleavemessages.messages." + permission)));
-                }
-                getLogger().info("Enabled Permission Based Leave Messages");
-            }
-            if (getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
-                setupSQLConnection();
-                Bukkit.getPluginCommand("leavemessage").setExecutor(new LeaveMessageCommand());
-                getLogger().info("Enabled Custom Leave Messages");
-            }
-            if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
-                if (getConfig().getBoolean("LeaveMessages.SendOnVanish"))
-                    Bukkit.getPluginManager().registerEvents(new PlayerHide(), this);
-            }
-        }
-        if (getConfig().getBoolean("Gifts.enabled")) {
-            try {
-                if (GiftsStorage.exists())
-                    loadGifts();
-                Bukkit.getPluginCommand("gift").setExecutor(new GiftCommand());
-                Bukkit.getPluginCommand("gifts").setExecutor(new GiftsCommand());
-                getLogger().info("Enabled Gifts Module");
-            } catch (Exception e) {
-                e.printStackTrace();
-                getLogger().info("ERROR: Could not enable Gifts Module, GiftsStorage.yml could not be loaded!!");
-            }
-        }
+//        }
+//        if (getConfig().getBoolean("JoinMessages.enabled")) {
+//            getLogger().info("Enabled Join Messages Module");
+//            if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
+//                for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
+//                    permissionJoinMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("JoinMessages.permissionbasedjoinmessages.messages." + permission)));
+//                }
+//                getLogger().info("Enabled Permission Based Join Messages");
+//            }
+//            if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
+//                setupSQLConnection();
+//                Bukkit.getPluginCommand("joinmessage").setExecutor(new JoinMessageCommand());
+//                getLogger().info("Enabled Custom Join Messages");
+//            }
+//            if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
+//                if (getConfig().getBoolean("JoinMessages.SendOnUnVanish"))
+//                    Bukkit.getPluginManager().registerEvents(new PlayerShow(), this);
+//            }
+//        }
+//        if (getConfig().getBoolean("LeaveMessages.enabled")) {
+//            getLogger().info("Enabled Leave Messages Module");
+//            if (getConfig().getBoolean("LeaveMessages.permissionbasedleavemessages.enabled")) {
+//                for (String permission : getConfig().getConfigurationSection("LeaveMessages.permissionbasedleavemessages.messages").getKeys(false)) {
+//                    permissionLeaveMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("LeaveMessages.permissionbasedleavemessages.messages." + permission)));
+//                }
+//                getLogger().info("Enabled Permission Based Leave Messages");
+//            }
+//            if (getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
+//                setupSQLConnection();
+//                Bukkit.getPluginCommand("leavemessage").setExecutor(new LeaveMessageCommand());
+//                getLogger().info("Enabled Custom Leave Messages");
+//            }
+//            if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
+//                if (getConfig().getBoolean("LeaveMessages.SendOnVanish"))
+//                    Bukkit.getPluginManager().registerEvents(new PlayerHide(), this);
+//            }
+//        }
+//        if (getConfig().getBoolean("Gifts.enabled")) {
+//            try {
+//                if (GiftsStorage.exists())
+//                    loadGifts();
+//                Bukkit.getPluginCommand("gift").setExecutor(new GiftCommand());
+//                Bukkit.getPluginCommand("gifts").setExecutor(new GiftsCommand());
+//                getLogger().info("Enabled Gifts Module");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                getLogger().info("ERROR: Could not enable Gifts Module, GiftsStorage.yml could not be loaded!!");
+//            }
+//        }
 //        if (getConfig().getBoolean("ViaVersion.enable-scoreboard-placeholder") ||
 //                getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join")) {
 //            viaVersionApi = Via.getAPI();
@@ -281,35 +271,35 @@ public class VorplexCore extends JavaPlugin {
 //                getLogger().severe("ViaVersion not detected, unable to enable viaversion module!");
 //            }
 //        }
-        Bukkit.getPluginManager().registerEvents(new PlayerDeath(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerKick(), this);
-        if (hikari != null || connection != null) {
-            setupmysql();
-            startCaching();
-        }
+//        Bukkit.getPluginManager().registerEvents(new PlayerDeath(), this);
+//        Bukkit.getPluginManager().registerEvents(new PlayerKick(), this);
+//        if (hikari != null || connection != null) {
+//            setupmysql();
+//            startCaching();
+//        }
         getComponentLogger().info(Component.text("Plugin loaded in: " + (System.nanoTime() - startTime) / 1000000 + "ms!").color(NamedTextColor.GREEN));
         getComponentLogger().info("───────────────────────────────────────────────────────────");
     }
 
     @Override
     public void onDisable() {
-        Scheduler.stop();
-        try {
-            if (hikari != null && !hikari.isClosed()) {
-                getLogger().info("Closing Storage....");
-                Bukkit.getScheduler().cancelTask(cacheTaskid);
-                hikari.close();
-                connection = null;
-                hikari = null;
-                getLogger().info("Storage Closed");
-            }
-            if (getConfig().getBoolean("Gifts.enabled")) {
-                saveGifts();
-            }
-        } catch (Exception e) {
-            getLogger().severe("Could not Close Storage!");
-            e.printStackTrace();
-        }
+//        Scheduler.stop();
+//        try {
+//            if (hikari != null && !hikari.isClosed()) {
+//                getLogger().info("Closing Storage....");
+//                Bukkit.getScheduler().cancelTask(cacheTaskid);
+//                hikari.close();
+//                connection = null;
+//                hikari = null;
+//                getLogger().info("Storage Closed");
+//            }
+//            if (getConfig().getBoolean("Gifts.enabled")) {
+//                saveGifts();
+//            }
+//        } catch (Exception e) {
+//            getLogger().severe("Could not Close Storage!");
+//            e.printStackTrace();
+//        }
     }
 
     @Override
@@ -318,29 +308,29 @@ public class VorplexCore extends JavaPlugin {
                 label.equalsIgnoreCase("corereload") || label.equalsIgnoreCase("vcreload")) {
             if (sender.isOp()) {
                 reloadConfig();
-                Scheduler.stop();
-                Scheduler.start(new Config());
-                if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
-                    permissionJoinMessages.clear();
-                    for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
-                        permissionJoinMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("JoinMessages.permissionbasedjoinmessages.messages." + permission)));
-                    }
-                }
-                if (getConfig().getBoolean("LeaveMessages.permissionbasedleavemessages.enabled")) {
-                    permissionLeaveMessages.clear();
-                    for (String permission : getConfig().getConfigurationSection("LeaveMessages.permissionbasedleavemessages.messages").getKeys(false)) {
-                        permissionLeaveMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("LeaveMessages.permissionbasedleavemessages.messages." + permission)));
-                    }
-                }
-                if (getConfig().getBoolean("Titles.enabled")) {
-                    cacheTitles();
-                }
-                if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
-                    cacheJoinMessages();
-                }
-                if (getConfig().getBoolean("LeaveMessages.customLeavemessages.enabled")) {
-                    cacheLeaveMessages();
-                }
+//                Scheduler.stop();
+//                Scheduler.start(new Config());
+//                if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
+//                    permissionJoinMessages.clear();
+//                    for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
+//                        permissionJoinMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("JoinMessages.permissionbasedjoinmessages.messages." + permission)));
+//                    }
+//                }
+//                if (getConfig().getBoolean("LeaveMessages.permissionbasedleavemessages.enabled")) {
+//                    permissionLeaveMessages.clear();
+//                    for (String permission : getConfig().getConfigurationSection("LeaveMessages.permissionbasedleavemessages.messages").getKeys(false)) {
+//                        permissionLeaveMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("LeaveMessages.permissionbasedleavemessages.messages." + permission)));
+//                    }
+//                }
+//                if (getConfig().getBoolean("Titles.enabled")) {
+//                    cacheTitles();
+//                }
+//                if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
+//                    cacheJoinMessages();
+//                }
+//                if (getConfig().getBoolean("LeaveMessages.customLeavemessages.enabled")) {
+//                    cacheLeaveMessages();
+//                }
                 sender.sendMessage(prefix + ChatColor.GREEN + "Config reloaded!");
                 return true;
             } else {
