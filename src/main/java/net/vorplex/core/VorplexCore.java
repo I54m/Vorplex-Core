@@ -264,7 +264,7 @@ public class VorplexCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
-//        Scheduler.stop();
+        AutoRestartScheduler.stop();
 //        try {
 //            if (hikari != null && !hikari.isClosed()) {
 //                getLogger().info("Closing Storage....");
