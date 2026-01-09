@@ -373,9 +373,6 @@ public class VorplexCore extends JavaPlugin {
 
     private void startCaching() {
         cacheTaskid = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            if (getConfig().getBoolean("Titles.enabled")) {
-                cacheTitles();
-            }
             if (getConfig().getBoolean("JoinMessages.customjoinmessages")) {
                 cacheJoinMessages();
             }
@@ -383,55 +380,11 @@ public class VorplexCore extends JavaPlugin {
                 cacheLeaveMessages();
             }
         }, 200, 100);
-        if (getConfig().getBoolean("Titles.enabled")) {
-            cacheTitles();
-        }
         if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
             cacheJoinMessages();
         }
         if (getConfig().getBoolean("LeaveMessages.customLeavemessages.enabled")) {
             cacheLeaveMessages();
-        }
-    }
-
-    private void cacheTitles() {
-        titles.clear();
-        titles.put(0, "");
-        equippedTitles.clear();
-        try {
-            String sqltitles = "SELECT * FROM `vorplexcore_titles`;";
-            PreparedStatement stmttitles = connection.prepareStatement(sqltitles);
-            ResultSet resultstitles = stmttitles.executeQuery();
-            while (resultstitles.next()) {
-                String rawTitle = resultstitles.getString("RawTitle");
-                if (rawTitle.contains("%sinquo%"))
-                    rawTitle = rawTitle.replace("%sinquo%", "'");
-                if (rawTitle.contains("%dubquo%"))
-                    rawTitle = rawTitle.replace("%dubquo%", "\"");
-                if (rawTitle.contains("%bcktck%"))
-                    rawTitle = rawTitle.replace("%bcktck%", "`");
-                titles.put(resultstitles.getInt("ID"), rawTitle);
-            }
-            resultstitles.close();
-            stmttitles.close();
-            String sqlequippedtitles = "SELECT * FROM `vorplexcore_equippedtitles`;";
-            PreparedStatement stmtequippedtitles = connection.prepareStatement(sqlequippedtitles);
-            ResultSet resultsequippedtitles = stmtequippedtitles.executeQuery();
-            while (resultsequippedtitles.next()) {
-                String rawTitle = resultsequippedtitles.getString("RawTitle");
-                if (rawTitle.contains("%sinquo%"))
-                    rawTitle = rawTitle.replace("%sinquo%", "'");
-                if (rawTitle.contains("%dubquo%"))
-                    rawTitle = rawTitle.replace("%dubquo%", "\"");
-                if (rawTitle.contains("%bcktck%"))
-                    rawTitle = rawTitle.replace("%bcktck%", "`");
-                equippedTitles.put(UUID.fromString(resultsequippedtitles.getString("UUID")), rawTitle);
-            }
-            resultsequippedtitles.close();
-            stmtequippedtitles.close();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-            getLogger().warning("Unable to cache titles from mysql database, title placeholders may no longer work!!");
         }
     }
 
