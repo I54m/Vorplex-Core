@@ -1,5 +1,6 @@
 package net.vorplex.core;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.zaxxer.hikari.HikariDataSource;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
@@ -9,12 +10,14 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.luckperms.api.LuckPerms;
-import net.vorplex.core.autorestart.Config;
+import net.vorplex.core.autorestart.AutoRestartConfig;
+import net.vorplex.core.autorestart.AutoRestartScheduler;
+import net.vorplex.core.commands.AutoRestartCommand;
 import net.vorplex.core.commands.BuyCommand;
 import net.vorplex.core.objects.Gift;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -29,10 +32,7 @@ import java.util.*;
 
 public class VorplexCore extends JavaPlugin {
 
-    public String prefix = null;
-
-    public static String PREFIX = null;
-    public static String PREFIX_NO_COLOR = null;
+    public AutoRestartConfig autoRestartConfig = null;
 
     @Getter
     @Setter
@@ -55,8 +55,8 @@ public class VorplexCore extends JavaPlugin {
     private static String database;
     private int port;
     public Connection connection;
-
-    public Config config = null;
+    @Getter
+    private Component prefix;
     public LuckPerms luckPermsAPI = null;
 
     public boolean essentials = false;
@@ -67,13 +67,12 @@ public class VorplexCore extends JavaPlugin {
             Bukkit.getServer().getVersion().contains("1.11") ||
             Bukkit.getServer().getVersion().contains("1.12");
     private String host, username;
-
     public final LiteralCommandNode<CommandSourceStack> RELOAD_COMMAND_NODE = Commands.literal("vorplexcorereload")
             .requires(ctx -> ctx.getSender().isOp())
             .executes((ctx) -> {
                 reloadConfig();
-//                Scheduler.stop();
-//                Scheduler.start(new Config());
+                        AutoRestartScheduler.stop();
+                        AutoRestartScheduler.start(new AutoRestartConfig());
 //                if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
 //                    permissionJoinMessages.clear();
 //                    for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
@@ -95,31 +94,10 @@ public class VorplexCore extends JavaPlugin {
 //                if (getConfig().getBoolean("LeaveMessages.customLeavemessages.enabled")) {
 //                    cacheLeaveMessages();
 //                }
-                        ctx.getSource().getSender().sendMessage(prefix + ChatColor.GREEN + "Config reloaded!");
-                        return com.mojang.brigadier.Command.SINGLE_SUCCESS;
+                        ctx.getSource().getSender().sendRichMessage(getPrefix() + "<green>Config reloaded!");
+                        return Command.SINGLE_SUCCESS;
                     }
             ).build();
-
-    @Override
-    public void onDisable() {
-//        Scheduler.stop();
-//        try {
-//            if (hikari != null && !hikari.isClosed()) {
-//                getLogger().info("Closing Storage....");
-//                Bukkit.getScheduler().cancelTask(cacheTaskid);
-//                hikari.close();
-//                connection = null;
-//                hikari = null;
-//                getLogger().info("Storage Closed");
-//            }
-//            if (getConfig().getBoolean("Gifts.enabled")) {
-//                saveGifts();
-//            }
-//        } catch (Exception e) {
-//            getLogger().severe("Could not Close Storage!");
-//            e.printStackTrace();
-//        }
-    }
 
     @Override
     public void onEnable() {
@@ -142,9 +120,7 @@ public class VorplexCore extends JavaPlugin {
         setInstance(this);
         saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
-        prefix = ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("Prefixes.plugin", "&5[&d&lVorplex-Core&5] "));
-        PREFIX = ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("Prefixes.autorestart-module", "&5[&dVorplex-Restart&5] "));
-        PREFIX_NO_COLOR = ChatColor.stripColor(PREFIX);
+        prefix = MiniMessage.miniMessage().deserialize(this.getConfig().getString("Plugin-Prefix", "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] "));
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(this.RELOAD_COMMAND_NODE, List.of("corereload", "vcreload", "vorplexrelaod")));
         //load modules
         if (this.getConfig().getBoolean("buycommand.enabled")) {
@@ -163,12 +139,12 @@ public class VorplexCore extends JavaPlugin {
 //            this.getServer().getPluginManager().registerEvents(new PlayerVote(), this);
 //            getLogger().info("Enabled Vote Rewards Module");
 //        }
-//        if (this.getConfig().getBoolean("AutoRestart.enabled")) {
-//            getCommand("autorestart").setExecutor(new AutoRe());
-//            config = new Config();
-//            Scheduler.start(config);
-//            getLogger().info("Enabled Auto Restart Module");
-//        }
+        if (this.getConfig().getBoolean("AutoRestart.enabled")) {
+            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(AutoRestartCommand.COMMAND_NODE, List.of("restart", "reboot", "autoreboot", "autore")));
+            autoRestartConfig = new AutoRestartConfig();
+            AutoRestartScheduler.start(autoRestartConfig);
+            getLogger().info("Enabled Auto Restart Module");
+        }
 //        if (this.getConfig().getBoolean("VorplexServer.enabled")) {
 //            this.getServer().getPluginManager().registerEvents(new CommandPreProcess(), this);
 //            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -337,6 +313,27 @@ public class VorplexCore extends JavaPlugin {
 //        }
         getComponentLogger().info(Component.text("Plugin loaded in: " + (System.nanoTime() - startTime) / 1000000 + "ms!").color(NamedTextColor.GREEN));
         getComponentLogger().info("───────────────────────────────────────────────────────────");
+    }
+
+    @Override
+    public void onDisable() {
+//        Scheduler.stop();
+//        try {
+//            if (hikari != null && !hikari.isClosed()) {
+//                getLogger().info("Closing Storage....");
+//                Bukkit.getScheduler().cancelTask(cacheTaskid);
+//                hikari.close();
+//                connection = null;
+//                hikari = null;
+//                getLogger().info("Storage Closed");
+//            }
+//            if (getConfig().getBoolean("Gifts.enabled")) {
+//                saveGifts();
+//            }
+//        } catch (Exception e) {
+//            getLogger().severe("Could not Close Storage!");
+//            e.printStackTrace();
+//        }
     }
 
 
