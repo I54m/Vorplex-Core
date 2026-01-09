@@ -18,14 +18,15 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 public class AutoRestartConfig {
+    private final VorplexCore plugin = VorplexCore.getInstance();
+
     public boolean valid;
     public List<String> schedule;
     public Sound notifySound;
-
     public boolean notifyChatEnabled;
-    Map<Integer, String> notifyChatPeriods;
+    public Map<Integer, String> notifyChatPeriods;
     public boolean notifyTitleEnabled;
-    Map<Integer, TitleMessage> notifyTitlePeriods;
+    public Map<Integer, TitleMessage> notifyTitlePeriods;
 
     public AutoRestartConfig() {
         valid = loadConfig();
@@ -45,7 +46,7 @@ public class AutoRestartConfig {
 
     private boolean loadConfig() {
         try {
-            FileConfiguration config = VorplexCore.getInstance().getConfig();
+            FileConfiguration config = plugin.getConfig();
             schedule = config.getStringList("AutoRestart.schedule");
 
             notifyChatEnabled = config.getBoolean("AutoRestart.notify.chat.enabled");
@@ -67,14 +68,14 @@ public class AutoRestartConfig {
             String notifySoundName = config.getString("AutoRestart.notify.sound", "ui.button.click");
             notifySound = Sound.sound(Key.key(notifySoundName), Sound.Source.MASTER, 1f, 1f);
         } catch (Exception e) {
-            e.printStackTrace();
+            plugin.getComponentLogger().error("Error loading AutoRestart config: {}", e.getMessage());
             return false;
         }
         return true;
     }
 
 
-    static class TitleMessage {
+    public static class TitleMessage {
         Component title, subtitle;
         long fadeIn, stay, fadeOut;
 
