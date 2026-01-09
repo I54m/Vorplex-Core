@@ -130,10 +130,5 @@ public class PlayerJoin implements Listener {
                 }
             }
         }
-//        if (plugin.getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join")) {
-//            if (plugin.viaVersionApi != null)
-//                if (plugin.viaVersionApi.getPlayerVersion(player.getUniqueId()) < 393)
-//                    Bukkit.getScheduler().runTaskLater(plugin, () -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("ViaVersion.legacy-warning", "&c&lDetected legacy client version! It is recommended that you update to a 1.13+ client for the best experience!"))), 5 * 20);
-//        }
     }
 }

@@ -85,9 +85,6 @@ public class VorplexCore extends JavaPlugin {
 //                        permissionLeaveMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("LeaveMessages.permissionbasedleavemessages.messages." + permission)));
 //                    }
 //                }
-//                if (getConfig().getBoolean("Titles.enabled")) {
-//                    cacheTitles();
-//                }
 //                if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
 //                    cacheJoinMessages();
 //                }
@@ -128,17 +125,6 @@ public class VorplexCore extends JavaPlugin {
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands ->
                     commands.registrar().register(BuyCommand.COMMAND_NODE));
         }
-//        if (this.getConfig().getBoolean("discordcommand.enabled"))
-//            this.getCommand("discord").setExecutor(new DiscordCommand());
-//        if (this.getConfig().getBoolean("VoteBookGUI.enabled")) {
-//            this.getCommand("vote").setExecutor(new VoteGUICommand());
-//            BookUtils.init();
-//            getLogger().info("Enabled Vote Book Module");
-//        }
-//        if (this.getConfig().getBoolean("VoteRewards.enabled")) {
-//            this.getServer().getPluginManager().registerEvents(new PlayerVote(), this);
-//            getLogger().info("Enabled Vote Rewards Module");
-//        }
         if (this.getConfig().getBoolean("AutoRestart.enabled")) {
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(AutoRestartCommand.COMMAND_NODE, List.of("restart", "reboot", "autoreboot", "autore")));
             autoRestartConfig = new AutoRestartConfig();
@@ -218,28 +204,6 @@ public class VorplexCore extends JavaPlugin {
 //            Bukkit.getPluginCommand("ranktitle").setExecutor(new RankTitleCommand());
 //            getLogger().info("Enabled Rank Title Module");
 //        }
-//        if (getConfig().getBoolean("Titles.enabled")) {
-//            if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")) {
-//                setupSQLConnection();
-//                Bukkit.getPluginCommand("title").setExecutor(new TitleCommand());
-//                PlaceholderAPI.registerPlaceholder(this, "vorplex_titles", (event) -> {
-//                    if (event.isOnline() && event.getPlayer() != null) {
-//                        Player player = event.getPlayer();
-//                        UUID uuid = player.getUniqueId();
-//                        if (equippedTitles.containsKey(uuid) && equippedTitles.get(uuid) != null) {
-//                            if (equippedTitles.get(uuid).isEmpty()) return "";
-//                            else
-//                                return ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', equippedTitles.get(uuid)) + ChatColor.DARK_GRAY + "]" + ChatColor.RESET + " ";
-//                        }
-//                    }
-//                    return "";
-//                });
-//                titles.put(0, "");
-//                getLogger().info("Enabled Title Module");
-//            } else {
-//                getLogger().warning("MVdWPlaceholderAPI not detected, title module will not be enabled!");
-//            }
-//        }
 //        if (getConfig().getBoolean("JoinMessages.enabled")) {
 //            getLogger().info("Enabled Join Messages Module");
 //            if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
@@ -286,23 +250,6 @@ public class VorplexCore extends JavaPlugin {
 //            } catch (Exception e) {
 //                e.printStackTrace();
 //                getLogger().info("ERROR: Could not enable Gifts Module, GiftsStorage.yml could not be loaded!!");
-//            }
-//        }
-//        if (getConfig().getBoolean("ViaVersion.enable-scoreboard-placeholder") ||
-//                getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join")) {
-//            viaVersionApi = Via.getAPI();
-//            if (Bukkit.getPluginManager().isPluginEnabled("ViaVersion") && getConfig().getBoolean("ViaVersion.enable-scoreboard-placeholder")) {
-//                PlaceholderAPI.registerPlaceholder(this, "vorplex_scoreboardversion", (event) -> {
-//                    if (event.isOnline() && event.getPlayer() != null) {
-//                        Player player = event.getPlayer();
-//                        UUID uuid = player.getUniqueId();
-//                        if (viaVersionApi.getPlayerVersion(uuid) < 393) return "legacy_default";
-//                        else return "default";
-//                    }
-//                    return "legacy_default";
-//                });
-//            } else if (!Bukkit.getPluginManager().isPluginEnabled("ViaVersion")) {
-//                getLogger().severe("ViaVersion not detected, unable to enable viaversion module!");
 //            }
 //        }
 //        Bukkit.getPluginManager().registerEvents(new PlayerDeath(), this);

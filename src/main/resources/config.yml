@@ -14,32 +14,6 @@ MySQL:
 
 Plugin-Prefix: "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] "
 
-#/vote links module
-VoteBookGUI:
-  enabled: true
-  #set the links that the book gui will send the player to here! (max 9 links, min 1 link)
-  votelinks:
-    1: "https://votelink1.com"
-    2: "https://votelink2.com"
-    3: "https://votelink3.com"
-    4: "https://votelink4.com"
-    5: "https://votelink5.com"
-
-#vote rewards module (Gives rewards on each vote)
-VoteRewards:
-  enabled: true
-  #commands to execute when a player votes. Use %player% for the player.
-  commands:
-    - "/command 1"
-    - "/command 2"
-    - "/command 3"
-  #message to send to the player who votes use %votesite% for the vote site
-  message: "&d&lThanks for voting on %votesite%!"
-  #send a message to all players on the server that the player voted?
-  broadcastvote: true
-  #message to send to all players to when a player votes. Use %player% for player and %votesite% for the vote site.
-  broadcast: "&d&l%player% has voted on %votesite% for some cool rewards"
-
 #Server re-router module
 #permission: vorplexcore.server.switch
 VorplexServer:
@@ -148,19 +122,6 @@ RankTitle:
   #this is also the priority that prefixes will be changed to when the player changes their prefix
   priority-to-add-prefixes: 45
 
-
-#player Title module (allows players to have global titles - Requires MYSQL connection)
-Titles:
-  enabled: true
-  #Permission for a title: vorplexcore.titles.<title id>
-  #admin permissions:
-  #vorplexcore.titles.create (/title create)
-  #vorplexcore.titles.delete (/title delete)
-  #vorplexcore.titles.help (/title help)
-  #vorplexcore.titles.clear (/title clear)
-  #vorplexcore.titles.set (/title set)
-
-
 #join messages module
 JoinMessages:
   enabled: true
@@ -211,11 +172,6 @@ buycommand:
   enabled: true
   # uses minimessage format
   message: "<b><gold>Store:</gold></b> <click:open_url:'https://store.vorplex.net'><u><aqua>https://store.vorplex.net</aqua></u></click>"
-
-#Discord command
-discordcommand:
-  enabled: true
-  message: "&6&discord: &b&nhttps://discord.vorplex.net"
 
 
 
