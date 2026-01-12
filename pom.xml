@@ -120,13 +120,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <!--        <dependency>-->
-        <!--            <groupId>org.jetbrains</groupId>-->
-        <!--            <artifactId>annotations</artifactId>-->
-        <!--            <version>16.0.3</version>-->
-        <!--            <scope>compile</scope>-->
-        <!--        </dependency>-->
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -142,38 +135,10 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.NuVotifier.NuVotifier</groupId>
-            <artifactId>nuvotifier-bukkit</artifactId>
-            <version>2.6.0</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-common</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-codec</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.netty</groupId>
-                    <artifactId>netty-handler</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
             <groupId>com.github.LeonMangler</groupId>
             <artifactId>PremiumVanishAPI</artifactId>
             <version>2.9.18-2</version>
             <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-buffer</artifactId>
-            <version>4.2.7.Final</version>
-            <scope>compile</scope>
         </dependency>
 
     </dependencies>
@@ -196,10 +161,6 @@
                             <pattern>org.slf4j</pattern>
                             <shadedPattern>net.vorplex.core.internal.slf4j</shadedPattern>
                         </relocation>
-                        <!--                        <relocation>-->
-                        <!--                            <pattern>org.jetbrains</pattern>-->
-                        <!--                            <shadedPattern>net.vorplex.core.internal.jetbrains</shadedPattern>-->
-                        <!--                        </relocation>-->
                     </relocations>
                 </configuration>
                 <executions>
