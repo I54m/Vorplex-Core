@@ -11,6 +11,7 @@ import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.vorplex.core.autorestart.AutoRestartConfig;
 import net.vorplex.core.autorestart.AutoRestartScheduler;
@@ -57,6 +58,9 @@ public class VorplexCore extends JavaPlugin {
     public Connection connection;
     @Getter
     private Component prefix;
+    //TODO Temp prefix until all modules have been converted to minimessage format
+    public String LEGACY_PREFIX;
+
     public LuckPerms luckPermsAPI = null;
 
     public boolean essentials = false;
@@ -118,6 +122,7 @@ public class VorplexCore extends JavaPlugin {
         saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
         prefix = MiniMessage.miniMessage().deserialize(this.getConfig().getString("Plugin-Prefix", "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] "));
+        LEGACY_PREFIX = PlainTextComponentSerializer.plainText().serialize(prefix);
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(this.RELOAD_COMMAND_NODE, List.of("corereload", "vcreload", "vorplexrelaod")));
         //load modules
         if (this.getConfig().getBoolean("buycommand.enabled")) {

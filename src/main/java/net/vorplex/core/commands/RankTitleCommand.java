@@ -36,7 +36,7 @@ public class RankTitleCommand implements CommandExecutor {
         }
         Player player = (Player) commandSender;
         if (!player.hasPermission("vorplexcore.ranktitles")) {
-            player.sendMessage(plugin.prefix + ChatColor.RED + "You do not have permission to use this command!");
+            player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "You do not have permission to use this command!");
             return false;
         }
         User user = plugin.luckPermsAPI.getUserManager().getUser(player.getName());
@@ -74,7 +74,7 @@ public class RankTitleCommand implements CommandExecutor {
             }
         }
         if (prefixes.size() <= 1) {
-            player.sendMessage(plugin.prefix + ChatColor.RED + "You do not have any prefixes to change!");
+            player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "You do not have any prefixes to change!");
             return false;
         }
         if (prefixes.size() <= 56) {
@@ -84,7 +84,7 @@ public class RankTitleCommand implements CommandExecutor {
                         menu1.close(clicker);
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player.getName() + " meta removeprefix " + plugin.getConfig().getInt("RankTitle.priority-to-add-prefixes"));
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player.getName() + " meta addprefix " + plugin.getConfig().getInt("RankTitle.priority-to-add-prefixes") + " " + ChatColor.translateAlternateColorCodes('&', item.getItemMeta().getDisplayName()));
-                        clicker.sendMessage(plugin.prefix + ChatColor.LIGHT_PURPLE + "Set your prefix to: " + ChatColor.translateAlternateColorCodes('&', item.getItemMeta().getDisplayName()));
+                        clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.LIGHT_PURPLE + "Set your prefix to: " + ChatColor.translateAlternateColorCodes('&', item.getItemMeta().getDisplayName()));
                         return true;
                     }
                 }
@@ -127,7 +127,7 @@ public class RankTitleCommand implements CommandExecutor {
                         clicker.closeInventory();
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player.getName() + " meta removeprefix " + plugin.getConfig().getInt("RankTitle.priority-to-add-prefixes"));
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player.getName() + " meta addprefix " + plugin.getConfig().getInt("RankTitle.priority-to-add-prefixes") + " " + ChatColor.translateAlternateColorCodes('&', item.getItemMeta().getDisplayName()));
-                        clicker.sendMessage(plugin.prefix + ChatColor.LIGHT_PURPLE + "Set your prefix to: " + ChatColor.translateAlternateColorCodes('&', item.getItemMeta().getDisplayName()));
+                        clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.LIGHT_PURPLE + "Set your prefix to: " + ChatColor.translateAlternateColorCodes('&', item.getItemMeta().getDisplayName()));
                         return true;
                     }
                 }

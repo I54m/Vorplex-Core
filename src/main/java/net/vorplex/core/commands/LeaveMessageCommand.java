@@ -35,7 +35,7 @@ public class LeaveMessageCommand implements CommandExecutor {
         }
         Player player = (Player) commandSender;
         if (!player.hasPermission("vorplexcore.customleavemessages")){
-            player.sendMessage(plugin.prefix + ChatColor.RED + "You do not have permission to use this command!");
+            player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "You do not have permission to use this command!");
             return false;
         }
         if (strings.length < 1){
@@ -47,7 +47,7 @@ public class LeaveMessageCommand implements CommandExecutor {
         }
         if (strings[0].equalsIgnoreCase("set")) {
             if (strings.length < 2){
-                player.sendMessage(plugin.prefix + ChatColor.RED + "Please provide a leave message!");
+                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Please provide a leave message!");
                 return false;
             }
             StringBuilder leavemessage = new StringBuilder();
@@ -55,7 +55,7 @@ public class LeaveMessageCommand implements CommandExecutor {
                 leavemessage.append(strings[i]).append(" ");
             }
             if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', leavemessage.toString())).replace(" ", "").length() > plugin.getConfig().getInt("LeaveMessages.customleavemessages.maxlength")) {
-                player.sendMessage(plugin.prefix + ChatColor.RED + "That Leave message is too long, the maximum length for leave messages is " + plugin.getConfig().getInt("LeaveMessages.customleavemessages.maxlength") + " (excludes color codes)");
+                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "That Leave message is too long, the maximum length for leave messages is " + plugin.getConfig().getInt("LeaveMessages.customleavemessages.maxlength") + " (excludes color codes)");
                 return false;
             } else {
                 try {
@@ -110,22 +110,22 @@ public class LeaveMessageCommand implements CommandExecutor {
                     } else {
                         placeholder = prefix + ChatColor.RESET + " " + player.getName();
                     }
-                    player.sendMessage(plugin.prefix + ChatColor.GREEN + "Set your leave message to: " + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', leavemessage.toString().replace("%me%", placeholder).replace("\n", "")));
+                    player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.GREEN + "Set your leave message to: " + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', leavemessage.toString().replace("%me%", placeholder).replace("\n", "")));
                     return true;
                 } catch (SQLException sqle) {
                     sqle.printStackTrace();
-                    player.sendMessage(plugin.prefix + ChatColor.RED + "An Error occurred in our database and we were unable to save your leave message, please try again later!!");
+                    player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "An Error occurred in our database and we were unable to save your leave message, please try again later!!");
                     return false;
                 }
 
             }
         }else if (strings[0].equalsIgnoreCase("clear")){
             if (!player.hasPermission("vorplexcore.customleavemessages.admin")){
-                player.sendMessage(plugin.prefix + ChatColor.RED + "You do not have permission to use that command!");
+                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "You do not have permission to use that command!");
                 return false;
             }
             if (strings.length < 2){
-                player.sendMessage(plugin.prefix + ChatColor.RED + "Usage: /leavemessage clear <player> - clear a player's leave message.");
+                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Usage: /leavemessage clear <player> - clear a player's leave message.");
                 return false;
             }
             UUID targetuuid = null;
@@ -145,14 +145,14 @@ public class LeaveMessageCommand implements CommandExecutor {
                     targetuuid = future.get(10, TimeUnit.SECONDS);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    player.sendMessage(plugin.prefix + ChatColor.RED + "Unable to fetch player's uuid!");
+                    player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Unable to fetch player's uuid!");
                     executorService.shutdown();
                     return false;
                 }
                 executorService.shutdown();
             }
             if (targetuuid == null) {
-                player.sendMessage(plugin.prefix + ChatColor.RED + "That is not a player's name!");
+                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "That is not a player's name!");
                 return false;
             }
             String targetName = NameFetcher.getName(targetuuid);
@@ -165,10 +165,10 @@ public class LeaveMessageCommand implements CommandExecutor {
                 stmt1.executeUpdate();
                 stmt1.close();
                 plugin.customLeaveMessages.remove(targetuuid);
-                player.sendMessage(plugin.prefix + ChatColor.GREEN + "Cleared leave message for player: " + targetName + "!");
+                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.GREEN + "Cleared leave message for player: " + targetName + "!");
             }catch (SQLException sqle){
                 sqle.printStackTrace();
-                player.sendMessage(plugin.prefix + ChatColor.RED + "An Error occurred in our database and we were unable to clear that player's leave message!");
+                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "An Error occurred in our database and we were unable to clear that player's leave message!");
                 return false;
             }
         }else{

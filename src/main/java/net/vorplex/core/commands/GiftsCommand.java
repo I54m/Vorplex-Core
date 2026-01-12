@@ -28,11 +28,11 @@ public class GiftsCommand implements CommandExecutor {
         }
         Player player = (Player) commandSender;
         if (!player.hasPermission("vorplexcore.gifts.claim")){
-            player.sendMessage(plugin.prefix + ChatColor.RED + "You do not have permission to use this command!");
+            player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "You do not have permission to use this command!");
             return false;
         }
         if (!plugin.gifts.containsKey(player.getUniqueId())){
-            player.sendMessage(plugin.prefix + ChatColor.RED + "You do not have any gifts to claim!");
+            player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "You do not have any gifts to claim!");
             return false;
         }
         return openGiftMenu(player);
@@ -47,16 +47,16 @@ public class GiftsCommand implements CommandExecutor {
                     if (item.getItemMeta().hasDisplayName()) {
                         Gift gift = getGift(item, clicker);
                         if (gift == null){
-                            clicker.sendMessage(plugin.prefix + ChatColor.RED + "An error occurred, please try again!");
+                            clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "An error occurred, please try again!");
                             return true;
                         }
                         if (clicker.getInventory().firstEmpty() == -1){
-                            clicker.sendMessage(plugin.prefix + ChatColor.RED + "Your inventory is full, please remove some items before redeeming a gift!");
+                            clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Your inventory is full, please remove some items before redeeming a gift!");
                             return true;
                         }
                         menu1.close(player);
                         clicker.getInventory().addItem(gift.getItem());
-                        clicker.sendMessage(plugin.prefix + ChatColor.GREEN + item.getItemMeta().getDisplayName() + ChatColor.LIGHT_PURPLE + " Redeemed!");
+                        clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.GREEN + item.getItemMeta().getDisplayName() + ChatColor.LIGHT_PURPLE + " Redeemed!");
                         ArrayList<Gift> giftsLeft = new ArrayList<>(plugin.gifts.get(player.getUniqueId()));
                         giftsLeft.remove(gift);
                         if (giftsLeft.isEmpty()) {
@@ -131,16 +131,16 @@ public class GiftsCommand implements CommandExecutor {
                     if (item.getItemMeta().hasDisplayName()) {
                         Gift gift = getGift(item, clicker);
                         if (gift == null){
-                            clicker.sendMessage(plugin.prefix + ChatColor.RED + "An error occurred, please try again!");
+                            clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "An error occurred, please try again!");
                             return true;
                         }
                         if (clicker.getInventory().firstEmpty() == -1){
-                            clicker.sendMessage(plugin.prefix + ChatColor.RED + "Your inventory is full, please remove some items before redeeming a gift!");
+                            clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Your inventory is full, please remove some items before redeeming a gift!");
                             return true;
                         }
                         clicker.closeInventory();
                         clicker.getInventory().addItem(gift.getItem());
-                        clicker.sendMessage(plugin.prefix + ChatColor.GREEN + item.getItemMeta().getDisplayName() + ChatColor.LIGHT_PURPLE + " Redeemed!");
+                        clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.GREEN + item.getItemMeta().getDisplayName() + ChatColor.LIGHT_PURPLE + " Redeemed!");
                         ArrayList<Gift> giftsLeft = new ArrayList<>(plugin.gifts.get(clicker.getUniqueId()));
                         giftsLeft.remove(gift);
                         if (giftsLeft.isEmpty()) {

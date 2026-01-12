@@ -38,16 +38,16 @@ public class GiftCommand implements CommandExecutor {
         }
         Player player = (Player) commandSender;
         if (!player.hasPermission("vorplexcore.gifts.send")) {
-            player.sendMessage(plugin.prefix + ChatColor.RED + "you do not have permission to use this command!");
+            player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "you do not have permission to use this command!");
             return false;
         }
         if (strings.length < 1) {
-            player.sendMessage(plugin.prefix + ChatColor.RED + "Send a player the item in your main hand as a gift, Usage: /gift <player>");
+            player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Send a player the item in your main hand as a gift, Usage: /gift <player>");
             return false;
         }
         ItemStack itemgift = old ? player.getItemInHand().clone() : player.getInventory().getItemInMainHand().clone();
         if (itemgift == null || itemgift.getType() == Material.AIR) {
-            player.sendMessage(plugin.prefix + ChatColor.RED + "You must be holding an item in your main hand to gift a player");
+            player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "You must be holding an item in your main hand to gift a player");
             return false;
         }
         Player receiver = Bukkit.getPlayer(strings[0]);
@@ -61,27 +61,27 @@ public class GiftCommand implements CommandExecutor {
                 receiverUUID = future.get(10, TimeUnit.SECONDS);
             } catch (Exception e) {
                 e.printStackTrace();
-                player.sendMessage(plugin.prefix + ChatColor.RED + "Unable to fetch player's uuid!");
+                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Unable to fetch player's uuid!");
                 executorService.shutdown();
                 return false;
             }
             executorService.shutdown();
             if (receiverUUID == null) {
-                player.sendMessage(plugin.prefix + ChatColor.RED + "That is not a player's name!");
+                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "That is not a player's name!");
                 return false;
             }
         } else receiverUUID = receiver.getUniqueId();
         String receiverName = NameFetcher.getName(receiverUUID);
 
         if (receiverUUID.equals(player.getUniqueId())) {
-            player.sendMessage(plugin.prefix + ChatColor.RED + "You cannot send yourself a gift!");
+            player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "You cannot send yourself a gift!");
             return false;
         }
         if (plugin.gifts.containsKey(receiverUUID)) {
             ArrayList<Gift> gifts = new ArrayList<>(plugin.gifts.get(receiverUUID));
             for (Gift gift : gifts) {
                 if (gift.getSender().equals(player.getUniqueId())) {
-                    player.sendMessage(plugin.prefix + ChatColor.RED + receiverName + " already has an unopened gift from you!");
+                    player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + receiverName + " already has an unopened gift from you!");
                     return false;
                 }
             }
@@ -99,7 +99,7 @@ public class GiftCommand implements CommandExecutor {
             if (clicker == player) {
                 if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return false;
                 if (item.getItemMeta().getDisplayName().contains(ChatColor.GREEN + "Confirm") && (old ? item.getType() == confirm.getType() && item.getDurability() == confirm.getDurability() : item.getType() == confirm.getType())) {
-                    clicker.sendMessage(plugin.prefix + ChatColor.GREEN + "Gifting item to " + receiverName);
+                    clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.GREEN + "Gifting item to " + receiverName);
                     Gift gift = new Gift(itemgift, player.getUniqueId());
                     if (plugin.gifts.containsKey(finalReceiverUUID)) {
                         ArrayList<Gift> gifts = new ArrayList<>(plugin.gifts.get(finalReceiverUUID));
@@ -111,11 +111,11 @@ public class GiftCommand implements CommandExecutor {
                         plugin.gifts.put(finalReceiverUUID, gifts);
                     }
                     if (receiver != null && receiver.isOnline())
-                        receiver.sendMessage(plugin.prefix + ChatColor.GREEN + clicker.getName() + " has sent you a gift! Do /gifts to claim it!");
+                        receiver.sendMessage(plugin.LEGACY_PREFIX + ChatColor.GREEN + clicker.getName() + " has sent you a gift! Do /gifts to claim it!");
                     inProgress.remove(clicker.getUniqueId());
                     return true;
                 } else if (item.getItemMeta().getDisplayName().contains(ChatColor.RED + "Deny") && (old ? item.getType() == deny.getType() && item.getDurability() == deny.getDurability() : item.getType() == deny.getType())) {
-                    clicker.sendMessage(plugin.prefix + ChatColor.RED + "Cancelled gifting item to " + receiverName);
+                    clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Cancelled gifting item to " + receiverName);
                     if (old) player.getInventory().setItemInHand(inProgress.get(clicker.getUniqueId()));
                     else player.getInventory().setItemInMainHand(inProgress.get(clicker.getUniqueId()));
                     inProgress.remove(clicker.getUniqueId());
@@ -125,7 +125,7 @@ public class GiftCommand implements CommandExecutor {
             }
             return false;
         }, (closer, menu1) -> {
-            closer.sendMessage(plugin.prefix + ChatColor.RED + "Cancelled gifting item to " + receiverName);
+            closer.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Cancelled gifting item to " + receiverName);
             if (old) closer.getInventory().setItemInHand(inProgress.get(closer.getUniqueId()));
             else closer.getInventory().setItemInMainHand(inProgress.get(closer.getUniqueId()));
             inProgress.remove(closer.getUniqueId());
