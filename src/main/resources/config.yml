@@ -1,3 +1,4 @@
+#TODO Add and implement config-version for new config versions
 #MYSQL Options for modules that require it
 MySQL:
   #host use 127.0.0.1 or localhost for localhost
