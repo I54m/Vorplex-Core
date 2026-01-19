@@ -9,7 +9,6 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.vorplex.core.VorplexCore;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
@@ -23,7 +22,9 @@ public class AutoRestartConfig {
     public boolean valid;
     public List<String> schedule;
     public Sound notifySound;
+    public boolean notifySoundEnabled;
     public boolean notifyChatEnabled;
+    public boolean bossBarCountdownEnabled;
     public Map<Integer, String> notifyChatPeriods;
     public boolean notifyTitleEnabled;
     public Map<Integer, TitleMessage> notifyTitlePeriods;
@@ -37,8 +38,8 @@ public class AutoRestartConfig {
                 new CronParser(definition).parse(cronTime);
             } catch (IllegalArgumentException ex) {
                 valid = false;
-                Bukkit.getLogger().warning("Cron time format is invalid: " + cronTime);
-                Bukkit.getLogger().warning("Error: " + ex.getMessage());
+                plugin.getLogger().warning("Cron time format is invalid: " + cronTime);
+                plugin.getLogger().warning("Error: " + ex.getMessage());
             }
         }
     }
@@ -65,8 +66,10 @@ public class AutoRestartConfig {
                 notifyTitlePeriods.put(time, message);
             }
 
-            String notifySoundName = config.getString("AutoRestart.notify.sound", "ui.button.click");
-            notifySound = Sound.sound(Key.key(notifySoundName), Sound.Source.MASTER, 1f, 1f);
+            notifySoundEnabled = config.getBoolean("AutoRestart.notify.sound.enabled", true);
+            notifySound = Sound.sound(Key.key("ui.button.click"), Sound.Source.MASTER, 1f, 1f);
+
+            bossBarCountdownEnabled = config.getBoolean("AutoRestart.notify.bossBarCountdown.enabled", true);
         } catch (Exception e) {
             plugin.getComponentLogger().error("Error loading AutoRestart config: {}", e.getMessage());
             return false;
@@ -77,7 +80,7 @@ public class AutoRestartConfig {
 
     public static class TitleMessage {
         Component title, subtitle;
-        long fadeIn, stay, fadeOut;
+        int fadeIn, stay, fadeOut;
 
         TitleMessage(String description) {
             String[] descriptionArray = description.split(" :: ");
@@ -85,9 +88,9 @@ public class AutoRestartConfig {
             subtitle = MiniMessage.miniMessage().deserialize(descriptionArray[1]);
 
             String[] times = descriptionArray[2].split(" ");
-            fadeIn = Long.parseLong(times[0]);
-            stay = Long.parseLong(times[1]);
-            fadeOut = Long.parseLong(times[2]);
+            fadeIn = Integer.parseInt(times[0]);
+            stay = Integer.parseInt(times[1]);
+            fadeOut = Integer.parseInt(times[2]);
         }
     }
 }
