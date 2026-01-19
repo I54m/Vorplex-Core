@@ -57,7 +57,7 @@ public class VorplexCore extends JavaPlugin {
     private int port;
     public Connection connection;
     @Getter
-    private Component prefix;
+    private String prefix;
     //TODO Temp prefix until all modules have been converted to minimessage format
     public String LEGACY_PREFIX;
 
@@ -75,8 +75,8 @@ public class VorplexCore extends JavaPlugin {
             .requires(ctx -> ctx.getSender().isOp())
             .executes((ctx) -> {
                 reloadConfig();
-                        AutoRestartScheduler.stop();
-                        AutoRestartScheduler.start(new AutoRestartConfig());
+                AutoRestartScheduler.stop();
+                AutoRestartScheduler.start(new AutoRestartConfig());
 //                if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
 //                    permissionJoinMessages.clear();
 //                    for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
@@ -95,10 +95,9 @@ public class VorplexCore extends JavaPlugin {
 //                if (getConfig().getBoolean("LeaveMessages.customLeavemessages.enabled")) {
 //                    cacheLeaveMessages();
 //                }
-                        ctx.getSource().getSender().sendRichMessage(getPrefix() + "<green>Config reloaded!");
-                        return Command.SINGLE_SUCCESS;
-                    }
-            ).build();
+                ctx.getSource().getSender().sendRichMessage(getPrefix() + "<green>Config reloaded!");
+                return Command.SINGLE_SUCCESS;
+            }).build();
 
     @Override
     public void onEnable() {
@@ -121,8 +120,8 @@ public class VorplexCore extends JavaPlugin {
         setInstance(this);
         saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
-        prefix = MiniMessage.miniMessage().deserialize(this.getConfig().getString("Plugin-Prefix", "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] "));
-        LEGACY_PREFIX = PlainTextComponentSerializer.plainText().serialize(prefix);
+        prefix = this.getConfig().getString("Plugin-Prefix", "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] ");
+        LEGACY_PREFIX = PlainTextComponentSerializer.plainText().serialize(MiniMessage.miniMessage().deserialize(prefix));
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(this.RELOAD_COMMAND_NODE, List.of("corereload", "vcreload", "vorplexrelaod")));
         //load modules
         if (this.getConfig().getBoolean("buycommand.enabled")) {
@@ -131,10 +130,10 @@ public class VorplexCore extends JavaPlugin {
                     commands.registrar().register(BuyCommand.COMMAND_NODE));
         }
         if (this.getConfig().getBoolean("AutoRestart.enabled")) {
+            getComponentLogger().info(Component.text("Enabling AutoRestart Module...").color(NamedTextColor.GREEN));
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(AutoRestartCommand.COMMAND_NODE, List.of("restart", "reboot", "autoreboot", "autore")));
             autoRestartConfig = new AutoRestartConfig();
             AutoRestartScheduler.start(autoRestartConfig);
-            getLogger().info("Enabled Auto Restart Module");
         }
 //        if (this.getConfig().getBoolean("VorplexServer.enabled")) {
 //            this.getServer().getPluginManager().registerEvents(new CommandPreProcess(), this);
