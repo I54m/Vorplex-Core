@@ -118,7 +118,7 @@ public class AutoRestartScheduler {
 
                 long ticksLeft = remainingTicks.addAndGet(-20);
 
-                long secondsLeft = (ticksLeft / 20) + 1;
+                long secondsLeft = ticksLeft / 20;
                 if (secondsLeft <= 0) {
                     Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
                     return;
@@ -133,7 +133,6 @@ public class AutoRestartScheduler {
                 else if (secondsLeft <= 10) bossBarCountdown.color(BossBar.Color.YELLOW);
 
                 Audience.audience(Bukkit.getOnlinePlayers()).showBossBar(bossBarCountdown);
-                //TODO check the min of 20 ticks works alright
             }, Math.max(20, initDelayTicks - 1200), 20L));
         }
     }
