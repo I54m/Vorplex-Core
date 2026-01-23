@@ -33,45 +33,46 @@ import java.util.*;
 
 public class VorplexCore extends JavaPlugin {
 
-    public AutoRestartConfig autoRestartConfig = null;
-
+    // Misc Plugin variables
     @Getter
     @Setter
     public static VorplexCore instance;
+    public AutoRestartConfig autoRestartConfig;
     public static boolean announce;
     private static int previousMessageNumber;
     private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
-
     private int cacheTaskid;
-
-    public Map<UUID, String> equippedTitles = new HashMap<>();
-    public TreeMap<Integer, String> titles = new TreeMap<>();
+    public LuckPerms luckPermsAPI = null;
+    // Plugin storage Hashmaps
     public Map<String, String> permissionJoinMessages = new HashMap<>();
+    // Legacy Variables - deprecated to be removed
+    //TODO Temp prefix until all modules have been converted to minimessage format
+    @Deprecated(since = "2.0-SNAPSHOT")
+    public String LEGACY_PREFIX;
     public Map<String, String> permissionLeaveMessages = new HashMap<>();
     public Map<UUID, String> customJoinMessages = new HashMap<>();
     public Map<UUID, String> customLeaveMessages = new HashMap<>();
     public Map<UUID, ArrayList<Gift>> gifts = new HashMap<>();
-
+    @Deprecated(since = "2.0-SNAPSHOT")
+    public Map<UUID, String> equippedTitles = new HashMap<>();
     private HikariDataSource hikari;
     private static String database;
     private int port;
     public Connection connection;
-    @Getter
-    private String prefix;
-    //TODO Temp prefix until all modules have been converted to minimessage format
+    @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
+    public TreeMap<Integer, String> titles = new TreeMap<>();
     @Deprecated(since = "2.0-SNAPSHOT")
-    public String LEGACY_PREFIX;
-
-    public LuckPerms luckPermsAPI = null;
-
     public boolean essentials = false;
+    @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
     public boolean old = Bukkit.getServer().getVersion().contains("1.7") ||
             Bukkit.getServer().getVersion().contains("1.8") ||
             Bukkit.getServer().getVersion().contains("1.9") ||
             Bukkit.getServer().getVersion().contains("1.10") ||
             Bukkit.getServer().getVersion().contains("1.11") ||
             Bukkit.getServer().getVersion().contains("1.12");
-    private String host, username;
+    @Getter
+    private String prefix;
+    //Plugin reload command
     public final LiteralCommandNode<CommandSourceStack> RELOAD_COMMAND_NODE = Commands.literal("vorplexcorereload")
             .requires(ctx -> ctx.getSender().isOp())
             .executes((ctx) -> {
@@ -99,6 +100,8 @@ public class VorplexCore extends JavaPlugin {
                 ctx.getSource().getSender().sendRichMessage(getPrefix() + "<green>Config reloaded!");
                 return Command.SINGLE_SUCCESS;
             }).build();
+    // SQL Connection variables
+    private String host, username;
 
     @Override
     public void onEnable() {
