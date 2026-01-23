@@ -1,10 +1,11 @@
 package net.vorplex.core.util;
 
 import com.google.gson.Gson;
+import lombok.Getter;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -13,40 +14,29 @@ import java.util.concurrent.Callable;
 
 public class UUIDFetcher implements Callable<UUID> {
 
-
+    @Getter
     public static final UUID BLANK_UUID = UUID.fromString("0-0-0-0-0");
-    private static final HashMap<String, UUID> UUID_CACHE = new HashMap<>();
+    private static final HashMap<String, UUID> UUIDS = new HashMap<>();
     private String name;
-
-    public static UUID getBLANK_UUID() {
-        return BLANK_UUID;
-    }
 
     public static UUID formatUUID(String uuid) {
         if (uuid.contains("-")) return UUID.fromString(uuid);
-        StringBuffer sb = new StringBuffer(uuid);
-        sb.insert(8, "-");
-        sb = new StringBuffer(sb.toString());
-        sb.insert(13, "-");
-        sb = new StringBuffer(sb.toString());
-        sb.insert(18, "-");
-        sb = new StringBuffer(sb.toString());
-        sb.insert(23, "-");
-        return UUID.fromString(sb.toString());
+        else
+            return UUID.fromString(uuid.replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5"));
     }
 
     public static void updateStoredUUID(String name, UUID uuid) {
-        for (String storedName : UUID_CACHE.keySet()) {
-            UUID StoredUUID = UUID_CACHE.get(storedName);
+        for (String storedName : UUIDS.keySet()) {
+            UUID StoredUUID = UUIDS.get(storedName);
             if (uuid.equals(StoredUUID)) {
                 if (!name.toLowerCase().equals(storedName)) {
-                    UUID_CACHE.remove(storedName);
-                    UUID_CACHE.put(name.toLowerCase(), uuid);
+                    UUIDS.remove(storedName);
+                    UUIDS.put(name.toLowerCase(), uuid);
                 }
                 return;
             }
         }
-        UUID_CACHE.put(name.toLowerCase(), uuid);
+        UUIDS.put(name.toLowerCase(), uuid);
     }
 
     public void fetch(String name) {
@@ -57,10 +47,10 @@ public class UUIDFetcher implements Callable<UUID> {
     public UUID call() throws Exception {
         if (name.equalsIgnoreCase("console"))
             return BLANK_UUID;
-        if (UUID_CACHE.containsKey(name.toLowerCase()))
-            return UUID_CACHE.get(name.toLowerCase());
+        if (UUIDS.containsKey(name.toLowerCase()))
+            return UUIDS.get(name.toLowerCase());
         StringBuilder sb = new StringBuilder();
-        URLConnection urlConn = new URL("https://api.mojang.com/users/profiles/minecraft/" + this.name).openConnection();
+        URLConnection urlConn = new URI("https://api.mojang.com/users/profiles/minecraft/" + this.name).toURL().openConnection();
         urlConn.setReadTimeout(5000);
         if (urlConn.getInputStream() != null) {
             InputStreamReader in = new InputStreamReader(urlConn.getInputStream(), Charset.defaultCharset());
@@ -78,31 +68,18 @@ public class UUIDFetcher implements Callable<UUID> {
         Gson g = new Gson();
         Profile profile;
         profile = g.fromJson(sb.toString(), Profile.class);
-        UUID uuid = formatUUID(profile.id);
-        NameFetcher.storeName(uuid, profile.getName());
-        UUID_CACHE.put(name.toLowerCase(), uuid);
+        UUID uuid = UUIDFetcher.formatUUID(profile.id);
+        NameFetcher.storeName(uuid, profile.name());
+        UUIDS.put(name.toLowerCase(), uuid);
         return uuid;
     }
 
     public void storeUUID(UUID uuid, String name) {
-        UUID_CACHE.put(name.toLowerCase(), uuid);
+        UUIDS.put(name.toLowerCase(), uuid);
     }
 
 
-    private static class Profile {
-        private final String name, id;
+    private record Profile(String name, String id) {
 
-        public Profile(String name, String id) {
-            this.name = name;
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getId() {
-            return id;
-        }
     }
 }

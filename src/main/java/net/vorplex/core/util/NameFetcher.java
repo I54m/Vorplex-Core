@@ -1,12 +1,11 @@
 package net.vorplex.core.util;
 
-
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -28,15 +27,15 @@ public class NameFetcher {
         Gson g = new Gson();
         Profile profile;
         profile = g.fromJson(output.substring(0, output.indexOf(",\n  \"properties\"")) + "}", Profile.class);
-        new UUIDFetcher().storeUUID(uuid, profile.getName());
-        NAMES.put(uuid, profile.getName());
-        return profile.getName();
+        new UUIDFetcher().storeUUID(uuid, profile.name());
+        NAMES.put(uuid, profile.name());
+        return profile.name();
     }
 
     protected static String callURL(String URL) {
         StringBuilder sb = new StringBuilder();
         try {
-            URLConnection urlConn = new URL(URL).openConnection();
+            URLConnection urlConn = new URI(URL).toURL().openConnection();
             urlConn.setReadTimeout(6000);
             if (urlConn.getInputStream() != null) {
                 InputStreamReader in = new InputStreamReader(urlConn.getInputStream(), Charset.defaultCharset());
@@ -74,20 +73,7 @@ public class NameFetcher {
         return NAMES.containsKey(uuid);
     }
 
-    protected static class Profile {
-        private final String name, id;
+    protected record Profile(String name, String id) {
 
-        public Profile(String name, String id) {
-            this.name = name;
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getId() {
-            return id;
-        }
     }
 }
