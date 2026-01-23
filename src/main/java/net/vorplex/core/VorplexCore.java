@@ -37,15 +37,13 @@ public class VorplexCore extends JavaPlugin {
     @Getter
     @Setter
     public static VorplexCore instance;
-    public AutoRestartConfig autoRestartConfig;
+    @Getter
+    private String prefix;
     public static boolean announce;
     private static int previousMessageNumber;
     private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
     private int cacheTaskid;
-    // Legacy Variables - deprecated to be removed
-    //TODO Temp prefix until all modules have been converted to minimessage format
-    @Deprecated(since = "2.0-SNAPSHOT")
-    public String LEGACY_PREFIX;
+    public AutoRestartConfig autoRestartConfig;
     public LuckPerms luckPermsAPI = null;
 
     // Plugin storage Hashmaps
@@ -54,16 +52,20 @@ public class VorplexCore extends JavaPlugin {
     public Map<UUID, String> customJoinMessages = new HashMap<>();
     public Map<UUID, String> customLeaveMessages = new HashMap<>();
     public Map<UUID, ArrayList<Gift>> gifts = new HashMap<>();
-    @Deprecated(since = "2.0-SNAPSHOT")
-    public Map<UUID, String> equippedTitles = new HashMap<>();
+
+    // SQL Connection variables
+    private String host, username;
     private HikariDataSource hikari;
     private static String database;
     private int port;
     public Connection connection;
-    @Getter
-    private String prefix;
-    // SQL Connection variables
-    private String host, username;
+
+    // Legacy Variables - deprecated to be removed
+    //TODO Temp prefix until all modules have been converted to minimessage format
+    @Deprecated(since = "2.0-SNAPSHOT")
+    public String LEGACY_PREFIX;
+    @Deprecated(since = "2.0-SNAPSHOT")
+    public Map<UUID, String> equippedTitles = new HashMap<>();
     @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
     public TreeMap<Integer, String> titles = new TreeMap<>();
     @Deprecated(since = "2.0-SNAPSHOT")
