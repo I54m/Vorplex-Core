@@ -59,6 +59,7 @@ public class VorplexCore extends JavaPlugin {
     @Getter
     private String prefix;
     //TODO Temp prefix until all modules have been converted to minimessage format
+    @Deprecated(since = "2.0-SNAPSHOT")
     public String LEGACY_PREFIX;
 
     public LuckPerms luckPermsAPI = null;
