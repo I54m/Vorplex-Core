@@ -33,7 +33,7 @@ import java.util.*;
 
 public class VorplexCore extends JavaPlugin {
 
-    // Misc Plugin variables
+    // Misc Plugin variables - still to be sorted through
     @Getter
     @Setter
     public static VorplexCore instance;
