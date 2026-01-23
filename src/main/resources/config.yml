@@ -1,4 +1,5 @@
-#TODO Add and implement config-version for new config versions
+# DO NOT TOUCH THIS
+config-version: "1.0"
 #MYSQL Options for modules that require it
 MySQL:
   #host use 127.0.0.1 or localhost for localhost
