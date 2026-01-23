@@ -42,13 +42,14 @@ public class VorplexCore extends JavaPlugin {
     private static int previousMessageNumber;
     private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
     private int cacheTaskid;
-    public LuckPerms luckPermsAPI = null;
-    // Plugin storage Hashmaps
-    public Map<String, String> permissionJoinMessages = new HashMap<>();
     // Legacy Variables - deprecated to be removed
     //TODO Temp prefix until all modules have been converted to minimessage format
     @Deprecated(since = "2.0-SNAPSHOT")
     public String LEGACY_PREFIX;
+    public LuckPerms luckPermsAPI = null;
+
+    // Plugin storage Hashmaps
+    public Map<String, String> permissionJoinMessages = new HashMap<>();
     public Map<String, String> permissionLeaveMessages = new HashMap<>();
     public Map<UUID, String> customJoinMessages = new HashMap<>();
     public Map<UUID, String> customLeaveMessages = new HashMap<>();
@@ -59,6 +60,10 @@ public class VorplexCore extends JavaPlugin {
     private static String database;
     private int port;
     public Connection connection;
+    @Getter
+    private String prefix;
+    // SQL Connection variables
+    private String host, username;
     @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
     public TreeMap<Integer, String> titles = new TreeMap<>();
     @Deprecated(since = "2.0-SNAPSHOT")
@@ -70,8 +75,7 @@ public class VorplexCore extends JavaPlugin {
             Bukkit.getServer().getVersion().contains("1.10") ||
             Bukkit.getServer().getVersion().contains("1.11") ||
             Bukkit.getServer().getVersion().contains("1.12");
-    @Getter
-    private String prefix;
+
     //Plugin reload command
     public final LiteralCommandNode<CommandSourceStack> RELOAD_COMMAND_NODE = Commands.literal("vorplexcorereload")
             .requires(ctx -> ctx.getSender().isOp())
@@ -100,8 +104,6 @@ public class VorplexCore extends JavaPlugin {
                 ctx.getSource().getSender().sendRichMessage(getPrefix() + "<green>Config reloaded!");
                 return Command.SINGLE_SUCCESS;
             }).build();
-    // SQL Connection variables
-    private String host, username;
 
     @Override
     public void onEnable() {
