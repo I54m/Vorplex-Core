@@ -18,6 +18,7 @@ import net.vorplex.core.autorestart.AutoRestartScheduler;
 import net.vorplex.core.commands.AutoRestartCommand;
 import net.vorplex.core.commands.BuyCommand;
 import net.vorplex.core.objects.Gift;
+import net.vorplex.core.util.ConfigUpdater;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -124,10 +125,8 @@ public class VorplexCore extends JavaPlugin {
         getComponentLogger().info(Component.text("Developed by I54m").color(NamedTextColor.RED));
         getComponentLogger().info(Component.text("v" + getPluginMeta().getVersion() + " Running on " + getServer().getVersion()).color(NamedTextColor.RED));
         getComponentLogger().info("───────────────────────────────────────────────────────────");
-
         setInstance(this);
-        saveDefaultConfig();
-        this.getConfig().options().copyDefaults(true);
+        ConfigUpdater.checkAndUpdate();
         prefix = this.getConfig().getString("Plugin-Prefix", "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] ");
         LEGACY_PREFIX = PlainTextComponentSerializer.plainText().serialize(MiniMessage.miniMessage().deserialize(prefix));
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(this.RELOAD_COMMAND_NODE, List.of("corereload", "vcreload", "vorplexrelaod")));
