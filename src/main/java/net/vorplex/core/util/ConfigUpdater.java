@@ -10,11 +10,21 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.Arrays;
 
+/**
+ * Class to handle all configuration updates and versioning
+ */
 public class ConfigUpdater {
 
     private static final VorplexCore plugin = VorplexCore.getInstance();
+    /**
+     * Hard-coded current config version used in this version of the plugin
+     */
     private static final String CURRENT_CONFIG_VERSION = "1.0";
 
+    /**
+     * Main usage for ConfigUpdater.
+     * Checks if the config is outdated and then updates it if it is
+     */
     public static void checkAndUpdate() {
         if (!new File(plugin.getDataFolder(), "config.yml").exists()) {
             plugin.getComponentLogger().info(Component.text("[ConfigUpdater] No config.yml detected, saving default...").color(NamedTextColor.GREEN));
@@ -36,6 +46,11 @@ public class ConfigUpdater {
             plugin.getComponentLogger().info(Component.text("[ConfigUpdater] Config is up-to-date!").color(NamedTextColor.YELLOW));
     }
 
+    /**
+     * Handles the renaming of old config, creation of new config and merging of old config
+     *
+     * @throws IllegalStateException if the current config could not be renamed
+     */
     private static void updateConfig() throws IllegalStateException {
         File configFile = new File(plugin.getDataFolder(), "config.yml");
         File oldConfigFile = new File(plugin.getDataFolder(), "old-config.yml");
@@ -66,6 +81,12 @@ public class ConfigUpdater {
     }
 
 
+    /**
+     * Method to merge the old config into the new config
+     * @param oldConfig the config to copy valid options from
+     * @param newConfig the config to copy the valid options to
+     * @param path the config section path - only used in logging, set to "" if top level section
+     */
     public static void mergeConfigs(ConfigurationSection oldConfig, ConfigurationSection newConfig, String path) {
         for (String key : oldConfig.getKeys(false)) {
             if (key.equalsIgnoreCase("config-version")) {
@@ -96,6 +117,10 @@ public class ConfigUpdater {
     }
 
 
+    /**
+     * Method to check if the currently used config is outdated
+     * @return true if config is outdated else false
+     */
     public static boolean isConfigOutDated() {
         int[] currentParts = parseVersion(CURRENT_CONFIG_VERSION);
         int[] storedParts = parseVersion(plugin.getConfig().getString("config-version", "0.0"));
@@ -113,6 +138,11 @@ public class ConfigUpdater {
         return false; // equal
     }
 
+    /**
+     * Method to parse version string to an array of ints. I.E "1.23.4" becomes {1,23,4}
+     * @param version the version string to parse
+     * @return an int array containing an int for each part of a version string
+     */
     private static int[] parseVersion(String version) {
         try {
             return Arrays.stream(version.split("\\."))
