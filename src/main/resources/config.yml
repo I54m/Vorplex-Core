@@ -1,5 +1,5 @@
 # DO NOT TOUCH THIS
-config-version: "1.0"
+config-version: "1.1"
 #MYSQL Options for modules that require it
 MySQL:
   #host use 127.0.0.1 or localhost for localhost
@@ -19,7 +19,7 @@ Plugin-Prefix: "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] "
 #Server re-router module
 #permission: vorplexcore.server.switch
 VorplexServer:
-  enabled: true
+  enabled: false
   #These are the servers defined in your bungeecord config (case sensitive)
   serverslist:
     - server1
@@ -68,57 +68,24 @@ AutoRestart:
         1: "<red>Restart soon :: <gray>1 second left :: 1 40 1"
 
 #auto-announcer module
-Announcer:
+AutoAnnouncer:
   enabled: true
+  #pick announcement messages randomly
   Random: true
-  Interval: 60
-  NumberOfMessages: 5
-  Prefix: "&5[&d&lTip&5]"
+  #time between messages in seconds
+  Interval: 120
+  #uses mini message format
+  Prefix: "<dark_purple>[<light_purple><b>Tip</b></light_purple>]</dark_purple>"
   Messages:
-    1:
-      text: " &fThis chat announcer is working!"
-      clickevent:
-        action: "SUGGEST_COMMAND"
-        value: "That click event worked!"
-      hoverevent:
-        action: "SHOW_TEXT"
-        value: "&fThis hover text is working!\n&fThis next line is working"
-    2:
-      text: " &fThis chat announcer is working!"
-      clickevent:
-        action: "SUGGEST_COMMAND"
-        value: "That click event worked!"
-      hoverevent:
-        action: "SHOW_TEXT"
-        value: "&fThis hover text is working!\n&fThis next line is working"
-    3:
-      text: " &fThis chat announcer is working!"
-      clickevent:
-        action: "SUGGEST_COMMAND"
-        value: "That click event worked!"
-      hoverevent:
-        action: "SHOW_TEXT"
-        value: "&fThis hover text is working!\n &fThis next line is working"
-    4:
-      text: " &fThis chat announcer is working!"
-      clickevent:
-        action: "SUGGEST_COMMAND"
-        value: "That click event worked!"
-      hoverevent:
-        action: "SHOW_TEXT"
-        value: "&fThis hover text is working!\n&fThis next line is working"
-    5:
-      text: " &fThis chat announcer is working!"
-      clickevent:
-        action: "SUGGEST_COMMAND"
-        value: "That click event worked!"
-      hoverevent:
-        action: "SHOW_TEXT"
-        value: "&fThis hover text is working!\n&fThis next line is working"
+    - "<click:suggest_command:'That click event worked!'><hover:show_text:'This hover text is working<br>This next line is working'><white>This chat announcer is working!</white></hover></click>"
+    - "<click:suggest_command:'That click event worked!'><hover:show_text:'This hover text is working<br>This next line is working'><white>This chat announcer is working!</white></hover></click>"
+    - "<click:suggest_command:'That click event worked!'><hover:show_text:'This hover text is working<br>This next line is working'><white>This chat announcer is working!</white></hover></click>"
+    - "<click:suggest_command:'That click event worked!'><hover:show_text:'This hover text is working<br>This next line is working'><white>This chat announcer is working!</white></hover></click>"
+    - "<click:suggest_command:'That click event worked!'><hover:show_text:'This hover text is working<br>This next line is working'><white>This chat announcer is working!</white></hover></click>"
 
 #hub module (used for hub servers)
 Hub:
-  enabled: true
+  enabled: false
   #%player% will be replaced with the players name
   join-title-message: "&3&lVorplex &b&lNetwork:&7Welcome &c%player%&7. Enjoy your stay!:20:50:20"
   oxygen-helmet-enabled: true
