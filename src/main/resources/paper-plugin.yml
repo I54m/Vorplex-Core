@@ -52,9 +52,6 @@ permissions:
   vorplexcore.customleavemessages.admin:
     description: Allows the user to change other's leave messages.
     default: op
-  vorplexcore.titles.*:
-    description: Main permission node for titles.
-    default: op
   vectorcore.gifts.send:
     description: Send other players a gift.
     default: op
