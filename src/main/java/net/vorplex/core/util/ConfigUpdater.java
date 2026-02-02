@@ -43,7 +43,7 @@ public class ConfigUpdater {
             }
             plugin.reloadConfig();
         } else
-            plugin.getComponentLogger().info(Component.text("[ConfigUpdater] Config is up-to-date!").color(NamedTextColor.YELLOW));
+            plugin.getComponentLogger().info(Component.text("[ConfigUpdater] Config is up-to-date!").color(NamedTextColor.GREEN));
     }
 
     /**
