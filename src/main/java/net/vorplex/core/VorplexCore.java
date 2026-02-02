@@ -84,15 +84,13 @@ public class VorplexCore extends JavaPlugin {
     public final LiteralCommandNode<CommandSourceStack> RELOAD_COMMAND_NODE = Commands.literal("vorplexcorereload")
             .requires(ctx -> ctx.getSender().isOp())
             .executes((ctx) -> {
+                AutoRestartScheduler.stop();
+                AutoAnnouncerScheduler.stop();
                 reloadConfig();
-                if (this.getConfig().getBoolean("AutoRestart.enabled")) {
-                    AutoRestartScheduler.stop();
+                if (this.getConfig().getBoolean("AutoRestart.enabled"))
                     AutoRestartScheduler.start(new AutoRestartConfig());
-                }
-                if (this.getConfig().getBoolean("AutoAnnouncer.enabled")) {
-                    AutoAnnouncerScheduler.stop();
+                if (this.getConfig().getBoolean("AutoAnnouncer.enabled"))
                     AutoAnnouncerScheduler.start();
-                }
 //                if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
 //                    permissionJoinMessages.clear();
 //                    for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
