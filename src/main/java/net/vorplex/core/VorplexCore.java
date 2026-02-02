@@ -13,6 +13,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPerms;
+import net.vorplex.core.autoannouncer.AutoAnnouncerScheduler;
 import net.vorplex.core.autorestart.AutoRestartConfig;
 import net.vorplex.core.autorestart.AutoRestartScheduler;
 import net.vorplex.core.commands.AutoRestartCommand;
@@ -84,8 +85,14 @@ public class VorplexCore extends JavaPlugin {
             .requires(ctx -> ctx.getSender().isOp())
             .executes((ctx) -> {
                 reloadConfig();
-                AutoRestartScheduler.stop();
-                AutoRestartScheduler.start(new AutoRestartConfig());
+                if (this.getConfig().getBoolean("AutoRestart.enabled")) {
+                    AutoRestartScheduler.stop();
+                    AutoRestartScheduler.start(new AutoRestartConfig());
+                }
+                if (this.getConfig().getBoolean("AutoAnnouncer.enabled")) {
+                    AutoAnnouncerScheduler.stop();
+                    AutoAnnouncerScheduler.start();
+                }
 //                if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
 //                    permissionJoinMessages.clear();
 //                    for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
@@ -142,6 +149,10 @@ public class VorplexCore extends JavaPlugin {
             autoRestartConfig = new AutoRestartConfig();
             AutoRestartScheduler.start(autoRestartConfig);
         }
+        if (getConfig().getBoolean("Announcer.enabled")) {
+            getLogger().info("Enabling Auto Announcer Module...");
+            AutoAnnouncerScheduler.start();
+        }
 //        if (this.getConfig().getBoolean("VorplexServer.enabled")) {
 //            this.getServer().getPluginManager().registerEvents(new CommandPreProcess(), this);
 //            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -156,43 +167,7 @@ public class VorplexCore extends JavaPlugin {
 //            return;
 //        }
 //
-//        if (getConfig().getBoolean("Announcer.enabled")) {
-//            announce = false;
-//            getLogger().info("Detected no players online! disabling announcements to save resources!");
-//            Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
-//            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-//                if (announce) {
-//                    String message;
-//                    int messageNumber;
-//                    int maxMesages;
-//                    maxMesages = getConfig().getInt("Announcer.NumberOfMessages");
-//                    if (getConfig().getBoolean("Announcer.Random"))
-//                        messageNumber = (int) ((Math.random() * maxMesages) + 1);
-//                    else {
-//                        messageNumber = previousMessageNumber + 1;
-//                        if (previousMessageNumber >= maxMesages)
-//                            previousMessageNumber = 0;
-//                        else previousMessageNumber++;
-//                    }
-//                    message = getConfig().getString("Announcer.Messages." + messageNumber + ".text");
-//                    String prefix = getConfig().getString("Announcer.Prefix");
-//
-//                    ClickEvent.Action clickEventAction = ClickEvent.Action.valueOf(getConfig().getString("Announcer.Messages." + messageNumber + ".clickevent.action"));
-//                    String clickEventValue = ChatColor.translateAlternateColorCodes('&', getConfig().getString("Announcer.Messages." + messageNumber + ".clickevent.value"));
-//                    HoverEvent.Action hoverEventAction = HoverEvent.Action.valueOf(getConfig().getString("Announcer.Messages." + messageNumber + ".hoverevent.action"));
-//                    BaseComponent[] hoverEventValue = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', getConfig().getString("Announcer.Messages." + messageNumber + ".hoverevent.value")));
-//                    TextComponent messagetext = new TextComponent(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', prefix) + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', message)));
-//                    messagetext.setHoverEvent(new HoverEvent(hoverEventAction, hoverEventValue));
-//                    messagetext.setClickEvent(new ClickEvent(clickEventAction, clickEventValue));
-//                    for (Player players : Bukkit.getOnlinePlayers()) {
-//                        players.spigot().sendMessage(messagetext);
-//                    }
-//                }
-//            }, 720, (getConfig().getInt("Announcer.Interval") * 20));
-//            getLogger().info("Enabled Auto Announcer Module");
-//        }
-//        if (getConfig().getBoolean("Announcer.enabled") ||
-//                getConfig().getBoolean("JoinMessages.enabled") ||
+//        if (getConfig().getBoolean("JoinMessages.enabled") ||
 //                getConfig().getBoolean("Hub.enabled") ||
 //                (getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join") && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")))
 //            Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
@@ -276,6 +251,7 @@ public class VorplexCore extends JavaPlugin {
     @Override
     public void onDisable() {
         AutoRestartScheduler.stop();
+        AutoAnnouncerScheduler.stop();
 //        try {
 //            if (hikari != null && !hikari.isClosed()) {
 //                getLogger().info("Closing Storage....");
