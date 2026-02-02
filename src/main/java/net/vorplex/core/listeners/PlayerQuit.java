@@ -5,7 +5,6 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
 import net.vorplex.core.VorplexCore;
 import net.vorplex.core.util.UserFetcher;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,10 +23,6 @@ public class PlayerQuit implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         event.setQuitMessage("");
-        if(Bukkit.getOnlinePlayers().toArray().length <= 0){
-            VorplexCore.announce = false;
-            Bukkit.getLogger().info("Detected no players online! disabling announcements to save resources!");
-        }
         Player player = event.getPlayer();
         if (plugin.getConfig().getBoolean("LeaveMessages.enabled")){
             User user = plugin.luckPermsAPI.getUserManager().getUser(player.getName());
