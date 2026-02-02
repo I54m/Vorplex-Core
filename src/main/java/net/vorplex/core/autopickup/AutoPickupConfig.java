@@ -21,12 +21,12 @@ public class AutoPickupConfig {
     private boolean enabled;
 
     public AutoPickupConfig() {
-        enabled = plugin.getConfig().getBoolean("AutoPickup.enabled", true);
-        inventoryFullSound = plugin.getConfig().getBoolean("AutoPickup.InventoryFullSound");
-        List<String> configList = (List<String>) plugin.getConfig().getList("AutoPickup.AllowedItems");
+        enabled = plugin.getConfig().getBoolean("AutoItemPickup.enabled", true);
+        inventoryFullSound = plugin.getConfig().getBoolean("AutoItemPickup.InventoryFullSound");
+        List<String> configList = (List<String>) plugin.getConfig().getList("AutoItemPickup.AllowedItems");
         if (configList == null || configList.isEmpty()) {
             plugin.getComponentLogger().error("AllowedItems list is empty!");
-            plugin.getComponentLogger().error("AutoPickup Module will not be enabled!");
+            plugin.getComponentLogger().error("AutoItemPickup Module will not be enabled!");
             return;
         }
         for (String item : configList) {

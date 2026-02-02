@@ -155,8 +155,8 @@ public class VorplexCore extends JavaPlugin {
             getLogger().info("Enabling Auto Announcer Module...");
             AutoAnnouncerScheduler.start();
         }
-        if (getConfig().getBoolean("AutoPickup.enabled")) {
-            getLogger().info("Enabling Auto Pickup Module...");
+        if (getConfig().getBoolean("AutoItemPickup.enabled")) {
+            getLogger().info("Enabling Auto Item Pickup Module...");
             autoPickupConfig = new AutoPickupConfig();
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(ToggleAutoPickupCommand.COMMAND_NODE, List.of("tapu")));
             getServer().getPluginManager().registerEvents(new BlockBreak(), this);
