@@ -41,8 +41,6 @@ public class VorplexCore extends JavaPlugin {
     public static VorplexCore instance;
     @Getter
     private String prefix;
-    public static boolean announce;
-    private static int previousMessageNumber;
     private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
     private int cacheTaskid;
     public AutoRestartConfig autoRestartConfig;
