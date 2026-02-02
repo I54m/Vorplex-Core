@@ -14,10 +14,13 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.vorplex.core.autoannouncer.AutoAnnouncerScheduler;
+import net.vorplex.core.autopickup.AutoPickupConfig;
 import net.vorplex.core.autorestart.AutoRestartConfig;
 import net.vorplex.core.autorestart.AutoRestartScheduler;
 import net.vorplex.core.commands.AutoRestartCommand;
 import net.vorplex.core.commands.BuyCommand;
+import net.vorplex.core.commands.ToggleAutoPickupCommand;
+import net.vorplex.core.listeners.BlockBreak;
 import net.vorplex.core.objects.Gift;
 import net.vorplex.core.util.ConfigUpdater;
 import org.bukkit.Bukkit;
@@ -45,6 +48,8 @@ public class VorplexCore extends JavaPlugin {
     private int cacheTaskid;
     public AutoRestartConfig autoRestartConfig;
     public LuckPerms luckPermsAPI = null;
+    @Getter
+    public AutoPickupConfig autoPickupConfig;
 
     // Plugin storage Hashmaps
     public Map<String, String> permissionJoinMessages = new HashMap<>();
@@ -89,6 +94,8 @@ public class VorplexCore extends JavaPlugin {
                     AutoRestartScheduler.start(new AutoRestartConfig());
                 if (this.getConfig().getBoolean("AutoAnnouncer.enabled"))
                     AutoAnnouncerScheduler.start();
+                if (getConfig().getBoolean("AutoPickup.enabled"))
+                    autoPickupConfig = new AutoPickupConfig();
 //                if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
 //                    permissionJoinMessages.clear();
 //                    for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
@@ -136,8 +143,7 @@ public class VorplexCore extends JavaPlugin {
         //load modules
         if (this.getConfig().getBoolean("buycommand.enabled")) {
             getComponentLogger().info(Component.text("Enabling Buy Command...").color(NamedTextColor.GREEN));
-            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands ->
-                    commands.registrar().register(BuyCommand.COMMAND_NODE));
+            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(BuyCommand.COMMAND_NODE));
         }
         if (this.getConfig().getBoolean("AutoRestart.enabled")) {
             getComponentLogger().info(Component.text("Enabling AutoRestart Module...").color(NamedTextColor.GREEN));
@@ -148,6 +154,12 @@ public class VorplexCore extends JavaPlugin {
         if (getConfig().getBoolean("Announcer.enabled")) {
             getLogger().info("Enabling Auto Announcer Module...");
             AutoAnnouncerScheduler.start();
+        }
+        if (getConfig().getBoolean("AutoPickup.enabled")) {
+            getLogger().info("Enabling Auto Pickup Module...");
+            autoPickupConfig = new AutoPickupConfig();
+            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(ToggleAutoPickupCommand.COMMAND_NODE, List.of("tapu")));
+            getServer().getPluginManager().registerEvents(new BlockBreak(), this);
         }
 //        if (this.getConfig().getBoolean("VorplexServer.enabled")) {
 //            this.getServer().getPluginManager().registerEvents(new CommandPreProcess(), this);
