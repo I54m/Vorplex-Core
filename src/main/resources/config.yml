@@ -83,6 +83,24 @@ AutoAnnouncer:
     - "<click:suggest_command:'That click event worked!'><hover:show_text:'This hover text is working<br>This next line is working'><white>This chat announcer is working!</white></hover></click>"
     - "<click:suggest_command:'That click event worked!'><hover:show_text:'This hover text is working<br>This next line is working'><white>This chat announcer is working!</white></hover></click>"
 
+
+#auto item pickup module
+AutoItemPickup:
+  enabled: true
+  InventoryFullSound: true
+  AllowedItems:
+    - SUGAR_CANE
+    - WHEAT
+    - PALE_HANGING_MOSS
+    - CAVE_VINES_PLANT # Glow berries
+    - CARROTS
+    - BEETROOTS
+    - PUMPKIN
+    - MELON
+    - NETHER_WART
+    - COCOA
+    - POTATOES
+
 #hub module (used for hub servers)
 Hub:
   enabled: false
