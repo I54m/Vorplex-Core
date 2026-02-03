@@ -19,7 +19,7 @@ public class ConfigUpdater {
     /**
      * Hard-coded current config version used in this version of the plugin
      */
-    private static final String CURRENT_CONFIG_VERSION = "1.1";
+    private static final String CURRENT_CONFIG_VERSION = "1.2";
 
     /**
      * Main usage for ConfigUpdater.
