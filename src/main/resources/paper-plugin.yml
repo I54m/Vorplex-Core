@@ -25,8 +25,8 @@ dependencies:
 ####################################################################################[Permissions]#########################################################################################
 
 permissions:
-  vorplexcore.autopickup:
-    description: Allows the user to use autopickup
+  vorplexcore.autoitempickup:
+    description: Allows the user to use autoitempickup
     default: op
   vorplexcore.autorestart.admin:
     description: Allows the user to use /autorestart commands.
