@@ -123,7 +123,7 @@ public class AutoRestartScheduler {
                     Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
                     return;
                 }
-                float progress = Math.min(1.0f, secondsLeft / (float) (bossbarTicks / 20));
+                float progress = secondsLeft <= 0 ? 0.0f : Math.min(1.0f, secondsLeft / (float) (bossbarTicks / 20));
 
                 bossBarCountdown.progress(progress);
                 bossBarCountdown.name(
