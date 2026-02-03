@@ -1,5 +1,8 @@
 # DO NOT TOUCH THIS
-config-version: "1.1"
+config-version: "1.2"
+
+#Debug mode for extra debug logging
+debug: false
 #MYSQL Options for modules that require it
 MySQL:
   #host use 127.0.0.1 or localhost for localhost
@@ -92,7 +95,6 @@ AutoItemPickup:
     - SUGAR_CANE
     - WHEAT
     - PALE_HANGING_MOSS
-    - CAVE_VINES_PLANT # Glow berries
     - CARROTS
     - BEETROOTS
     - PUMPKIN
@@ -100,6 +102,15 @@ AutoItemPickup:
     - NETHER_WART
     - COCOA
     - POTATOES
+    - BAMBOO
+    - TWISTING_VINES
+    - TWISTING_VINES_PLANT
+    - WEEPING_VINES
+    - WEEPING_VINES_PLANT
+    - CAVE_VINES
+    - CAVE_VINES_PLANT
+    - KELP
+    - KELP_PLANT
 
 #hub module (used for hub servers)
 Hub:
