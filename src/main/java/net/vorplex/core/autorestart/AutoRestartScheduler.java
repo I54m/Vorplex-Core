@@ -119,7 +119,7 @@ public class AutoRestartScheduler {
                 long ticksLeft = remainingTicks.addAndGet(-20);
 
                 long secondsLeft = ticksLeft / 20;
-                if (secondsLeft <= 0) {
+                if (secondsLeft < 0) {
                     Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
                     return;
                 }
