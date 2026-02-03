@@ -16,7 +16,7 @@ public class ToggleAutoPickupCommand {
     private static AutoPickupConfig autoPickupConfig = plugin.getAutoPickupConfig();
 
     public static final LiteralCommandNode<CommandSourceStack> COMMAND_NODE = Commands.literal("toggleautopickup")
-            .requires(ctx -> ctx.getSender() instanceof Player && ctx.getSender().hasPermission("vorplexcore.autopickup"))
+            .requires(ctx -> ctx.getSender() instanceof Player && ctx.getSender().hasPermission("vorplexcore.autoitempickup"))
             .executes(ToggleAutoPickupCommand::toggleCommand).build();
 
     private static int toggleCommand(final CommandContext<CommandSourceStack> ctx) {
