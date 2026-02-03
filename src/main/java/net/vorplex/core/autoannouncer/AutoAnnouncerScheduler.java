@@ -57,7 +57,7 @@ public class AutoAnnouncerScheduler {
             Audience players = Audience.audience(Bukkit.getOnlinePlayers());
             players.sendMessage(MiniMessage.miniMessage().deserialize(prefix + " " + messages.get(messageNumber)));
             if (playSound)
-                players.playSound(Sound.sound(Key.key("block.amethyst_cluster.place"), Sound.Source.MASTER, 1f, 1));
+                players.playSound(Sound.sound(Key.key("entity.chicken.egg"), Sound.Source.MASTER, 1f, 1));
         }
     }
 }
