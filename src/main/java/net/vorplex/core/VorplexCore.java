@@ -172,10 +172,14 @@ public class VorplexCore extends JavaPlugin {
         }
         if (getConfig().getBoolean("chats.staff.enabled") || getConfig().getBoolean("chats.admin.enabled")) {
             getServer().getPluginManager().registerEvents(new AsyncChatListener(), this);
-            if (getConfig().getBoolean("chats.staff.enabled"))
-                this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(StaffChatCommand.COMMAND_NODE, List.of("ac")));
-            if (getConfig().getBoolean("chats.admin.enabled"))
-                this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(AdminChatCommand.COMMAND_NODE, List.of("sc")));
+            if (getConfig().getBoolean("chats.staff.enabled")) {
+                getComponentLogger().info(Component.text("Enabling Staff Chat...").color(NamedTextColor.GREEN));
+                this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(StaffChatCommand.COMMAND_NODE, List.of("sc")));
+            }
+            if (getConfig().getBoolean("chats.admin.enabled")) {
+                getComponentLogger().info(Component.text("Enabling Admin Chat...").color(NamedTextColor.GREEN));
+                this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(AdminChatCommand.COMMAND_NODE, List.of("ac")));
+            }
         }
 
 
