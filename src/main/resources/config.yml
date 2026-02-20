@@ -1,5 +1,5 @@
 # DO NOT TOUCH THIS
-config-version: "1.2"
+config-version: "1.3"
 
 #Debug mode for extra debug logging
 debug: false
@@ -30,6 +30,15 @@ VorplexServer:
     - server3
   #the message to be sent to the player when sending them to a server. use %server% for the server name
   sendingtoservermessage: "&d&lSending you to %server%."
+
+#Staff chat and admin chat module
+chats:
+  #permission: vorplexcore.staffchat
+  staff:
+    enabled: true
+  #permission: vorplexcore.adminchat
+  admin:
+    enabled: true
 
 #auto restart module
 #permission: vorplexcore.autorestart.admin
@@ -89,7 +98,7 @@ AutoAnnouncer:
 
 #auto item pickup module
 AutoItemPickup:
-  enabled: true
+  enabled: false
   InventoryFullSound: true
   AllowedItems:
     - SUGAR_CANE
