@@ -14,8 +14,8 @@ import java.util.List;
 
 public class ChatUtils {
 
-    private static final String STAFF_CHAT_FORMAT = "<gray>[<aqua>SC</aqua>]</gray> <rank><sender><white>: <message>";
-    private static final String ADMIN_CHAT_FORMAT = "<gray>[<blue>AC</aqua>]</gray> <rank><sender><white>: <message>";
+    private static final String STAFF_CHAT_FORMAT = "<gray>[<red><bold>SC</red>]</gray> <rank><sender><white>: <red><message></red>";
+    private static final String ADMIN_CHAT_FORMAT = "<gray>[<blue><bold>AC</blue>]</gray> <rank><sender><white>: <blue><message></blue>";
     private static final VorplexCore plugin = VorplexCore.getInstance();
 
     public static List<Player> staffChat = new ArrayList<>();
