@@ -17,6 +17,9 @@ import net.vorplex.core.autoannouncer.AutoAnnouncerScheduler;
 import net.vorplex.core.autopickup.AutoPickupConfig;
 import net.vorplex.core.autorestart.AutoRestartConfig;
 import net.vorplex.core.autorestart.AutoRestartScheduler;
+import net.vorplex.core.chat.AdminChatCommand;
+import net.vorplex.core.chat.AsyncChatListener;
+import net.vorplex.core.chat.StaffChatCommand;
 import net.vorplex.core.commands.AutoRestartCommand;
 import net.vorplex.core.commands.BuyCommand;
 import net.vorplex.core.commands.ToggleAutoPickupCommand;
@@ -27,6 +30,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -47,7 +51,7 @@ public class VorplexCore extends JavaPlugin {
     private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
     private int cacheTaskid;
     public AutoRestartConfig autoRestartConfig;
-    public LuckPerms luckPermsAPI = null;
+    public LuckPerms luckPermsAPI;
     @Getter
     public AutoPickupConfig autoPickupConfig;
 
@@ -139,7 +143,12 @@ public class VorplexCore extends JavaPlugin {
         ConfigUpdater.checkAndUpdate();
         prefix = this.getConfig().getString("Plugin-Prefix", "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] ");
         LEGACY_PREFIX = PlainTextComponentSerializer.plainText().serialize(MiniMessage.miniMessage().deserialize(prefix));
-        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(this.RELOAD_COMMAND_NODE, List.of("corereload", "vcreload", "vorplexrelaod")));
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(this.RELOAD_COMMAND_NODE, List.of("corereload", "vcreload", "vorplexreload")));
+        //register luckperms api
+        RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+        if (provider != null)
+            luckPermsAPI = provider.getProvider();
+        else throw new IllegalStateException("LuckPerms not detected!");
         //load modules
         if (this.getConfig().getBoolean("buycommand.enabled")) {
             getComponentLogger().info(Component.text("Enabling Buy Command...").color(NamedTextColor.GREEN));
@@ -161,20 +170,20 @@ public class VorplexCore extends JavaPlugin {
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(ToggleAutoPickupCommand.COMMAND_NODE, List.of("tapu")));
             getServer().getPluginManager().registerEvents(new BlockBreak(), this);
         }
+        if (getConfig().getBoolean("chats.staff.enabled") || getConfig().getBoolean("chats.admin.enabled")) {
+            getServer().getPluginManager().registerEvents(new AsyncChatListener(), this);
+            if (getConfig().getBoolean("chats.staff.enabled"))
+                this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(StaffChatCommand.COMMAND_NODE, List.of("ac")));
+            if (getConfig().getBoolean("chats.admin.enabled"))
+                this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(AdminChatCommand.COMMAND_NODE, List.of("sc")));
+        }
+
+
 //        if (this.getConfig().getBoolean("VorplexServer.enabled")) {
 //            this.getServer().getPluginManager().registerEvents(new CommandPreProcess(), this);
 //            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 //            getLogger().info("Enabled Server Module");
 //        }
-//        RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
-//        if (provider != null)
-//            luckPermsAPI = provider.getProvider();
-//        else {
-//            getLogger().severe("Luckperms not detected! Disabling plugin!");
-//            this.setEnabled(false);
-//            return;
-//        }
-//
 //        if (getConfig().getBoolean("JoinMessages.enabled") ||
 //                getConfig().getBoolean("Hub.enabled") ||
 //                (getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join") && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")))
