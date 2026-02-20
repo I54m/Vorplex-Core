@@ -146,9 +146,10 @@ public class VorplexCore extends JavaPlugin {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(this.RELOAD_COMMAND_NODE, List.of("corereload", "vcreload", "vorplexreload")));
         //register luckperms api
         RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
-        if (provider != null)
+        if (provider != null) {
             luckPermsAPI = provider.getProvider();
-        else throw new IllegalStateException("LuckPerms not detected!");
+            getComponentLogger().info(Component.text("LuckPerms Detected!").color(NamedTextColor.GREEN));
+        } else throw new IllegalStateException("LuckPerms not detected!");
         //load modules
         if (this.getConfig().getBoolean("buycommand.enabled")) {
             getComponentLogger().info(Component.text("Enabling Buy Command...").color(NamedTextColor.GREEN));
