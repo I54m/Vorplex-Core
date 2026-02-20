@@ -81,6 +81,7 @@ public class BlockBreak implements Listener {
         }
 
         while (current.getType() == origType || current.getType() == secondaryType) {
+            //TODO check if block is waterlogged and handle rather than setting to air blindly
             current.setType(Material.AIR);
             Block next = current.getRelative(direction);
             Debug.log("Next block y = " + next.getY());
