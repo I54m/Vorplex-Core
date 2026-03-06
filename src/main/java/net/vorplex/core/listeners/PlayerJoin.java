@@ -44,9 +44,9 @@ public class PlayerJoin implements Listener {
             if (!plugin.getConfig().getList("SafeLogin.AllowedWorlds", new ArrayList<>(Collections.singleton("world"))).contains(player.getWorld().getName()))
                 return;
             if (isLocationUnSafe(player, player.getLocation())) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 80, 10));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 60, 10));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 60, 10));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 10));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 100, 10));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 100, 10));
                 final Location safeLocation = player.getWorld().getHighestBlockAt(player.getLocation()).getLocation();
                 if (safeLocation.getBlock().getType() == Material.LAVA) safeLocation.getBlock().setType(Material.STONE);
                 safeLocation.add(0.5, 1, 0.5);
