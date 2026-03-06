@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,8 +50,9 @@ public class PlayerJoin implements Listener {
                 if (safeLocation.getBlock().getType() == Material.LAVA) safeLocation.getBlock().setType(Material.STONE);
                 safeLocation.add(0.5, 1, 0.5);
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                    player.sendRichMessage(plugin.getConfig().getString("SafeLogin.TeleportMessage", "<red>You joined in an unsafe location, You have been teleported to the highest safe block!"));
+                    player.setVelocity(new Vector(0, 0, 0));
                     player.teleport(safeLocation);
+                    player.sendRichMessage(plugin.getConfig().getString("SafeLogin.TeleportMessage", "<red>You joined in an unsafe location, You have been teleported to the highest safe block!"));
                 }, 60);
             }
         }
