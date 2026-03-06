@@ -2,6 +2,7 @@ package net.vorplex.core.listeners;
 
 //import com.earth2me.essentials.spawn.EssentialsSpawn;
 
+import lombok.NonNull;
 import net.vorplex.core.VorplexCore;
 import net.vorplex.core.util.Debug;
 import net.vorplex.core.util.NameFetcher;
@@ -151,7 +152,14 @@ public class PlayerJoin implements Listener {
     }
 
 
-    public boolean isLocationUnSafe(final Player player, final Location feetLocation) {
+    /**
+     * Check a player's location to see if it is safe
+     *
+     * @param player       the player to check the safe location for
+     * @param feetLocation the foot location of the player
+     * @return true if the location is considered unsafe, else false
+     */
+    public boolean isLocationUnSafe(final @NonNull Player player, final @NonNull Location feetLocation) {
         if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) {
             Debug.log(player.getName() + " is in creative or spectator, location is considered safe for them");
             return false;
