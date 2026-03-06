@@ -5,6 +5,7 @@ package net.vorplex.core.listeners;
 import net.vorplex.core.VorplexCore;
 import net.vorplex.core.util.NameFetcher;
 import net.vorplex.core.util.UUIDFetcher;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -42,7 +43,7 @@ public class PlayerJoin implements Listener {
         if (plugin.getConfig().getBoolean("SafeLogin.enabled", true)) {
             if (!plugin.getConfig().getList("SafeLogin.AllowedWorlds", new ArrayList<>(Collections.singleton("world"))).contains(player.getWorld().getName()))
                 return;
-            if (isLocationUnSafe(player.getLocation())) {
+            if (isLocationUnSafe(player, player.getLocation())) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 80, 10));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 60, 10));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 60, 10));
@@ -140,12 +141,13 @@ public class PlayerJoin implements Listener {
     }
 
 
-    public boolean isLocationUnSafe(Location feetLocation) {
+    public boolean isLocationUnSafe(Player player, Location feetLocation) {
+        if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return false;
         Location headLocation = feetLocation.add(0, 1, 0);
         if (feetLocation.getBlock().isSuffocating() && headLocation.getBlock().isSuffocating())
             return true;
         else if (feetLocation.getBlock().getType() == Material.LAVA || headLocation.getBlock().getType() == Material.LAVA)
             return true;
-        else return !feetLocation.add(0, -1, 0).getBlock().getType().isSolid();
+        else return !player.isFlying() && !feetLocation.add(0, -1, 0).getBlock().getType().isSolid();
     }
 }
