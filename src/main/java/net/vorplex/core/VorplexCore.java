@@ -24,6 +24,7 @@ import net.vorplex.core.commands.AutoRestartCommand;
 import net.vorplex.core.commands.BuyCommand;
 import net.vorplex.core.commands.ToggleAutoPickupCommand;
 import net.vorplex.core.listeners.BlockBreak;
+import net.vorplex.core.listeners.PlayerJoin;
 import net.vorplex.core.objects.Gift;
 import net.vorplex.core.util.ConfigUpdater;
 import org.bukkit.Bukkit;
@@ -181,6 +182,10 @@ public class VorplexCore extends JavaPlugin {
                 getComponentLogger().info(Component.text("Enabling Admin Chat...").color(NamedTextColor.GREEN));
                 this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(AdminChatCommand.COMMAND_NODE, List.of("ac")));
             }
+        }
+        if (getConfig().getBoolean("SafeLogin.enabled")) {
+            getComponentLogger().info(Component.text("Enabling Safe Login...").color(NamedTextColor.GREEN));
+            getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
         }
 
 
