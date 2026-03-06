@@ -1,5 +1,5 @@
 # DO NOT TOUCH THIS
-config-version: "1.3"
+config-version: "1.4"
 
 #Debug mode for extra debug logging
 debug: false
@@ -18,6 +18,16 @@ MySQL:
   extraArguments: ?useSSL=false
 
 Plugin-Prefix: "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] "
+
+#Safe-login Module
+#if player is inside a block when they log in they will be teleported to the highest block at their position
+SafeLogin:
+  enabled: true
+  TeleportMessage: "<red>You were inside a block when you logged in, You have been teleported to the highest safe block!"
+  AllowedWorlds:
+    - world_resource
+    - world_nether
+    - world_end
 
 #Server re-router module
 #permission: vorplexcore.server.switch
