@@ -11,6 +11,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -48,7 +49,7 @@ public class PlayerJoin implements Listener {
                 Debug.log(player.getName() + " is not in an allowed world for safe-login");
                 return;
             }
-            if (isLocationUnSafe(player, player.getLocation())) {
+            if (isLocationUnSafe(player)) {
                 Debug.log(player.getName() + "'s login location was deemed unsafe applying buffs and scheduling tp...");
                 player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 10));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 100, 10));
@@ -153,19 +154,20 @@ public class PlayerJoin implements Listener {
 
 
     /**
-     * Check a player's location to see if it is safe
+     * Check a player's location to see if it is unsafe
      *
      * @param player       the player to check the safe location for
-     * @param feetLocation the foot location of the player
      * @return true if the location is considered unsafe, else false
      */
-    public boolean isLocationUnSafe(final @NonNull Player player, final @NonNull Location feetLocation) {
+    public boolean isLocationUnSafe(final @NonNull Player player) {
         if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) {
             Debug.log(player.getName() + " is in creative or spectator, location is considered safe for them");
             return false;
         }
-        final Location headLocation = feetLocation.add(0, 1, 0);
-        final Block standingBlock = feetLocation.subtract(0, 1, 0).getBlock();
+        final Location headLocation = player.getEyeLocation().getBlock().getLocation();
+        final Location feetLocation = player.getLocation().getBlock().getLocation();
+        Debug.log("isLocationUnSafe - headLocation = " + headLocation + " feetLocation = " + feetLocation);
+        final Block standingBlock = feetLocation.getBlock().getRelative(BlockFace.DOWN);
         if (feetLocation.getBlock().isSuffocating() && headLocation.getBlock().isSuffocating()) {
             Debug.log(player.getName() + "'s head AND feet location was in a block that causes suffocation - NOT SAFE");
             return true;
