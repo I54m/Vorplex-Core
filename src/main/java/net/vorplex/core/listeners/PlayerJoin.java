@@ -144,6 +144,6 @@ public class PlayerJoin implements Listener {
             return true;
         else if (feetLocation.getBlock().getType() == Material.LAVA || headLocation.getBlock().getType() == Material.LAVA)
             return true;
-        else return !feetLocation.getBlock().getType().isSolid();
+        else return !feetLocation.add(0, -1, 0).getBlock().getType().isSolid();
     }
 }
