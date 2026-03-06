@@ -23,7 +23,7 @@ Plugin-Prefix: "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] "
 #if player is inside a block when they log in they will be teleported to the highest block at their position
 SafeLogin:
   enabled: true
-  TeleportMessage: "<red>You were inside a block when you logged in, You have been teleported to the highest safe block!"
+  TeleportMessage: "<red>You joined in an unsafe location, You have been teleported to the highest safe block!"
   AllowedWorlds:
     - world_resource
     - world_nether
