@@ -3,11 +3,13 @@ package net.vorplex.core.listeners;
 //import com.earth2me.essentials.spawn.EssentialsSpawn;
 
 import net.vorplex.core.VorplexCore;
+import net.vorplex.core.util.Debug;
 import net.vorplex.core.util.NameFetcher;
 import net.vorplex.core.util.UUIDFetcher;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -37,23 +39,31 @@ public class PlayerJoin implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
 //        event.setJoinMessage("");
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         UUIDFetcher.updateStoredUUID(player.getName(), player.getUniqueId());
         NameFetcher.updateStoredName(player.getUniqueId(), player.getName());
         if (plugin.getConfig().getBoolean("SafeLogin.enabled", true)) {
-            if (!plugin.getConfig().getList("SafeLogin.AllowedWorlds", new ArrayList<>(Collections.singleton("world"))).contains(player.getWorld().getName()))
+            if (!plugin.getConfig().getList("SafeLogin.AllowedWorlds", new ArrayList<>(Collections.singleton("world"))).contains(player.getWorld().getName())) {
+                Debug.log(player.getName() + " is not in an allowed world for safe-login");
                 return;
+            }
             if (isLocationUnSafe(player, player.getLocation())) {
+                Debug.log(player.getName() + "'s login location was deemed unsafe applying buffs and scheduling tp...");
                 player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 10));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 100, 10));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 100, 10));
                 final Location safeLocation = player.getWorld().getHighestBlockAt(player.getLocation()).getLocation();
-                if (safeLocation.getBlock().getType() == Material.LAVA) safeLocation.getBlock().setType(Material.STONE);
+                if (safeLocation.getBlock().getType() == Material.LAVA) {
+                    Debug.log("Safe location had lava placing stone");
+                    safeLocation.getBlock().setType(Material.STONE);
+                }
                 safeLocation.add(0.5, 1, 0.5);
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    Debug.log("Teleporting " + player.getName() + " and setting velocity to 0");
                     player.setVelocity(new Vector(0, 0, 0));
                     player.teleport(safeLocation);
                     player.sendRichMessage(plugin.getConfig().getString("SafeLogin.TeleportMessage", "<red>You joined in an unsafe location, You have been teleported to the highest safe block!"));
+                    Debug.log(player.getName() + " was teleported successfully");
                 }, 60);
             }
         }
@@ -141,13 +151,25 @@ public class PlayerJoin implements Listener {
     }
 
 
-    public boolean isLocationUnSafe(Player player, Location feetLocation) {
-        if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) return false;
-        Location headLocation = feetLocation.add(0, 1, 0);
-        if (feetLocation.getBlock().isSuffocating() && headLocation.getBlock().isSuffocating())
+    public boolean isLocationUnSafe(final Player player, final Location feetLocation) {
+        if (player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR) {
+            Debug.log(player.getName() + " is in creative or spectator, location is considered safe for them");
+            return false;
+        }
+        final Location headLocation = feetLocation.add(0, 1, 0);
+        final Block standingBlock = feetLocation.add(0, -1, 0).getBlock();
+        if (feetLocation.getBlock().isSuffocating() && headLocation.getBlock().isSuffocating()) {
+            Debug.log(player.getName() + "'s head AND feet location was in a block that causes suffocation - NOT SAFE");
             return true;
-        else if (feetLocation.getBlock().getType() == Material.LAVA || headLocation.getBlock().getType() == Material.LAVA)
+        } else if (feetLocation.getBlock().getType() == Material.LAVA || headLocation.getBlock().getType() == Material.LAVA) {
+            Debug.log(player.getName() + "'s head OR feet location was in lava - NOT SAFE");
             return true;
-        else return !player.isFlying() && !feetLocation.add(0, -1, 0).getBlock().getType().isSolid();
+        } else if (!player.isFlying() && !standingBlock.getType().isAir()) {
+            Debug.log(player.getName() + " was not flying and was in the air - NOT SAFE");
+            return true;
+        } else {
+            Debug.log("All checks passed for " + player.getName() + " - SAFE!");
+            return false;
+        }
     }
 }
