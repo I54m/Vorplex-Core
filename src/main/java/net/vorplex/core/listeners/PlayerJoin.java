@@ -13,6 +13,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,12 +41,15 @@ public class PlayerJoin implements Listener {
         if (plugin.getConfig().getBoolean("SafeLogin.enabled", true)) {
             if (!plugin.getConfig().getList("SafeLogin.AllowedWorlds", new ArrayList<>(Collections.singleton("world"))).contains(player.getWorld().getName()))
                 return;
-            if (player.getLocation().getBlock().isSuffocating()) {
+            if (isLocationUnSafe(player.getLocation())) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 80, 10));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 60, 10));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 60, 10));
                 final Location safeLocation = player.getWorld().getHighestBlockAt(player.getLocation()).getLocation();
                 if (safeLocation.getBlock().getType() == Material.LAVA) safeLocation.getBlock().setType(Material.STONE);
-                safeLocation.add(0, 1, 0);
+                safeLocation.add(0.5, 1, 0.5);
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                    player.sendRichMessage(plugin.getConfig().getString("SafeLogin.TeleportMessage", "<red>You were inside a block when you logged in, You have been teleported to the highest safe block!"));
+                    player.sendRichMessage(plugin.getConfig().getString("SafeLogin.TeleportMessage", "<red>You joined in an unsafe location, You have been teleported to the highest safe block!"));
                     player.teleport(safeLocation);
                 }, 60);
             }
@@ -130,5 +135,15 @@ public class PlayerJoin implements Listener {
 //                }
 //            }
 //        }
+    }
+
+
+    public boolean isLocationUnSafe(Location feetLocation) {
+        Location headLocation = feetLocation.add(0, 1, 0);
+        if (feetLocation.getBlock().isSuffocating() && headLocation.getBlock().isSuffocating())
+            return true;
+        else if (feetLocation.getBlock().getType() == Material.LAVA || headLocation.getBlock().getType() == Material.LAVA)
+            return true;
+        else return !feetLocation.getBlock().getType().isSolid();
     }
 }
