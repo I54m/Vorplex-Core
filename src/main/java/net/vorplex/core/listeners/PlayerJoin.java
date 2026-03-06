@@ -165,14 +165,14 @@ public class PlayerJoin implements Listener {
             return false;
         }
         final Location headLocation = feetLocation.add(0, 1, 0);
-        final Block standingBlock = feetLocation.add(0, -1, 0).getBlock();
+        final Block standingBlock = feetLocation.subtract(0, 1, 0).getBlock();
         if (feetLocation.getBlock().isSuffocating() && headLocation.getBlock().isSuffocating()) {
             Debug.log(player.getName() + "'s head AND feet location was in a block that causes suffocation - NOT SAFE");
             return true;
         } else if (feetLocation.getBlock().getType() == Material.LAVA || headLocation.getBlock().getType() == Material.LAVA) {
             Debug.log(player.getName() + "'s head OR feet location was in lava - NOT SAFE");
             return true;
-        } else if (!player.isFlying() && !standingBlock.getType().isAir()) {
+        } else if (!player.isFlying() && !standingBlock.isSolid() && !standingBlock.isLiquid()) {
             Debug.log(player.getName() + " was not flying and was in the air - NOT SAFE");
             return true;
         } else {
