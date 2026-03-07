@@ -38,7 +38,7 @@ public class PlayerJoin implements Listener {
 //        }
 //    }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
 //        event.setJoinMessage("");
         final Player player = event.getPlayer();
@@ -63,6 +63,7 @@ public class PlayerJoin implements Listener {
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                     Debug.log("Teleporting " + player.getName() + " and setting velocity to 0");
                     player.setVelocity(new Vector(0, 0, 0));
+                    player.setFireTicks(0);
                     player.teleport(safeLocation);
                     player.sendRichMessage(plugin.getConfig().getString("SafeLogin.TeleportMessage", "<red>You joined in an unsafe location, You have been teleported to the highest safe block!"));
                     Debug.log(player.getName() + " was teleported successfully");
@@ -171,8 +172,8 @@ public class PlayerJoin implements Listener {
         if (feetLocation.getBlock().isSuffocating() && headLocation.getBlock().isSuffocating()) {
             Debug.log(player.getName() + "'s head AND feet location was in a block that causes suffocation - NOT SAFE");
             return true;
-        } else if (feetLocation.getBlock().getType() == Material.LAVA || headLocation.getBlock().getType() == Material.LAVA) {
-            Debug.log(player.getName() + "'s head OR feet location was in lava - NOT SAFE");
+        } else if (feetLocation.getBlock().getType() == Material.LAVA || headLocation.getBlock().getType() == Material.LAVA || player.getFireTicks() > 0) {
+            Debug.log(player.getName() + "'s head OR feet location was in lava OR they were on fire - NOT SAFE");
             return true;
         } else if (!player.isFlying() && !standingBlock.isSolid() && !standingBlock.isLiquid()) {
             Debug.log(player.getName() + " was not flying and was in the air - NOT SAFE");
