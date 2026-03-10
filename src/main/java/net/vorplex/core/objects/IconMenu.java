@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Deprecated(since = "2.0-SNAPSHOT-1.3", forRemoval = true)
 public class IconMenu implements Listener {
 
     private List<String> viewing = new ArrayList<>();
