@@ -51,10 +51,11 @@ public class VorplexCore extends JavaPlugin {
     private String prefix;
     private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
     private int cacheTaskid;
-    public AutoRestartConfig autoRestartConfig;
     public LuckPerms luckPermsAPI;
     @Getter
     public AutoPickupConfig autoPickupConfig;
+    @Getter
+    public AutoRestartConfig autoRestartConfig;
 
     // Plugin storage Hashmaps
     public Map<String, String> permissionJoinMessages = new HashMap<>();
@@ -74,19 +75,10 @@ public class VorplexCore extends JavaPlugin {
     //TODO Temp prefix until all modules have been converted to minimessage format
     @Deprecated(since = "2.0-SNAPSHOT")
     public String LEGACY_PREFIX;
-    @Deprecated(since = "2.0-SNAPSHOT")
-    public Map<UUID, String> equippedTitles = new HashMap<>();
     @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
-    public TreeMap<Integer, String> titles = new TreeMap<>();
+    public Map<UUID, String> equippedTitles = new HashMap<>();
     @Deprecated(since = "2.0-SNAPSHOT")
     public boolean essentials = false;
-    @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
-    public boolean old = Bukkit.getServer().getVersion().contains("1.7") ||
-            Bukkit.getServer().getVersion().contains("1.8") ||
-            Bukkit.getServer().getVersion().contains("1.9") ||
-            Bukkit.getServer().getVersion().contains("1.10") ||
-            Bukkit.getServer().getVersion().contains("1.11") ||
-            Bukkit.getServer().getVersion().contains("1.12");
 
     //Plugin reload command
     public final LiteralCommandNode<CommandSourceStack> RELOAD_COMMAND_NODE = Commands.literal("vorplexcorereload")

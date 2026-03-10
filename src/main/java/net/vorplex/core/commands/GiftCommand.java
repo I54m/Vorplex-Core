@@ -27,7 +27,7 @@ public class GiftCommand implements CommandExecutor {
 
     public static Map<UUID, ItemStack> inProgress = new HashMap<>();
     private final VorplexCore plugin = VorplexCore.getInstance();
-    private final boolean old = plugin.old;
+    private final boolean old = false;
 
     @SuppressWarnings("deprecation")
     @Override
@@ -45,7 +45,7 @@ public class GiftCommand implements CommandExecutor {
             player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Send a player the item in your main hand as a gift, Usage: /gift <player>");
             return false;
         }
-        ItemStack itemgift = old ? player.getItemInHand().clone() : player.getInventory().getItemInMainHand().clone();
+        ItemStack itemgift = player.getInventory().getItemInMainHand().clone();
         if (itemgift == null || itemgift.getType() == Material.AIR) {
             player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "You must be holding an item in your main hand to gift a player");
             return false;
@@ -87,18 +87,15 @@ public class GiftCommand implements CommandExecutor {
             }
         }
         inProgress.put(player.getUniqueId(), itemgift);
-        if (old)
-            player.getItemInHand().setAmount(0);
-        else
-            player.getInventory().getItemInMainHand().setAmount(0);
+        player.getInventory().getItemInMainHand().setAmount(0);
         player.updateInventory();
-        final ItemStack deny = old ? new ItemStack(Material.valueOf("WOOL"), 1, (short) 14) : new ItemStack(Material.RED_STAINED_GLASS_PANE);
-        final ItemStack confirm = old ? new ItemStack(Material.valueOf("WOOL"), 1, (short) 5) : new ItemStack(Material.LIME_STAINED_GLASS_PANE);
+        final ItemStack deny = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+        final ItemStack confirm = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
         UUID finalReceiverUUID = receiverUUID;
         IconMenu menu = new IconMenu(ChatColor.RED + "/Gift confirmation", 3, (clicker, menu1, slot, item) -> {
             if (clicker == player) {
                 if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return false;
-                if (item.getItemMeta().getDisplayName().contains(ChatColor.GREEN + "Confirm") && (old ? item.getType() == confirm.getType() && item.getDurability() == confirm.getDurability() : item.getType() == confirm.getType())) {
+                if (item.getItemMeta().getDisplayName().contains(ChatColor.GREEN + "Confirm") && item.getType() == confirm.getType()) {
                     clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.GREEN + "Gifting item to " + receiverName);
                     Gift gift = new Gift(itemgift, player.getUniqueId());
                     if (plugin.gifts.containsKey(finalReceiverUUID)) {
@@ -114,10 +111,9 @@ public class GiftCommand implements CommandExecutor {
                         receiver.sendMessage(plugin.LEGACY_PREFIX + ChatColor.GREEN + clicker.getName() + " has sent you a gift! Do /gifts to claim it!");
                     inProgress.remove(clicker.getUniqueId());
                     return true;
-                } else if (item.getItemMeta().getDisplayName().contains(ChatColor.RED + "Deny") && (old ? item.getType() == deny.getType() && item.getDurability() == deny.getDurability() : item.getType() == deny.getType())) {
+                } else if (item.getItemMeta().getDisplayName().contains(ChatColor.RED + "Deny") && item.getType() == deny.getType()) {
                     clicker.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Cancelled gifting item to " + receiverName);
-                    if (old) player.getInventory().setItemInHand(inProgress.get(clicker.getUniqueId()));
-                    else player.getInventory().setItemInMainHand(inProgress.get(clicker.getUniqueId()));
+                    player.getInventory().setItemInMainHand(inProgress.get(clicker.getUniqueId()));
                     inProgress.remove(clicker.getUniqueId());
                     player.updateInventory();
                     return true;
@@ -126,8 +122,7 @@ public class GiftCommand implements CommandExecutor {
             return false;
         }, (closer, menu1) -> {
             closer.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Cancelled gifting item to " + receiverName);
-            if (old) closer.getInventory().setItemInHand(inProgress.get(closer.getUniqueId()));
-            else closer.getInventory().setItemInMainHand(inProgress.get(closer.getUniqueId()));
+            closer.getInventory().setItemInMainHand(inProgress.get(closer.getUniqueId()));
             inProgress.remove(closer.getUniqueId());
             closer.updateInventory();
         });
