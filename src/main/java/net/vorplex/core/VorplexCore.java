@@ -257,8 +257,6 @@ public class VorplexCore extends JavaPlugin {
 //                getLogger().info("ERROR: Could not enable Gifts Module, GiftsStorage.yml could not be loaded!!");
 //            }
 //        }
-//        Bukkit.getPluginManager().registerEvents(new PlayerDeath(), this);
-//        Bukkit.getPluginManager().registerEvents(new PlayerKick(), this);
 //        if (hikari != null || connection != null) {
 //            setupmysql();
 //            startCaching();
