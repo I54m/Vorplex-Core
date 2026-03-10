@@ -1,5 +1,7 @@
 package net.vorplex.core.commands;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.vorplex.core.VorplexCore;
 import net.vorplex.core.objects.Gift;
 import net.vorplex.core.objects.IconMenu;
@@ -154,7 +156,7 @@ public class GiftsCommand implements CommandExecutor {
                 }
                 return false;
             };
-            new ScrollerInventory(items, ChatColor.LIGHT_PURPLE + player.getName() + "'s Gifts", onClick).open(player);
+            new ScrollerInventory(items, Component.text(player.getName() + "'s Gifts").color(NamedTextColor.LIGHT_PURPLE), onClick).open(player);
             return false;
         }
     }

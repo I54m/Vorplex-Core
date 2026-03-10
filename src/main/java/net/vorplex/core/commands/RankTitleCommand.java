@@ -1,5 +1,7 @@
 package net.vorplex.core.commands;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
@@ -133,7 +135,7 @@ public class RankTitleCommand implements CommandExecutor {
                 }
                 return false;
             };
-            new ScrollerInventory(items, ChatColor.LIGHT_PURPLE + "Rank Titles", onClick).open(player);
+            new ScrollerInventory(items, Component.text("Rank Titles").color(NamedTextColor.LIGHT_PURPLE), onClick).open(player);
             return false;
         }
     }
