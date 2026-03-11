@@ -22,6 +22,7 @@ import net.vorplex.core.chat.AsyncChatListener;
 import net.vorplex.core.chat.StaffChatCommand;
 import net.vorplex.core.commands.AutoRestartCommand;
 import net.vorplex.core.commands.BuyCommand;
+import net.vorplex.core.commands.RankTitleCommand;
 import net.vorplex.core.commands.ToggleAutoPickupCommand;
 import net.vorplex.core.listeners.BlockBreak;
 import net.vorplex.core.listeners.PlayerJoin;
@@ -176,8 +177,12 @@ public class VorplexCore extends JavaPlugin {
             }
         }
         if (getConfig().getBoolean("SafeLogin.enabled")) {
-            getComponentLogger().info(Component.text("Enabling Safe Login...").color(NamedTextColor.GREEN));
+            getComponentLogger().info(Component.text("Enabling Safe Login Module...").color(NamedTextColor.GREEN));
             getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
+        }
+        if (getConfig().getBoolean("RankTitle.enabled")) {
+            getComponentLogger().info(Component.text("Enabling Rank Title Module...").color(NamedTextColor.GREEN));
+            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(RankTitleCommand.COMMAND_NODE, List.of("titlerank", "tr", "rt")));
         }
 
 
@@ -204,10 +209,6 @@ public class VorplexCore extends JavaPlugin {
 //                Bukkit.getPluginManager().registerEvents(new InventoryClick(), this);
 //            }
 //            getLogger().info("Enabled Hub Module");
-//        }
-//        if (getConfig().getBoolean("RankTitle.enabled")) {
-//            Bukkit.getPluginCommand("ranktitle").setExecutor(new RankTitleCommand());
-//            getLogger().info("Enabled Rank Title Module");
 //        }
 //        if (getConfig().getBoolean("JoinMessages.enabled")) {
 //            getLogger().info("Enabled Join Messages Module");
