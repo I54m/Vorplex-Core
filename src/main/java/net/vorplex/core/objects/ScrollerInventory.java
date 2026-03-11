@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.vorplex.core.VorplexCore;
+import net.vorplex.core.util.Debug;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
 
 public class ScrollerInventory implements Listener, InventoryHolder {
@@ -37,9 +37,6 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     @Nullable
     private final onClose close;
     private final ArrayList<Inventory> pages = new ArrayList<>();
-
-    private final Component nextPageName = Component.text("Next Page").color(NamedTextColor.LIGHT_PURPLE);
-    private final Component previousPageName = Component.text("Previous Page").color(NamedTextColor.LIGHT_PURPLE);
 
     private final ItemStack nextPage = ItemStack.of(Material.ARROW, 1);
     private final ItemStack previousPage = ItemStack.of(Material.ARROW, 1);
@@ -64,6 +61,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         //run the first population of the menu
         repopulate(items);
+        Debug.log("Created new ScrollerInventory: " + this);
     }
 
     /**
@@ -85,6 +83,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         //run the first population of the menu
         repopulate(items);
+        Debug.log("Created new ScrollerInventory: " + this);
     }
 
     /**
@@ -107,11 +106,13 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         //run the first population of the menu
         repopulate(items);
+        Debug.log("Created new ScrollerInventory: " + this);
     }
 
     @Override
     public @NotNull Inventory getInventory() {
-        if (pages.size() > 1)
+        Debug.log("Raw getInventory() used! Please use open(Player) instead!");
+        if (!pages.isEmpty())
             return pages.getFirst();
         else return getBlankPage(this.name);
     }
@@ -153,6 +154,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         pages.clear();
         currentPage = 0;
 
+        Debug.log("Repopulate triggered for scrollerInventory with id: " + this.id + " Items: " + items);
         int itemsPerPagedInventory = 45;
 
         // If we don't need pagination
@@ -162,7 +164,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
             if (requiredRows == 0) requiredRows = 1;
 
             int inventorySize = requiredRows * 9;
-
+            Debug.log("No Pagination required - Items will fit in a " + inventorySize + " Size inventory");
             Inventory page = plugin.getServer().createInventory(this, inventorySize, name);
 
             for (ItemStack item : items) {
@@ -174,6 +176,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         }
 
         // Pagination required
+        Debug.log("Pagination required - creating pages...");
         //create new blank page
         Inventory page = getBlankPage(name);
         //According to the items in the arraylist, add items to the ScrollerInventory
@@ -186,6 +189,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
             page.addItem(item);
         }
         pages.add(page);
+        Debug.log("Created " + pages.size() + " total pages.");
 
     }
 
@@ -197,6 +201,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     public void close(@NotNull Player player) {
         if (!viewers.containsKey(player.getUniqueId())) return;
         if (player.getOpenInventory().getTopInventory().getHolder(false) instanceof ScrollerInventory) {
+            Debug.log("Closing scroller inventory for " + player.getName());
             viewers.remove(player.getUniqueId());
             player.closeInventory();
         }
@@ -208,6 +213,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      * @param player the player to open the ScrollerInventory for
      */
     public void open(Player player) {
+        Debug.log("Opening scroller inventory for " + player.getName());
         player.openInventory(pages.getFirst());
         viewers.put(player.getUniqueId(), this);
     }
@@ -227,41 +233,44 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         //ALWAYS cancel the click event
         event.setCancelled(true);
         //If the pressed item was a nextPage button
-        if (Objects.equals(item.getItemMeta().customName(), this.nextPageName)){
+        if (item.equals(this.nextPage)) {
+            Debug.log("Next page button was clicked");
             //If there is no next page, don't do anything
             if (scrollerInventory.currentPage < scrollerInventory.pages.size() - 1) {
+                Debug.log("Next page available, incrementing current page and opening new page");
                 //Next page exists, flip the page
                 scrollerInventory.currentPage += 1;
-                p.openInventory(scrollerInventory.pages.get(scrollerInventory.currentPage));
+                player.openInventory(scrollerInventory.pages.get(scrollerInventory.currentPage));
+                return;
             }
-            return;
+            Debug.log("No next page to go to");
             //if the pressed item was a previous page button
-        } else if (Objects.equals(item.getItemMeta().customName(), this.previousPageName)){
+        } else if (item.equals(this.previousPage)) {
+            Debug.log("Previous page button was clicked");
             //If the page number is more than 0 (So a previous page exists)
             if (scrollerInventory.currentPage > 0) {
+                Debug.log("Previous page available, decrementing current page and opening new page");
                 //Flip to previous page
                 scrollerInventory.currentPage -= 1;
-                p.openInventory(scrollerInventory.pages.get(scrollerInventory.currentPage));
+                player.openInventory(scrollerInventory.pages.get(scrollerInventory.currentPage));
+                return;
             }
-            return;
-        }
-        if (event.getCurrentItem() != null) {
-            if (this.click != null)
-                if (click.click(p, event.getCurrentItem(), this))
-                    close(p);
+            Debug.log("No previous page to go to");
         }
     }
 
     @EventHandler
     public void onInventoryClose(@NotNull InventoryCloseEvent event) {
-        if (!(event.getPlayer() instanceof Player p)) return;
+        if (!(event.getPlayer() instanceof Player player)) return;
 
-        if (p.getOpenInventory().getTopInventory().getHolder(false) instanceof ScrollerInventory scrollerInventory) {
+        if (player.getOpenInventory().getTopInventory().getHolder(false) instanceof ScrollerInventory scrollerInventory) {
             if (scrollerInventory.getId() != this.id) return;
             //TODO this may also trigger if the page changes
-            if (this.close != null)
-                this.close.close(p, this);
-            viewers.remove(p.getUniqueId());
+            if (this.close != null) {
+                Debug.log("Running close action for player " + player.getName());
+                this.close.close(player, this);
+            }
+            viewers.remove(player.getUniqueId());
         }
     }
 
