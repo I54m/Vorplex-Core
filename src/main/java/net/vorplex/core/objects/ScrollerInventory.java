@@ -40,6 +40,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
 
     private final ItemStack nextPage = ItemStack.of(Material.ARROW, 1);
     private final ItemStack previousPage = ItemStack.of(Material.ARROW, 1);
+    private final ItemStack fillerItem = ItemStack.of(Material.GRAY_STAINED_GLASS_PANE, 1);
 
     private final VorplexCore plugin = VorplexCore.getInstance();
 
@@ -128,6 +129,10 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         meta = nextPage.getItemMeta();
         meta.customName(Component.text("Next Page").color(NamedTextColor.LIGHT_PURPLE));
         nextPage.setItemMeta(meta);
+
+        meta = fillerItem.getItemMeta();
+        meta.setHideTooltip(true);
+        fillerItem.setItemMeta(meta);
     }
 
     /**
@@ -139,8 +144,15 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     private @NotNull Inventory getBlankPage(@NotNull Component name) {
         Inventory page = plugin.getServer().createInventory(this, 54, name);
 
-        page.setItem(53, this.nextPage);
         page.setItem(45, this.previousPage);
+        page.setItem(46, this.fillerItem);
+        page.setItem(47, this.fillerItem);
+        page.setItem(48, this.fillerItem);
+        page.setItem(49, this.fillerItem);
+        page.setItem(50, this.fillerItem);
+        page.setItem(51, this.fillerItem);
+        page.setItem(52, this.fillerItem);
+        page.setItem(53, this.nextPage);
 
         return page;
     }
@@ -167,8 +179,10 @@ public class ScrollerInventory implements Listener, InventoryHolder {
             Debug.log("No Pagination required - Items will fit in a " + inventorySize + " Size inventory");
             Inventory page = plugin.getServer().createInventory(this, inventorySize, name);
 
+            int index = 0;
             for (ItemStack item : items) {
-                page.addItem(item);
+                page.setItem(index, item);
+                index++;
             }
 
             pages.add(page);
@@ -179,14 +193,17 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         Debug.log("Pagination required - creating pages...");
         //create new blank page
         Inventory page = getBlankPage(name);
+        int index = 0;
         //According to the items in the arraylist, add items to the ScrollerInventory
         for (ItemStack item : items) {
             //If the current page is full, add the page to the inventory's pages arraylist, and create a new page to add the items.
-            if (page.firstEmpty() == 46) {
+            if (index >= 45) {
                 pages.add(page);
                 page = getBlankPage(name);
+                index = 0;
             }
-            page.addItem(item);
+            page.setItem(index, item);
+            index++;
         }
         pages.add(page);
         Debug.log("Created " + pages.size() + " total pages.");
@@ -223,15 +240,25 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         Inventory inventory = event.getClickedInventory();
         if (inventory == null || !(inventory.getHolder(false) instanceof ScrollerInventory scrollerInventory)) return;
         if (scrollerInventory.getId() != this.id) return;
-        if (!(event.getWhoClicked() instanceof Player p)) return;
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+        //ALWAYS cancel the click event in a scroller inventory
+        event.setCancelled(true);
+        // check if there is an item clicked and if there is a click action associated with the scroller inventory, then execute it
+        if (event.getCurrentItem() != null)
+            if (this.click != null) {
+                Debug.log("Running click action for player " + player.getName() + " with item: " + event.getCurrentItem());
+                if (click.click(player, event.getCurrentItem(), this)) {
+                    Debug.log("Click action returned true - closing scroller inventory");
+                    close(player);
+                }
+            }
 
         //Get the current scroller inventory the player is looking at, if the player is looking at one.
         ItemStack item = event.getCurrentItem();
         if (item == null) return;
         if (item.getItemMeta() == null) return;
         if (item.getItemMeta().customName() == null) return;
-        //ALWAYS cancel the click event
-        event.setCancelled(true);
+
         //If the pressed item was a nextPage button
         if (item.equals(this.nextPage)) {
             Debug.log("Next page button was clicked");
