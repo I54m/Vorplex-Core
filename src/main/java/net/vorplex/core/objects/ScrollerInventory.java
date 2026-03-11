@@ -3,6 +3,7 @@ package net.vorplex.core.objects;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.vorplex.core.VorplexCore;
 import net.vorplex.core.util.Debug;
 import org.bukkit.Material;
@@ -116,6 +117,34 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         if (!pages.isEmpty())
             return pages.getFirst();
         else return getBlankPage(this.name);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder pageSummary = new StringBuilder();
+        for (int i = 0; i < pages.size(); i++) {
+            Inventory page = pages.get(i);
+            pageSummary.append("{index=")
+                    .append(i)
+                    .append(", size=")
+                    .append(page.getSize())
+                    .append("}");
+
+            if (i < pages.size() - 1) {
+                pageSummary.append(", ");
+            }
+        }
+
+        return "ScrollerInventory{" +
+                "id=" + id +
+                ", name=" + PlainTextComponentSerializer.plainText().serialize(name) +
+                ", currentPage=" + currentPage +
+                ", totalPages=" + pages.size() +
+                ", pages=[" + pageSummary + "]" +
+                ", viewers=" + viewers.keySet() +
+                ", clickHandler=" + (click != null) +
+                ", closeHandler=" + (close != null) +
+                '}';
     }
 
     /**
