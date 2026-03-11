@@ -112,7 +112,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
 
     @Override
     public @NotNull Inventory getInventory() {
-        Debug.log("Raw getInventory() used! Please use open(Player) instead!");
+        //TODO may need to fetch current page so click actions work correctly
         if (!pages.isEmpty())
             return pages.getFirst();
         else return getBlankPage(this.name);
