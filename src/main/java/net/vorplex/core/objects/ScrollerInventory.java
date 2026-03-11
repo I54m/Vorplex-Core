@@ -123,11 +123,11 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      */
     private void setupControlItems() {
         ItemMeta meta = previousPage.getItemMeta();
-        meta.customName(Component.text("Previous Page").color(NamedTextColor.LIGHT_PURPLE));
+        meta.customName(Component.text("<- Previous Page").color(NamedTextColor.LIGHT_PURPLE));
         previousPage.setItemMeta(meta);
 
         meta = nextPage.getItemMeta();
-        meta.customName(Component.text("Next Page").color(NamedTextColor.LIGHT_PURPLE));
+        meta.customName(Component.text("Next Page ->").color(NamedTextColor.LIGHT_PURPLE));
         nextPage.setItemMeta(meta);
 
         meta = fillerItem.getItemMeta();
