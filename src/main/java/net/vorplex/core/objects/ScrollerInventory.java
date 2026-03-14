@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class ScrollerInventory implements Listener, InventoryHolder {
@@ -30,7 +29,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     @Getter
     private int currentPage = 0;
     @Getter
-    private final HashMap<UUID, ScrollerInventory> viewers = new HashMap<>();
+    private final ArrayList<UUID> viewers = new ArrayList<>();
     @Getter
     private final Component name;
     @Nullable
@@ -142,7 +141,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
                 ", currentPage=" + currentPage +
                 ", totalPages=" + pages.size() +
                 ", pages=[" + pageSummary + "]" +
-                ", viewers=" + viewers.keySet() +
+                ", viewers=" + viewers +
                 ", clickHandler=" + (click != null) +
                 ", closeHandler=" + (close != null) +
                 '}';
@@ -246,7 +245,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      * @param player the player to close the ScrollerInventory for
      */
     public void close(@NotNull Player player) {
-        if (!viewers.containsKey(player.getUniqueId())) return;
+        if (!viewers.contains(player.getUniqueId())) return;
         if (player.getOpenInventory().getTopInventory().getHolder(false) instanceof ScrollerInventory) {
             Debug.log("Closing scroller inventory for " + player.getName());
             viewers.remove(player.getUniqueId());
@@ -262,7 +261,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     public void open(Player player) {
         Debug.log("Opening scroller inventory for " + player.getName());
         player.openInventory(pages.getFirst());
-        viewers.put(player.getUniqueId(), this);
+        viewers.add(player.getUniqueId());
     }
 
     @EventHandler(ignoreCancelled = true)
