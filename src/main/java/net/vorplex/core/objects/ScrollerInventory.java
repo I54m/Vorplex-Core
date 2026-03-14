@@ -38,6 +38,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     @Nullable
     private final onClose close;
     private final ArrayList<Inventory> pages = new ArrayList<>();
+    private final ArrayList<Player> switchingPages = new ArrayList<>();
 
     private final ItemStack nextPage = ItemStack.of(Material.ARROW, 1);
     private final ItemStack previousPage = ItemStack.of(Material.ARROW, 1);
@@ -280,7 +281,8 @@ public class ScrollerInventory implements Listener, InventoryHolder {
             //If there is no next page, don't do anything
             if (scrollerInventory.currentPage < scrollerInventory.pages.size() - 1) {
                 Debug.log("Next page available, incrementing current page and opening new page");
-                //Next page exists, flip the page
+                //Next page exists, flip the page and add player to switching pages list
+                switchingPages.add(player);
                 scrollerInventory.currentPage += 1;
                 player.openInventory(scrollerInventory.pages.get(scrollerInventory.currentPage));
                 return;
@@ -292,7 +294,8 @@ public class ScrollerInventory implements Listener, InventoryHolder {
             //If the page number is more than 0 (So a previous page exists)
             if (scrollerInventory.currentPage > 0) {
                 Debug.log("Previous page available, decrementing current page and opening new page");
-                //Flip to previous page
+                //Flip to previous page and add player to switching pages list
+                switchingPages.add(player);
                 scrollerInventory.currentPage -= 1;
                 player.openInventory(scrollerInventory.pages.get(scrollerInventory.currentPage));
                 return;
@@ -317,7 +320,11 @@ public class ScrollerInventory implements Listener, InventoryHolder {
 
         if (event.getInventory().getHolder(false) instanceof ScrollerInventory scrollerInventory) {
             if (scrollerInventory.getId() != this.id) return;
-            //TODO this may also trigger if the page changes test with a close action to decide if this needs to be changed
+            if (switchingPages.contains(player)) {
+                Debug.log("Player is switching pages - no close action triggered");
+                switchingPages.remove(player);
+                return;
+            }
             if (this.close != null) {
                 Debug.log("Running close action for player " + player.getName());
                 this.close.close(player, this);
