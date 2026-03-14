@@ -22,6 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ScrollerInventory implements Listener, InventoryHolder {
@@ -30,9 +32,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     @Getter
     private final UUID id;
     @Getter
-    private int currentPage = 0;
-    @Getter
-    private final ArrayList<UUID> viewers = new ArrayList<>();
+    private final HashMap<UUID, Integer> viewers = new HashMap<>();
     @Getter
     private final Component name;
     @Nullable
@@ -142,7 +142,6 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         return "ScrollerInventory{" +
                 "id=" + id +
                 ", name=" + PlainTextComponentSerializer.plainText().serialize(name) +
-                ", currentPage=" + currentPage +
                 ", totalPages=" + pages.size() +
                 ", pages=[" + pageSummary + "]" +
                 ", viewers=" + viewers +
@@ -199,8 +198,10 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      * @param items An ArrayList of ItemStacks to use in the ScrollerInventory
      */
     public void repopulate(@NotNull ArrayList<ItemStack> items) {
+        //clear all pages and close the inventory for all players
         pages.clear();
-        currentPage = 0;
+        viewers.forEach(((uuid, integer) -> close(Objects.requireNonNull(plugin.getServer().getPlayer(uuid)))));
+        viewers.clear();
 
         Debug.log("Repopulate triggered for scrollerInventory with id: " + this.id + " Items: " + items);
         int itemsPerPagedInventory = 45;
@@ -252,7 +253,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      * @param player the player to close the ScrollerInventory for
      */
     public void close(@NotNull Player player) {
-        if (!viewers.contains(player.getUniqueId())) return;
+        if (!viewers.containsKey(player.getUniqueId())) return;
         if (player.getOpenInventory().getTopInventory().getHolder(false) instanceof ScrollerInventory) {
             Debug.log("Closing scroller inventory for " + player.getName());
             viewers.remove(player.getUniqueId());
@@ -268,7 +269,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     public void open(Player player) {
         Debug.log("Opening scroller inventory for " + player.getName());
         player.openInventory(pages.getFirst());
-        viewers.add(player.getUniqueId());
+        viewers.put(player.getUniqueId(), 0);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -277,6 +278,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         if (!(inventory.getHolder(false) instanceof ScrollerInventory scrollerInventory)) return;
         if (scrollerInventory.getId() != this.id) return;
         if (!(event.getWhoClicked() instanceof Player player)) return;
+        int currentPage = this.viewers.get(player.getUniqueId());
         //ALWAYS cancel the click event in a scroller inventory
         event.setCancelled(true);
 
@@ -287,12 +289,12 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         if (meta != null && meta.getPersistentDataContainer().has(nextPageKey, PersistentDataType.BYTE)) {
             Debug.log("Next page button was clicked");
             //If there is no next page, don't do anything
-            if (scrollerInventory.currentPage < scrollerInventory.pages.size() - 1) {
+            if (currentPage < scrollerInventory.pages.size() - 1) {
                 Debug.log("Next page available, incrementing current page and opening new page");
                 //Next page exists, flip the page and add player to switching pages list
                 switchingPages.add(player);
-                scrollerInventory.currentPage += 1;
-                player.openInventory(scrollerInventory.pages.get(scrollerInventory.currentPage));
+                viewers.put(player.getUniqueId(), currentPage++);
+                player.openInventory(scrollerInventory.pages.get(currentPage));
                 return;
             }
             Debug.log("No next page to go to");
@@ -300,12 +302,12 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         } else if (meta != null && meta.getPersistentDataContainer().has(previousPageKey, PersistentDataType.BYTE)) {
             Debug.log("Previous page button was clicked");
             //If the page number is more than 0 (So a previous page exists)
-            if (scrollerInventory.currentPage > 0) {
+            if (currentPage > 0) {
                 Debug.log("Previous page available, decrementing current page and opening new page");
                 //Flip to previous page and add player to switching pages list
                 switchingPages.add(player);
-                scrollerInventory.currentPage -= 1;
-                player.openInventory(scrollerInventory.pages.get(scrollerInventory.currentPage));
+                viewers.put(player.getUniqueId(), currentPage--);
+                player.openInventory(scrollerInventory.pages.get(currentPage));
                 return;
             }
             Debug.log("No previous page to go to");
