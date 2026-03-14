@@ -7,6 +7,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.vorplex.core.VorplexCore;
 import net.vorplex.core.util.Debug;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +26,7 @@ import java.util.UUID;
 
 public class ScrollerInventory implements Listener, InventoryHolder {
 
+    private final VorplexCore plugin = VorplexCore.getInstance();
     @Getter
     private final UUID id;
     @Getter
@@ -42,8 +45,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     private final ItemStack nextPage = ItemStack.of(Material.ARROW, 1);
     private final ItemStack previousPage = ItemStack.of(Material.ARROW, 1);
     private final ItemStack fillerItem = ItemStack.of(Material.GRAY_STAINED_GLASS_PANE, 1);
-
-    private final VorplexCore plugin = VorplexCore.getInstance();
+    private final NamespacedKey nextPageKey = new NamespacedKey(plugin, "next_page");
+    private final NamespacedKey previousPageKey = new NamespacedKey(plugin, "previous_page");
+    private final NamespacedKey fillerItemKey = new NamespacedKey(plugin, "filler_item");
 
     /**
      * Create a Scroller Inventory without any click or close actions
@@ -153,14 +157,17 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     private void setupControlItems() {
         ItemMeta meta = previousPage.getItemMeta();
         meta.customName(Component.text("<- Previous Page").color(NamedTextColor.LIGHT_PURPLE));
+        meta.getPersistentDataContainer().set(previousPageKey, PersistentDataType.BYTE, (byte) 1);
         previousPage.setItemMeta(meta);
 
         meta = nextPage.getItemMeta();
         meta.customName(Component.text("Next Page ->").color(NamedTextColor.LIGHT_PURPLE));
+        meta.getPersistentDataContainer().set(nextPageKey, PersistentDataType.BYTE, (byte) 1);
         nextPage.setItemMeta(meta);
 
         meta = fillerItem.getItemMeta();
         meta.setHideTooltip(true);
+        meta.getPersistentDataContainer().set(fillerItemKey, PersistentDataType.BYTE, (byte) 1);
         fillerItem.setItemMeta(meta);
     }
 
@@ -275,8 +282,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
 
         ItemStack item = event.getCurrentItem();
         if (item == null) return;
+        ItemMeta meta = item.getItemMeta();
         //If the pressed item was a nextPage button
-        if (item.equals(this.nextPage)) {
+        if (meta != null && meta.getPersistentDataContainer().has(nextPageKey, PersistentDataType.BYTE)) {
             Debug.log("Next page button was clicked");
             //If there is no next page, don't do anything
             if (scrollerInventory.currentPage < scrollerInventory.pages.size() - 1) {
@@ -289,7 +297,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
             }
             Debug.log("No next page to go to");
             //if the pressed item was a previous page button
-        } else if (item.equals(this.previousPage)) {
+        } else if (meta != null && meta.getPersistentDataContainer().has(previousPageKey, PersistentDataType.BYTE)) {
             Debug.log("Previous page button was clicked");
             //If the page number is more than 0 (So a previous page exists)
             if (scrollerInventory.currentPage > 0) {
@@ -302,6 +310,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
             }
             Debug.log("No previous page to go to");
         }
+
+        // prevent click action triggering on filler item
+        if (meta != null && meta.getPersistentDataContainer().has(fillerItemKey, PersistentDataType.BYTE)) return;
 
         // check if there is an item clicked and if there is a click action associated with the scroller inventory, then execute it
         if (event.getCurrentItem() != null)
@@ -338,7 +349,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      */
     public interface onClick {
         /**
-         * Lambda function used to create a click action
+         * Lambda function used to create a click action - will not trigger on filler item or page buttons
          * @param clicker the Player who clicked the item
          * @param item the ItemStack that was clicked
          * @param scrollerInventory the ScrollerInventory that was clicked
@@ -352,7 +363,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      */
     public interface onClose {
         /**
-         * Lambda function used to create a close action
+         * Lambda function used to create a close action - will not trigger on page change
          *
          * @param closer            the Player who closed the inventory
          * @param scrollerInventory the ScrollerInventory that was closed
