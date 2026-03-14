@@ -272,22 +272,8 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         if (!(event.getWhoClicked() instanceof Player player)) return;
         //ALWAYS cancel the click event in a scroller inventory
         event.setCancelled(true);
-        // check if there is an item clicked and if there is a click action associated with the scroller inventory, then execute it
-        if (event.getCurrentItem() != null)
-            if (this.click != null) {
-                Debug.log("Running click action for player " + player.getName() + " with item: " + event.getCurrentItem());
-                if (click.click(player, event.getCurrentItem(), this)) {
-                    Debug.log("Click action returned true - closing scroller inventory");
-                    close(player);
-                }
-            }
 
-        //Get the current scroller inventory the player is looking at, if the player is looking at one.
         ItemStack item = event.getCurrentItem();
-        if (item == null) return;
-        if (item.getItemMeta() == null) return;
-        if (item.getItemMeta().customName() == null) return;
-
         //If the pressed item was a nextPage button
         if (item.equals(this.nextPage)) {
             Debug.log("Next page button was clicked");
@@ -313,6 +299,16 @@ public class ScrollerInventory implements Listener, InventoryHolder {
             }
             Debug.log("No previous page to go to");
         }
+
+        // check if there is an item clicked and if there is a click action associated with the scroller inventory, then execute it
+        if (event.getCurrentItem() != null)
+            if (this.click != null) {
+                Debug.log("Running click action for player " + player.getName() + " with item: " + event.getCurrentItem());
+                if (click.click(player, event.getCurrentItem(), this)) {
+                    Debug.log("Click action returned true - closing scroller inventory");
+                    close(player);
+                }
+            }
     }
 
     @EventHandler
