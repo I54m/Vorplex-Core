@@ -319,7 +319,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     public void onInventoryClose(@NotNull InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player player)) return;
 
-        if (player.getOpenInventory().getTopInventory().getHolder(false) instanceof ScrollerInventory scrollerInventory) {
+        if (event.getInventory().getHolder(false) instanceof ScrollerInventory scrollerInventory) {
             if (scrollerInventory.getId() != this.id) return;
             //TODO this may also trigger if the page changes test with a close action to decide if this needs to be changed
             if (this.close != null) {
