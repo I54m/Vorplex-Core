@@ -266,8 +266,8 @@ public class ScrollerInventory implements Listener, InventoryHolder {
 
     @EventHandler(ignoreCancelled = true)
     public void onClick(@NotNull InventoryClickEvent event) {
-        Inventory inventory = event.getClickedInventory();
-        if (inventory == null || !(inventory.getHolder(false) instanceof ScrollerInventory scrollerInventory)) return;
+        Inventory inventory = event.getView().getTopInventory();
+        if (!(inventory.getHolder(false) instanceof ScrollerInventory scrollerInventory)) return;
         if (scrollerInventory.getId() != this.id) return;
         if (!(event.getWhoClicked() instanceof Player player)) return;
         //ALWAYS cancel the click event in a scroller inventory
