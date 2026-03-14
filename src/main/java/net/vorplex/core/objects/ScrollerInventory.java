@@ -274,6 +274,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         event.setCancelled(true);
 
         ItemStack item = event.getCurrentItem();
+        if (item == null) return;
         //If the pressed item was a nextPage button
         if (item.equals(this.nextPage)) {
             Debug.log("Next page button was clicked");
