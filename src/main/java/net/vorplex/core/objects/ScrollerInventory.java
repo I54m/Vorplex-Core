@@ -285,7 +285,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
                 //Next page exists, flip the page and add player to switching pages list
                 page.setPageNumber(currentPage + 1);
                 viewers.put(player.getUniqueId(), page);
-                player.openInventory(page.getInventory());
+                renderPage(player);
                 return;
             }
             Debug.log("No next page to go to");
@@ -298,7 +298,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
                 //Flip to previous page and add player to switching pages list
                 page.setPageNumber(currentPage - 1);
                 viewers.put(player.getUniqueId(), page);
-                player.openInventory(page.getInventory());
+                renderPage(player);
                 return;
             }
             Debug.log("No previous page to go to");
