@@ -307,15 +307,14 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         // prevent click action triggering on filler item
         if (meta != null && meta.getPersistentDataContainer().has(fillerItemKey, PersistentDataType.BYTE)) return;
 
-        // check if there is an item clicked and if there is a click action associated with the scroller inventory, then execute it
-        if (event.getCurrentItem() != null)
-            if (this.clickAction != null) {
-                Debug.log("Running click action for player " + player.getName() + " with item: " + event.getCurrentItem());
-                if (clickAction.click(player, event.getCurrentItem(), this)) {
-                    Debug.log("Click action returned true - closing scroller inventory");
-                    close(player);
-                }
+        // check if there is a click action associated with the scroller inventory, then execute it
+        if (this.clickAction != null) {
+            Debug.log("Running click action for player " + player.getName() + " with item: " + event.getCurrentItem());
+            if (clickAction.click(player, event.getCurrentItem(), this)) {
+                Debug.log("Click action returned true - closing scroller inventory");
+                close(player);
             }
+        }
     }
 
     @EventHandler
