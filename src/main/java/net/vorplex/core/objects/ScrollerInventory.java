@@ -273,6 +273,10 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         //ALWAYS cancel the click event in a scroller inventory
         event.setCancelled(true);
 
+        // player clicked their own inventory or outside the inventory, event is already canceled, no need to continue
+        if (event.getClickedInventory() == null) return;
+        if (!event.getClickedInventory().equals(inventory)) return;
+
         ItemStack item = event.getCurrentItem();
         if (item == null) return;
         ItemMeta meta = item.getItemMeta();
