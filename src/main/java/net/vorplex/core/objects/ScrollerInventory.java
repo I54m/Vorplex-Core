@@ -12,6 +12,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
@@ -315,8 +316,8 @@ public class ScrollerInventory implements Listener, InventoryHolder {
 
         // check if there is a click action associated with the scroller inventory, then execute it
         if (this.clickAction != null) {
-            Debug.log("Running click action for player " + player.getName() + " with item: " + event.getCurrentItem());
-            if (this.clickAction.click(player, event.getCurrentItem(), this)) {
+            Debug.log("Running click action for player " + player.getName() + " with click type: " + event.getClick() + " with item: " + event.getCurrentItem());
+            if (this.clickAction.click(player, event.getClick(), event.getCurrentItem(), this)) {
                 Debug.log("Click action returned true - closing scroller inventory");
                 close(player);
             }
@@ -367,11 +368,12 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         /**
          * Lambda function used to create a click action - will not trigger on filler item or page buttons
          * @param clicker           the Player who clicked the item
+         * @param clickType         the type of click the player made on the item
          * @param item              the ItemStack that was clicked
          * @param scrollerInventory the ScrollerInventory that was clicked
          * @return                  true to close the inventory, false to leave open
          */
-        boolean click(Player clicker, ItemStack item, ScrollerInventory scrollerInventory);
+        boolean click(Player clicker, ClickType clickType, ItemStack item, ScrollerInventory scrollerInventory);
     }
 
     /**
