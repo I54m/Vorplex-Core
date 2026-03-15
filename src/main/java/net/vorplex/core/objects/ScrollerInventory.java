@@ -1,6 +1,7 @@
 package net.vorplex.core.objects;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -23,25 +24,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
 
 public class ScrollerInventory implements Listener, InventoryHolder {
 
+    // Constants
     private final VorplexCore plugin = VorplexCore.getInstance();
-    @Getter
-    private final UUID id;
-    @Getter
-    private final HashMap<UUID, Integer> viewers = new HashMap<>();
-    @Getter
-    private final Component name;
-    @Nullable
-    private final onClick click;
-    @Nullable
-    private final onClose close;
-    private final ArrayList<Inventory> pages = new ArrayList<>();
-    private final ArrayList<Player> switchingPages = new ArrayList<>();
-
+    private final int ITEMS_PER_PAGE = 45;
     private final ItemStack nextPage = ItemStack.of(Material.ARROW, 1);
     private final ItemStack previousPage = ItemStack.of(Material.ARROW, 1);
     private final ItemStack fillerItem = ItemStack.of(Material.GRAY_STAINED_GLASS_PANE, 1);
@@ -49,109 +38,109 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     private final NamespacedKey previousPageKey = new NamespacedKey(plugin, "previous_page");
     private final NamespacedKey fillerItemKey = new NamespacedKey(plugin, "filler_item");
 
+    // Constructor variables
+    @Getter
+    private final UUID id;
+    @Getter
+    private final Component name;
+    private final ArrayList<ItemStack> items;
+    @Nullable
+    private final onClick clickAction;
+    @Nullable
+    private final onClose closeAction;
+
+    // Storage
+    @Getter
+    private final HashMap<UUID, Page> viewers = new HashMap<>();
+
     /**
      * Create a Scroller Inventory without any click or close actions
      *
-     * @param items An ArrayList of ItemStacks to be added to the Inventory - will be paginated if required
      * @param name  The name of the ScrollerInventory
+     * @param items An ArrayList of ItemStacks to be added to the Inventory - will be paginated if required
      */
-    public ScrollerInventory(ArrayList<ItemStack> items, Component name) {
+    public ScrollerInventory(Component name, ArrayList<ItemStack> items) {
         this.id = UUID.randomUUID();
         this.name = name;
-        this.click = null;
-        this.close = null;
+        this.items = items;
+        this.clickAction = null;
+        this.closeAction = null;
 
-        // Setup control items
-        setupControlItems();
         // register events for this ScrollerInventory
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        //run the first population of the menu
-        repopulate(items);
+
         Debug.log("Created new ScrollerInventory: " + this);
     }
 
     /**
      * Create a Scroller Inventory with a click action and no close action
      *
-     * @param items An ArrayList of ItemStacks to be added to the Inventory - will be paginated if required
      * @param name  The name of the ScrollerInventory
-     * @param click A lambda function to execute upon the user clicking an item (does not work for nextPage or previousPage)
+     * @param items An ArrayList of ItemStacks to be added to the Inventory - will be paginated if required
+     * @param clickAction A lambda function to execute upon the user clicking an item (does not work for nextPage or previousPage)
      */
-    public ScrollerInventory(ArrayList<ItemStack> items, Component name, @Nullable onClick click) {
+    public ScrollerInventory(Component name, ArrayList<ItemStack> items, @Nullable onClick clickAction) {
         this.id = UUID.randomUUID();
         this.name = name;
-        this.click = click;
-        this.close = null;
+        this.items = items;
+        this.clickAction = clickAction;
+        this.closeAction = null;
 
-        // Setup control items
-        setupControlItems();
         // register events for this ScrollerInventory
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        //run the first population of the menu
-        repopulate(items);
+
         Debug.log("Created new ScrollerInventory: " + this);
     }
 
     /**
      * Create a Scroller Inventory with a click and a close action
      *
-     * @param items An ArrayList of ItemStacks to be added to the Inventory - will be paginated if required
      * @param name  The name of the ScrollerInventory
-     * @param click A lambda function to execute upon the user clicking an item (does not work for nextPage or previousPage)
-     * @param close A lambda function to execute upon the user closing the ScrollerInventory
+     * @param items An ArrayList of ItemStacks to be added to the Inventory - will be paginated if required
+     * @param clickAction A lambda function to execute upon the user clicking an item (does not work for nextPage or previousPage)
+     * @param closeAction A lambda function to execute upon the user closing the ScrollerInventory
      */
-    public ScrollerInventory(ArrayList<ItemStack> items, Component name, @Nullable onClick click, @Nullable onClose close) {
+    public ScrollerInventory(Component name, ArrayList<ItemStack> items, @Nullable onClick clickAction, @Nullable onClose closeAction) {
         this.id = UUID.randomUUID();
         this.name = name;
-        this.click = click;
-        this.close = close;
+        this.items = items;
+        this.clickAction = clickAction;
+        this.closeAction = closeAction;
 
-        // Setup control items
-        setupControlItems();
         // register events for this ScrollerInventory
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        //run the first population of the menu
-        repopulate(items);
+
         Debug.log("Created new ScrollerInventory: " + this);
     }
 
     @Override
     public @NotNull Inventory getInventory() {
-        //TODO may need to fetch current page so click actions work correctly
-        if (!pages.isEmpty())
-            return pages.getFirst();
-        else return getBlankPage(this.name);
+        int inventorySize;
+        if (items.size() > ITEMS_PER_PAGE) {
+            inventorySize = 54;
+        } else {
+            int rows = (int) Math.ceil(items.size() / 9.0);
+            if (rows == 0) rows = 1;
+            inventorySize = rows * 9;
+        }
+        return renderPage(plugin.getServer().createInventory(this, inventorySize, name), 0);
     }
 
     @Override
     public String toString() {
-        StringBuilder pageSummary = new StringBuilder();
-        for (int i = 0; i < pages.size(); i++) {
-            Inventory page = pages.get(i);
-            pageSummary.append("{index=")
-                    .append(i)
-                    .append(", size=")
-                    .append(page.getSize())
-                    .append("}");
-
-            if (i < pages.size() - 1) {
-                pageSummary.append(", ");
-            }
-        }
 
         return "ScrollerInventory{" +
                 "id=" + id +
                 ", name=" + PlainTextComponentSerializer.plainText().serialize(name) +
-                ", totalPages=" + pages.size() +
-                ", pages=[" + pageSummary + "]" +
+                ", items=" + items +
+                ", clickAction=" + (clickAction != null) +
+                ", closeAction=" + (closeAction != null) +
                 ", viewers=" + viewers +
-                ", clickHandler=" + (click != null) +
-                ", closeHandler=" + (close != null) +
                 '}';
     }
 
     /**
-     * Set up the next and previous buttons
+     * Set up the next and previous buttons and the filler item
      */
     private void setupControlItems() {
         ItemMeta meta = previousPage.getItemMeta();
@@ -171,14 +160,12 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     }
 
     /**
-     * Creates a blank page with the next and prev buttons
-     *
-     * @param name The Name of the page/Inventory
-     * @return The Inventory object of the page
+     * Place the control buttons and filler item into the inventory
+     * @param page the inventory to place the items
      */
-    private @NotNull Inventory getBlankPage(@NotNull Component name) {
-        Inventory page = plugin.getServer().createInventory(this, 54, name);
-
+    private void setupControls(Inventory page) {
+        Debug.log("Setting up controls for pagination");
+        setupControlItems();
         page.setItem(45, this.previousPage);
         page.setItem(46, this.fillerItem);
         page.setItem(47, this.fillerItem);
@@ -188,63 +175,51 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         page.setItem(51, this.fillerItem);
         page.setItem(52, this.fillerItem);
         page.setItem(53, this.nextPage);
-
-        return page;
     }
 
     /**
-     * Used to repopulate the ScrollerInventory with items
-     *
-     * @param items An ArrayList of ItemStacks to use in the ScrollerInventory
+     * Render the page for a specific player
+     * @param player the player to render the page for
      */
-    public void repopulate(@NotNull ArrayList<ItemStack> items) {
-        //clear all pages and close the inventory for all players
-        pages.clear();
-        viewers.forEach(((uuid, integer) -> close(Objects.requireNonNull(plugin.getServer().getPlayer(uuid)))));
-        viewers.clear();
+    private void renderPage(Player player) {
+        UUID uuid = player.getUniqueId();
+        Inventory inv = viewers.get(uuid).getInventory();
+        int page = viewers.get(uuid).getPageNumber();
 
-        Debug.log("Repopulate triggered for scrollerInventory with id: " + this.id + " Items: " + items);
-        int itemsPerPagedInventory = 45;
+        if (inv == null) return;
 
-        // If we don't need pagination
-        if (items.size() <= itemsPerPagedInventory) {
+        renderPage(inv, page);
+    }
 
-            int requiredRows = (int) Math.ceil(items.size() / 9.0);
-            if (requiredRows == 0) requiredRows = 1;
+    /**
+     * Render a specific page without requiring a player
+     *
+     * @param inv  the inventory to render the page to
+     * @param page the page the render
+     * @return the fully rendered inventory page
+     */
+    private Inventory renderPage(@NotNull Inventory inv, int page) {
+        // Clear inventory
+        inv.clear();
 
-            int inventorySize = requiredRows * 9;
-            Debug.log("No Pagination required - Items will fit in a " + inventorySize + " Size inventory");
-            Inventory page = plugin.getServer().createInventory(this, inventorySize, name);
-
-            int index = 0;
+        if (items.size() <= ITEMS_PER_PAGE) {
+            int slot = 0;
             for (ItemStack item : items) {
-                page.setItem(index, item);
-                index++;
+                inv.setItem(slot++, item);
             }
-
-            pages.add(page);
-            return;
+            return inv;
         }
 
-        // Pagination required
-        Debug.log("Pagination required - creating pages...");
-        //create new blank page
-        Inventory page = getBlankPage(name);
-        int index = 0;
-        //According to the items in the arraylist, add items to the ScrollerInventory
-        for (ItemStack item : items) {
-            //If the current page is full, add the page to the inventory's pages arraylist, and create a new page to add the items.
-            if (index >= 45) {
-                pages.add(page);
-                page = getBlankPage(name);
-                index = 0;
-            }
-            page.setItem(index, item);
-            index++;
-        }
-        pages.add(page);
-        Debug.log("Created " + pages.size() + " total pages.");
+        int startIndex = page * ITEMS_PER_PAGE;
+        int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, items.size());
 
+        int slot = 0;
+        for (int i = startIndex; i < endIndex; i++) {
+            inv.setItem(slot++, items.get(i));
+        }
+
+        setupControls(inv);
+        return inv;
     }
 
     /**
@@ -268,8 +243,23 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      */
     public void open(Player player) {
         Debug.log("Opening scroller inventory for " + player.getName());
-        player.openInventory(pages.getFirst());
-        viewers.put(player.getUniqueId(), 0);
+        final int inventorySize;
+
+        if (items.size() > ITEMS_PER_PAGE) {
+            inventorySize = 54;
+            Debug.log("Pagination required - pages will be rendered as needed");
+        } else {
+            int rows = (int) Math.ceil(items.size() / 9.0);
+            if (rows == 0) rows = 1;
+            inventorySize = rows * 9;
+            Debug.log("No Pagination required - Items will fit in a " + inventorySize + " Size inventory");
+        }
+
+        Inventory inv = plugin.getServer().createInventory(this, inventorySize, name);
+        viewers.put(player.getUniqueId(), new Page(inv, 0));
+        player.openInventory(inv);
+
+        renderPage(player);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -278,7 +268,8 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         if (!(inventory.getHolder(false) instanceof ScrollerInventory scrollerInventory)) return;
         if (scrollerInventory.getId() != this.id) return;
         if (!(event.getWhoClicked() instanceof Player player)) return;
-        int currentPage = this.viewers.get(player.getUniqueId());
+        Page page = this.viewers.get(player.getUniqueId());
+        int currentPage = page.getPageNumber();
         //ALWAYS cancel the click event in a scroller inventory
         event.setCancelled(true);
 
@@ -289,12 +280,12 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         if (meta != null && meta.getPersistentDataContainer().has(nextPageKey, PersistentDataType.BYTE)) {
             Debug.log("Next page button was clicked");
             //If there is no next page, don't do anything
-            if (currentPage < scrollerInventory.pages.size() - 1) {
+            if (currentPage < (items.size() - 1) / 45) {
                 Debug.log("Next page available, incrementing current page and opening new page");
                 //Next page exists, flip the page and add player to switching pages list
-                switchingPages.add(player);
-                viewers.put(player.getUniqueId(), currentPage++);
-                player.openInventory(scrollerInventory.pages.get(currentPage));
+                page.setPageNumber(currentPage + 1);
+                viewers.put(player.getUniqueId(), page);
+                player.openInventory(page.getInventory());
                 return;
             }
             Debug.log("No next page to go to");
@@ -305,9 +296,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
             if (currentPage > 0) {
                 Debug.log("Previous page available, decrementing current page and opening new page");
                 //Flip to previous page and add player to switching pages list
-                switchingPages.add(player);
-                viewers.put(player.getUniqueId(), currentPage--);
-                player.openInventory(scrollerInventory.pages.get(currentPage));
+                page.setPageNumber(currentPage - 1);
+                viewers.put(player.getUniqueId(), page);
+                player.openInventory(page.getInventory());
                 return;
             }
             Debug.log("No previous page to go to");
@@ -318,9 +309,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
 
         // check if there is an item clicked and if there is a click action associated with the scroller inventory, then execute it
         if (event.getCurrentItem() != null)
-            if (this.click != null) {
+            if (this.clickAction != null) {
                 Debug.log("Running click action for player " + player.getName() + " with item: " + event.getCurrentItem());
-                if (click.click(player, event.getCurrentItem(), this)) {
+                if (clickAction.click(player, event.getCurrentItem(), this)) {
                     Debug.log("Click action returned true - closing scroller inventory");
                     close(player);
                 }
@@ -333,16 +324,34 @@ public class ScrollerInventory implements Listener, InventoryHolder {
 
         if (event.getInventory().getHolder(false) instanceof ScrollerInventory scrollerInventory) {
             if (scrollerInventory.getId() != this.id) return;
-            if (switchingPages.contains(player)) {
-                Debug.log("Player is switching pages - no close action triggered");
-                switchingPages.remove(player);
-                return;
-            }
-            if (this.close != null) {
+            if (this.closeAction != null) {
                 Debug.log("Running close action for player " + player.getName());
-                this.close.close(player, this);
+                this.closeAction.close(player, this);
             }
             viewers.remove(player.getUniqueId());
+        }
+    }
+
+    /**
+     * A simple object used to store both an inventory and the page number that is currently rendered
+     */
+    public static class Page {
+
+        @Getter
+        @Setter
+        private int pageNumber;
+        @Getter
+        private final Inventory inventory;
+
+        /**
+         * A simple object used to store both an inventory and the page number that is currently rendered
+         *
+         * @param inventory  the inventory currently open
+         * @param pageNumber the current page number that is rendered
+         */
+        public Page(Inventory inventory, int pageNumber) {
+            this.pageNumber = pageNumber;
+            this.inventory = inventory;
         }
     }
 
