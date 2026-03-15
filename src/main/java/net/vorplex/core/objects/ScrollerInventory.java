@@ -46,9 +46,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     private final Component name;
     private final ArrayList<ItemStack> items;
     @Nullable
-    private final onClick clickAction;
+    private final ClickAction clickAction;
     @Nullable
-    private final onClose closeAction;
+    private final CloseAction closeAction;
 
     // Storage
     @Getter
@@ -80,7 +80,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      * @param items       An ArrayList of ItemStacks to be added to the Inventory - will be paginated if required
      * @param clickAction A lambda function to execute upon the user clicking an item (does not work for nextPage or previousPage)
      */
-    public ScrollerInventory(Component name, ArrayList<ItemStack> items, @Nullable onClick clickAction) {
+    public ScrollerInventory(Component name, ArrayList<ItemStack> items, @Nullable ClickAction clickAction) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.items = items;
@@ -101,7 +101,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      * @param clickAction A lambda function to execute upon the user clicking an item (does not work for nextPage or previousPage)
      * @param closeAction A lambda function to execute upon the user closing the ScrollerInventory
      */
-    public ScrollerInventory(Component name, ArrayList<ItemStack> items, @Nullable onClick clickAction, @Nullable onClose closeAction) {
+    public ScrollerInventory(Component name, ArrayList<ItemStack> items, @Nullable ClickAction clickAction, @Nullable CloseAction closeAction) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.items = items;
@@ -364,9 +364,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     /**
      * Interface used to create a click action
      */
-    public interface onClick {
+    public interface ClickAction {
         /**
-         * Lambda function used to create a click action - will not trigger on filler item or page buttons
+         * Lambda function used to process a click action - will not trigger on filler item or page buttons
          * @param clicker           the Player who clicked the item
          * @param clickType         the type of click the player made on the item
          * @param item              the ItemStack that was clicked
@@ -379,9 +379,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     /**
      * Interface used to create a close action
      */
-    public interface onClose {
+    public interface CloseAction {
         /**
-         * Lambda function used to create a close action - will not trigger on page change
+         * Lambda function used to process a close action - will not trigger on page change
          *
          * @param closer            the Player who closed the inventory
          * @param scrollerInventory the ScrollerInventory that was closed
