@@ -127,7 +127,7 @@ public class GiftsCommand implements CommandExecutor {
                 giftclone.setItemMeta(im);
                 items.add(giftclone);
             }
-            ScrollerInventory.onClick onClick = (clicker, item, scrollerInventory) -> {
+            ScrollerInventory.ClickAction onClick = (clicker, clickType, item, scrollerInventory) -> {
                 if (clicker == player) {
                     if (item == null || !item.hasItemMeta()) return false;
                     if (item.getItemMeta().hasDisplayName()) {
