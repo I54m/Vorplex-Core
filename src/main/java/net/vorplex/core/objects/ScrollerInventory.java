@@ -116,10 +116,10 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     @Override
     public @NotNull Inventory getInventory() {
         int inventorySize;
-        if (items.size() > ITEMS_PER_PAGE) {
+        if (this.items.size() > ITEMS_PER_PAGE) {
             inventorySize = 54;
         } else {
-            int rows = (int) Math.ceil(items.size() / 9.0);
+            int rows = (int) Math.ceil(this.items.size() / 9.0);
             if (rows == 0) rows = 1;
             inventorySize = rows * 9;
         }
@@ -130,12 +130,12 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     public String toString() {
 
         return "ScrollerInventory{" +
-                "id=" + id +
-                ", name=" + PlainTextComponentSerializer.plainText().serialize(name) +
-                ", items=" + items +
-                ", clickAction=" + (clickAction != null) +
-                ", closeAction=" + (closeAction != null) +
-                ", viewers=" + viewers +
+                "id=" + this.id +
+                ", name=" + PlainTextComponentSerializer.plainText().serialize(this.name) +
+                ", items=" + this.items +
+                ", clickAction=" + (this.clickAction != null) +
+                ", closeAction=" + (this.closeAction != null) +
+                ", viewers=" + this.viewers +
                 '}';
     }
 
@@ -143,20 +143,20 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      * Set up the next and previous buttons and the filler item
      */
     private void setupControlItems() {
-        ItemMeta meta = previousPage.getItemMeta();
+        ItemMeta meta = this.previousPage.getItemMeta();
         meta.customName(Component.text("<- Previous Page").color(NamedTextColor.LIGHT_PURPLE));
-        meta.getPersistentDataContainer().set(previousPageKey, PersistentDataType.BYTE, (byte) 1);
-        previousPage.setItemMeta(meta);
+        meta.getPersistentDataContainer().set(this.previousPageKey, PersistentDataType.BYTE, (byte) 1);
+        this.previousPage.setItemMeta(meta);
 
-        meta = nextPage.getItemMeta();
+        meta = this.nextPage.getItemMeta();
         meta.customName(Component.text("Next Page ->").color(NamedTextColor.LIGHT_PURPLE));
-        meta.getPersistentDataContainer().set(nextPageKey, PersistentDataType.BYTE, (byte) 1);
-        nextPage.setItemMeta(meta);
+        meta.getPersistentDataContainer().set(this.nextPageKey, PersistentDataType.BYTE, (byte) 1);
+        this.nextPage.setItemMeta(meta);
 
-        meta = fillerItem.getItemMeta();
+        meta = this.fillerItem.getItemMeta();
         meta.setHideTooltip(true);
-        meta.getPersistentDataContainer().set(fillerItemKey, PersistentDataType.BYTE, (byte) 1);
-        fillerItem.setItemMeta(meta);
+        meta.getPersistentDataContainer().set(this.fillerItemKey, PersistentDataType.BYTE, (byte) 1);
+        this.fillerItem.setItemMeta(meta);
     }
 
     /**
@@ -183,8 +183,8 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      */
     private void renderPage(Player player) {
         UUID uuid = player.getUniqueId();
-        Inventory inv = viewers.get(uuid).getInventory();
-        int page = viewers.get(uuid).getPageNumber();
+        Inventory inv = this.viewers.get(uuid).getInventory();
+        int page = this.viewers.get(uuid).getPageNumber();
 
         if (inv == null) return;
 
@@ -202,20 +202,20 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         // Clear inventory
         inv.clear();
 
-        if (items.size() <= ITEMS_PER_PAGE) {
+        if (this.items.size() <= ITEMS_PER_PAGE) {
             int slot = 0;
-            for (ItemStack item : items) {
+            for (ItemStack item : this.items) {
                 inv.setItem(slot++, item);
             }
             return inv;
         }
 
         int startIndex = page * ITEMS_PER_PAGE;
-        int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, items.size());
+        int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, this.items.size());
 
         int slot = 0;
         for (int i = startIndex; i < endIndex; i++) {
-            inv.setItem(slot++, items.get(i));
+            inv.setItem(slot++, this.items.get(i));
         }
 
         setupControls(inv);
@@ -228,10 +228,10 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      * @param player the player to close the ScrollerInventory for
      */
     public void close(@NotNull Player player) {
-        if (!viewers.containsKey(player.getUniqueId())) return;
+        if (!this.viewers.containsKey(player.getUniqueId())) return;
         if (player.getOpenInventory().getTopInventory().getHolder(false) instanceof ScrollerInventory) {
             Debug.log("Closing scroller inventory for " + player.getName());
-            viewers.remove(player.getUniqueId());
+            this.viewers.remove(player.getUniqueId());
             player.closeInventory();
         }
     }
@@ -245,18 +245,18 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         Debug.log("Opening scroller inventory for " + player.getName());
         final int inventorySize;
 
-        if (items.size() > ITEMS_PER_PAGE) {
+        if (this.items.size() > ITEMS_PER_PAGE) {
             inventorySize = 54;
             Debug.log("Pagination required - pages will be rendered as needed");
         } else {
-            int rows = (int) Math.ceil(items.size() / 9.0);
+            int rows = (int) Math.ceil(this.items.size() / 9.0);
             if (rows == 0) rows = 1;
             inventorySize = rows * 9;
             Debug.log("No Pagination required - Items will fit in a " + inventorySize + " Size inventory");
         }
 
-        Inventory inv = plugin.getServer().createInventory(this, inventorySize, name);
-        viewers.put(player.getUniqueId(), new Page(inv, 0));
+        Inventory inv = plugin.getServer().createInventory(this, inventorySize, this.name);
+        this.viewers.put(player.getUniqueId(), new Page(inv, 0));
         player.openInventory(inv);
 
         renderPage(player);
@@ -277,28 +277,28 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         if (item == null) return;
         ItemMeta meta = item.getItemMeta();
         //If the pressed item was a nextPage button
-        if (meta != null && meta.getPersistentDataContainer().has(nextPageKey, PersistentDataType.BYTE)) {
+        if (meta != null && meta.getPersistentDataContainer().has(this.nextPageKey, PersistentDataType.BYTE)) {
             Debug.log("Next page button was clicked");
             //If there is no next page, don't do anything
-            if (currentPage < (items.size() - 1) / 45) {
+            if (currentPage < (this.items.size() - 1) / 45) {
                 Debug.log("Next page available, incrementing current page and opening new page");
                 //Next page exists, flip the page and add player to switching pages list
                 page.setPageNumber(currentPage + 1);
-                viewers.put(player.getUniqueId(), page);
+                this.viewers.put(player.getUniqueId(), page);
                 renderPage(player);
                 return;
             }
             Debug.log("No next page to go to");
             return;
             //if the pressed item was a previous page button
-        } else if (meta != null && meta.getPersistentDataContainer().has(previousPageKey, PersistentDataType.BYTE)) {
+        } else if (meta != null && meta.getPersistentDataContainer().has(this.previousPageKey, PersistentDataType.BYTE)) {
             Debug.log("Previous page button was clicked");
             //If the page number is more than 0 (So a previous page exists)
             if (currentPage > 0) {
                 Debug.log("Previous page available, decrementing current page and opening new page");
                 //Flip to previous page and add player to switching pages list
                 page.setPageNumber(currentPage - 1);
-                viewers.put(player.getUniqueId(), page);
+                this.viewers.put(player.getUniqueId(), page);
                 renderPage(player);
                 return;
             }
@@ -307,12 +307,12 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         }
 
         // prevent click action triggering on filler item
-        if (meta != null && meta.getPersistentDataContainer().has(fillerItemKey, PersistentDataType.BYTE)) return;
+        if (meta != null && meta.getPersistentDataContainer().has(this.fillerItemKey, PersistentDataType.BYTE)) return;
 
         // check if there is a click action associated with the scroller inventory, then execute it
         if (this.clickAction != null) {
             Debug.log("Running click action for player " + player.getName() + " with item: " + event.getCurrentItem());
-            if (clickAction.click(player, event.getCurrentItem(), this)) {
+            if (this.clickAction.click(player, event.getCurrentItem(), this)) {
                 Debug.log("Click action returned true - closing scroller inventory");
                 close(player);
             }
@@ -329,7 +329,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
                 Debug.log("Running close action for player " + player.getName());
                 this.closeAction.close(player, this);
             }
-            viewers.remove(player.getUniqueId());
+            this.viewers.remove(player.getUniqueId());
         }
     }
 
