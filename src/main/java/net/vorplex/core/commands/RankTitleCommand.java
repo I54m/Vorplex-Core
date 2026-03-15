@@ -49,7 +49,7 @@ public class RankTitleCommand {
         for (int i = 0; i < 9; i++)
             items.add(ItemStack.of(Material.RED_STAINED_GLASS_PANE, 1));
 
-        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("9 Items")), items, (clicker, item, inventory) -> {
+        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("9 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
         }, (closer, inventory) -> {
@@ -66,7 +66,7 @@ public class RankTitleCommand {
         for (int i = 0; i < 18; i++)
             items.add(ItemStack.of(Material.RED_STAINED_GLASS_PANE, 1));
 
-        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("18 Items")), items, (clicker, item, inventory) -> {
+        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("18 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
         }, (closer, inventory) -> {
@@ -83,7 +83,7 @@ public class RankTitleCommand {
         for (int i = 0; i < 27; i++)
             items.add(ItemStack.of(Material.RED_STAINED_GLASS_PANE, 1));
 
-        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("27 Items")), items, (clicker, item, inventory) -> {
+        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("27 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
         }, (closer, inventory) -> {
@@ -100,7 +100,7 @@ public class RankTitleCommand {
         for (int i = 0; i < 36; i++)
             items.add(ItemStack.of(Material.RED_STAINED_GLASS_PANE, 1));
 
-        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("36 Items")), items, (clicker, item, inventory) -> {
+        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("36 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
         }, (closer, inventory) -> {
@@ -117,7 +117,7 @@ public class RankTitleCommand {
         for (int i = 0; i < 45; i++)
             items.add(ItemStack.of(Material.RED_STAINED_GLASS_PANE, 1));
 
-        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("45 Items")), items, (clicker, item, inventory) -> {
+        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("45 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
         }, (closer, inventory) -> {
@@ -134,7 +134,7 @@ public class RankTitleCommand {
         for (int i = 0; i < 54; i++)
             items.add(ItemStack.of(Material.RED_STAINED_GLASS_PANE, 1));
 
-        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("54 Items")), items, (clicker, item, inventory) -> {
+        ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("54 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
         }, (closer, inventory) -> {
