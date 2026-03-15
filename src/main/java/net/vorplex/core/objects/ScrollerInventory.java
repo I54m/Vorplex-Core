@@ -289,6 +289,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
                 return;
             }
             Debug.log("No next page to go to");
+            return;
             //if the pressed item was a previous page button
         } else if (meta != null && meta.getPersistentDataContainer().has(previousPageKey, PersistentDataType.BYTE)) {
             Debug.log("Previous page button was clicked");
@@ -302,6 +303,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
                 return;
             }
             Debug.log("No previous page to go to");
+            return;
         }
 
         // prevent click action triggering on filler item
