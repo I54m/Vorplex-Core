@@ -75,8 +75,8 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     /**
      * Create a Scroller Inventory with a click action and no close action
      *
-     * @param name  The name of the ScrollerInventory
-     * @param items An ArrayList of ItemStacks to be added to the Inventory - will be paginated if required
+     * @param name        The name of the ScrollerInventory
+     * @param items       An ArrayList of ItemStacks to be added to the Inventory - will be paginated if required
      * @param clickAction A lambda function to execute upon the user clicking an item (does not work for nextPage or previousPage)
      */
     public ScrollerInventory(Component name, ArrayList<ItemStack> items, @Nullable onClick clickAction) {
@@ -95,8 +95,8 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     /**
      * Create a Scroller Inventory with a click and a close action
      *
-     * @param name  The name of the ScrollerInventory
-     * @param items An ArrayList of ItemStacks to be added to the Inventory - will be paginated if required
+     * @param name        The name of the ScrollerInventory
+     * @param items       An ArrayList of ItemStacks to be added to the Inventory - will be paginated if required
      * @param clickAction A lambda function to execute upon the user clicking an item (does not work for nextPage or previousPage)
      * @param closeAction A lambda function to execute upon the user closing the ScrollerInventory
      */
@@ -196,7 +196,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      *
      * @param inv  the inventory to render the page to
      * @param page the page the render
-     * @return the fully rendered inventory page
+     * @return     the fully rendered inventory page
      */
     private Inventory renderPage(@NotNull Inventory inv, int page) {
         // Clear inventory
@@ -362,10 +362,10 @@ public class ScrollerInventory implements Listener, InventoryHolder {
     public interface onClick {
         /**
          * Lambda function used to create a click action - will not trigger on filler item or page buttons
-         * @param clicker the Player who clicked the item
-         * @param item the ItemStack that was clicked
+         * @param clicker           the Player who clicked the item
+         * @param item              the ItemStack that was clicked
          * @param scrollerInventory the ScrollerInventory that was clicked
-         * @return true to close the inventory, false to leave open
+         * @return                  true to close the inventory, false to leave open
          */
         boolean click(Player clicker, ItemStack item, ScrollerInventory scrollerInventory);
     }
