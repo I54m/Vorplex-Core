@@ -129,7 +129,6 @@ public class ScrollerInventory implements Listener, InventoryHolder {
 
     @Override
     public String toString() {
-
         return "ScrollerInventory{" +
                 "id=" + this.id +
                 ", name=" + PlainTextComponentSerializer.plainText().serialize(this.name) +
@@ -332,7 +331,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
             if (scrollerInventory.getId() != this.id) return;
             if (this.closeAction != null) {
                 Debug.log("Running close action for player " + player.getName());
-                this.closeAction.close(player, this);
+                this.closeAction.close(player, event.getReason(), this);
             }
             this.viewers.remove(player.getUniqueId());
         }
@@ -384,8 +383,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
          * Lambda function used to process a close action - will not trigger on page change
          *
          * @param closer            the Player who closed the inventory
+         * @param reason            the reason the inventory was closed
          * @param scrollerInventory the ScrollerInventory that was closed
          */
-        void close(Player closer, ScrollerInventory scrollerInventory);
+        void close(Player closer, InventoryCloseEvent.Reason reason, ScrollerInventory scrollerInventory);
     }
 }
