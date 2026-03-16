@@ -56,7 +56,7 @@ public class RankTitleCommand {
         ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("9 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
-        }, (closer, inventory) -> {
+        }, (closer, reason, inventory) -> {
             closer.sendRichMessage("<red>Close action triggered!");
         });
         scrollerInventory.open(player);
@@ -77,7 +77,7 @@ public class RankTitleCommand {
         ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("18 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
-        }, (closer, inventory) -> {
+        }, (closer, reason, inventory) -> {
             closer.sendRichMessage("<red>Close action triggered!");
         });
         scrollerInventory.open(player);
@@ -98,7 +98,7 @@ public class RankTitleCommand {
         ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("27 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
-        }, (closer, inventory) -> {
+        }, (closer, reason, inventory) -> {
             closer.sendRichMessage("<red>Close action triggered!");
         });
         scrollerInventory.open(player);
@@ -119,7 +119,7 @@ public class RankTitleCommand {
         ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("36 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
-        }, (closer, inventory) -> {
+        }, (closer, reason, inventory) -> {
             closer.sendRichMessage("<red>Close action triggered!");
         });
         scrollerInventory.open(player);
@@ -140,7 +140,7 @@ public class RankTitleCommand {
         ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("45 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
-        }, (closer, inventory) -> {
+        }, (closer, reason, inventory) -> {
             closer.sendRichMessage("<red>Close action triggered!");
         });
         scrollerInventory.open(player);
@@ -161,7 +161,7 @@ public class RankTitleCommand {
         ScrollerInventory scrollerInventory = new ScrollerInventory(name.append(Component.text("54 Items")), items, (clicker, clickType, item, inventory) -> {
             clicker.sendRichMessage("<green>Click action triggered!");
             return true;
-        }, (closer, inventory) -> {
+        }, (closer, reason, inventory) -> {
             closer.sendRichMessage("<red>Close action triggered!");
         });
         scrollerInventory.open(player);
