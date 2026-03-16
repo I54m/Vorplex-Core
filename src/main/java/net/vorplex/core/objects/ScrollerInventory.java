@@ -70,6 +70,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         // register events for this ScrollerInventory
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
+        //setup control Items
+        setupControlItems();
+
         Debug.log("Created new ScrollerInventory: " + this);
     }
 
@@ -89,6 +92,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
 
         // register events for this ScrollerInventory
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+
+        //setup control Items
+        setupControlItems();
 
         Debug.log("Created new ScrollerInventory: " + this);
     }
@@ -110,6 +116,9 @@ public class ScrollerInventory implements Listener, InventoryHolder {
 
         // register events for this ScrollerInventory
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+
+        //setup control Items
+        setupControlItems();
 
         Debug.log("Created new ScrollerInventory: " + this);
     }
@@ -143,6 +152,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      * Set up the next and previous buttons and the filler item
      */
     private void setupControlItems() {
+        Debug.log("Setting up control items used for pagination");
         ItemMeta meta = this.previousPage.getItemMeta();
         meta.customName(Component.text("<- Previous Page").color(NamedTextColor.LIGHT_PURPLE));
         meta.getPersistentDataContainer().set(this.previousPageKey, PersistentDataType.BYTE, (byte) 1);
@@ -164,8 +174,7 @@ public class ScrollerInventory implements Listener, InventoryHolder {
      * @param page the inventory to place the items
      */
     private void setupControls(Inventory page) {
-        Debug.log("Setting up controls for pagination");
-        setupControlItems();
+        Debug.log("Adding pagination control items to inventory");
         page.setItem(45, this.previousPage);
         page.setItem(46, this.fillerItem);
         page.setItem(47, this.fillerItem);
