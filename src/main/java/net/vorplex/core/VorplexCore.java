@@ -57,6 +57,8 @@ public class VorplexCore extends JavaPlugin {
     public AutoPickupConfig autoPickupConfig;
     @Getter
     public AutoRestartConfig autoRestartConfig;
+    @Getter
+    private boolean placeholderAPI;
 
     // Plugin storage Hashmaps
     public Map<String, String> permissionJoinMessages = new HashMap<>();
@@ -144,6 +146,14 @@ public class VorplexCore extends JavaPlugin {
             luckPermsAPI = provider.getProvider();
             getComponentLogger().info(Component.text("LuckPerms Detected!").color(NamedTextColor.GREEN));
         } else throw new IllegalStateException("LuckPerms not detected!");
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            placeholderAPI = true;
+            getComponentLogger().info(Component.text("PlaceholderAPI Detected!").color(NamedTextColor.GREEN));
+        } else {
+            placeholderAPI = false;
+            getComponentLogger().info(Component.text("PlaceholderAPI NOT Detected!").color(NamedTextColor.RED));
+            getComponentLogger().info(Component.text("Placeholder support will not be enabled!").color(NamedTextColor.RED));
+        }
         //load modules
         if (this.getConfig().getBoolean("buycommand.enabled")) {
             getComponentLogger().info(Component.text("Enabling Buy Command...").color(NamedTextColor.GREEN));
