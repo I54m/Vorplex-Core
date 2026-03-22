@@ -51,13 +51,7 @@ public class PlayerShow implements Listener {
             if (plugin.getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
                 if (player.hasPermission("vorplexcore.customjoinmessages")) {
                     if (plugin.customJoinMessages.containsKey(player.getUniqueId())) {
-                        String placeholder;
-                        if (plugin.equippedTitles.containsKey(player.getUniqueId()) && plugin.equippedTitles.get(player.getUniqueId()) != null) {
-                            placeholder = ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', plugin.equippedTitles.get(player.getUniqueId())) + ChatColor.DARK_GRAY + "]"+ ChatColor.RESET + " " +
-                                    prefix + ChatColor.RESET + " " + player.getName();
-                        } else {
-                            placeholder = prefix + ChatColor.RESET + " " + player.getName();
-                        }
+                        String placeholder = prefix + ChatColor.RESET + " " + player.getName();
                         String joinmessage = plugin.customJoinMessages.get(player.getUniqueId()).replace("%me%", placeholder).replace("\n", "");
                         for (Player all : Bukkit.getOnlinePlayers()) {
                             all.sendMessage(ChatColor.translateAlternateColorCodes('&', joinmessage));
@@ -70,11 +64,7 @@ public class PlayerShow implements Listener {
                 for (String permission : plugin.permissionJoinMessages.keySet()) {
                     if (player.hasPermission("vorplexcore.joinmessages." + permission)) {
                         String joinmessage = plugin.permissionJoinMessages.get(permission).replace("%name%", ChatColor.RESET + " " + player.getName()).replace("%prefix%", prefix);
-                        if (plugin.equippedTitles.containsKey(player.getUniqueId()) && plugin.equippedTitles.get(player.getUniqueId()) != null) {
-                            joinmessage = joinmessage.replace("%title%", ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', plugin.equippedTitles.get(player.getUniqueId())) + ChatColor.DARK_GRAY + "]"+ ChatColor.RESET + " ");
-                        } else {
-                            joinmessage = joinmessage.replace("%title%", "");
-                        }
+                        joinmessage = joinmessage.replace("%title%", "");
                         for (Player all : Bukkit.getOnlinePlayers()) {
                             all.sendMessage(ChatColor.translateAlternateColorCodes('&', joinmessage));
                         }

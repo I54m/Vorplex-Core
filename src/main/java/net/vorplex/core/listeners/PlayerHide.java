@@ -52,13 +52,7 @@ public class PlayerHide implements Listener {
             if (plugin.getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
                 if (player.hasPermission("vorplexcore.customleavemessages")) {
                     if (plugin.customLeaveMessages.containsKey(player.getUniqueId())) {
-                        String placeholder;
-                        if (plugin.equippedTitles.containsKey(player.getUniqueId()) && plugin.equippedTitles.get(player.getUniqueId()) != null) {
-                            placeholder = ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', plugin.equippedTitles.get(player.getUniqueId())) + ChatColor.DARK_GRAY + "]"+ ChatColor.RESET + " " +
-                                    prefix + ChatColor.RESET + " " + player.getName();
-                        } else {
-                            placeholder = prefix + ChatColor.RESET + " " + player.getName();
-                        }
+                        String placeholder = prefix + ChatColor.RESET + " " + player.getName();
                         String leavemessage = plugin.customLeaveMessages.get(player.getUniqueId()).replace("%me%", placeholder).replace("\n", "");
                         for (Player all : Bukkit.getOnlinePlayers()) {
                             all.sendMessage(ChatColor.translateAlternateColorCodes('&', leavemessage));
@@ -71,11 +65,7 @@ public class PlayerHide implements Listener {
                 for (String permission : plugin.permissionLeaveMessages.keySet()) {
                     if (player.hasPermission("vorplexcore.leavemessages." + permission)) {
                         String leavemessage = plugin.permissionLeaveMessages.get(permission).replace("%name%", ChatColor.RESET + " " + player.getName()).replace("%prefix%", prefix);
-                        if (plugin.equippedTitles.containsKey(player.getUniqueId()) && plugin.equippedTitles.get(player.getUniqueId()) != null) {
-                            leavemessage = leavemessage.replace("%title%", ChatColor.DARK_GRAY + "[" + ChatColor.translateAlternateColorCodes('&', plugin.equippedTitles.get(player.getUniqueId())) + ChatColor.DARK_GRAY + "]"+ ChatColor.RESET + " ");
-                        } else {
-                            leavemessage = leavemessage.replace("%title%", "");
-                        }
+                        leavemessage = leavemessage.replace("%title%", "");
                         for (Player all : Bukkit.getOnlinePlayers()) {
                             all.sendMessage(ChatColor.translateAlternateColorCodes('&', leavemessage));
                         }
