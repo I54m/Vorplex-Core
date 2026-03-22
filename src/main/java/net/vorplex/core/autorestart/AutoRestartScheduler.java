@@ -34,6 +34,7 @@ public class AutoRestartScheduler {
 
     public static void start(AutoRestartConfig autoRestartConfig) {
         if (!autoRestartConfig.valid) return;
+        plugin.autoRestartConfig = autoRestartConfig;
         long delayTicks = getDelayTicks(autoRestartConfig.schedule);
         tasks = new ArrayList<>();
 
