@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
+//TODO fetcher update - beginCall() & retrieveResult()
 @Setter
 public class UserFetcher implements Callable<User> {
     private UUID uuid;

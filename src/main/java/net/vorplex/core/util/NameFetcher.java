@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.UUID;
 
+//TODO fetcher update - try server cache first? - beginCall() & retrieveResult()
 public class NameFetcher {
     private static final HashMap<UUID, String> NAMES = new HashMap<>();
 

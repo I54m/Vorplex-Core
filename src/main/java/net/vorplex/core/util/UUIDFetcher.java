@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+//TODO fetcher update - try server cache first? - beginCall() & retrieveResult()
 public class UUIDFetcher implements Callable<UUID> {
 
     @Getter
