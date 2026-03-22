@@ -78,9 +78,9 @@ public class VorplexCore extends JavaPlugin {
 
     // Legacy Variables - deprecated to be removed
     //TODO Temp prefix until all modules have been converted to minimessage format
-    @Deprecated(since = "2.0-SNAPSHOT")
+    @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
     public String LEGACY_PREFIX;
-    @Deprecated(since = "2.0-SNAPSHOT")
+    @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
     public boolean essentials = false;
 
     //Plugin reload command
