@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
@@ -20,10 +21,7 @@ import net.vorplex.core.autorestart.AutoRestartScheduler;
 import net.vorplex.core.chat.AdminChatCommand;
 import net.vorplex.core.chat.AsyncChatListener;
 import net.vorplex.core.chat.StaffChatCommand;
-import net.vorplex.core.commands.AutoRestartCommand;
-import net.vorplex.core.commands.BuyCommand;
-import net.vorplex.core.commands.RankTitleCommand;
-import net.vorplex.core.commands.ToggleAutoPickupCommand;
+import net.vorplex.core.commands.*;
 import net.vorplex.core.listeners.BlockBreak;
 import net.vorplex.core.listeners.PlayerJoin;
 import net.vorplex.core.objects.Gift;
@@ -44,21 +42,24 @@ import java.util.*;
 
 public class VorplexCore extends JavaPlugin {
 
-    // Misc Plugin variables - still to be sorted through
+    // Misc Plugin variables
     @Getter
-    @Setter
+    @Setter(AccessLevel.PRIVATE)
     public static VorplexCore instance;
     @Getter
     private String prefix;
     private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
-    private int cacheTaskid;
-    public LuckPerms luckPermsAPI;
+
+    // Config classes
     @Getter
     public AutoPickupConfig autoPickupConfig;
     @Getter
     public AutoRestartConfig autoRestartConfig;
+
+    // Dependency variables
     @Getter
     private boolean placeholderAPI;
+    public LuckPerms luckPermsAPI;
 
     // Plugin storage Hashmaps
     public Map<String, String> permissionJoinMessages = new HashMap<>();
@@ -67,19 +68,18 @@ public class VorplexCore extends JavaPlugin {
     public Map<UUID, String> customLeaveMessages = new HashMap<>();
     public Map<UUID, ArrayList<Gift>> gifts = new HashMap<>();
 
-    // SQL Connection variables
-    private String host, username;
+    // SQL Connection variables - to be moved to storage class later
     private HikariDataSource hikari;
+    private String host, username;
     private static String database;
     private int port;
     public Connection connection;
+    private int cacheTaskid;
 
     // Legacy Variables - deprecated to be removed
     //TODO Temp prefix until all modules have been converted to minimessage format
     @Deprecated(since = "2.0-SNAPSHOT")
     public String LEGACY_PREFIX;
-    @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
-    public Map<UUID, String> equippedTitles = new HashMap<>();
     @Deprecated(since = "2.0-SNAPSHOT")
     public boolean essentials = false;
 
@@ -146,6 +146,7 @@ public class VorplexCore extends JavaPlugin {
             luckPermsAPI = provider.getProvider();
             getComponentLogger().info(Component.text("LuckPerms Detected!").color(NamedTextColor.GREEN));
         } else throw new IllegalStateException("LuckPerms not detected!");
+        //register placeholder api
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             placeholderAPI = true;
             getComponentLogger().info(Component.text("PlaceholderAPI Detected!").color(NamedTextColor.GREEN));
@@ -192,7 +193,10 @@ public class VorplexCore extends JavaPlugin {
         }
         if (getConfig().getBoolean("RankTitle.enabled")) {
             getComponentLogger().info(Component.text("Enabling Rank Title Module...").color(NamedTextColor.GREEN));
-            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(RankTitleCommand.COMMAND_NODE, List.of("titlerank", "tr", "rt")));
+            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
+                commands.registrar().register(RankTitleCommand.COMMAND_NODE, List.of("titlerank", "tr", "rt"));
+                commands.registrar().register(RealRankCommand.COMMAND_NODE, List.of("rankreal", "truerank"));
+            });
         }
 
 
