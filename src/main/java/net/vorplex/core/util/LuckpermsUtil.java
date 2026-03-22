@@ -5,42 +5,45 @@ import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.types.PrefixNode;
 import net.vorplex.core.VorplexCore;
-import org.apache.commons.lang3.NotImplementedException;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 public class LuckpermsUtil {
 
     private static final VorplexCore plugin = VorplexCore.getInstance();
 
+    /**
+     * Get a User's highest group
+     *
+     * @param user the user to get the group for
+     * @return the group with the highest weight
+     */
     @Nullable
     public static Group getGroup(@NotNull User user) {
-//        final Collection<Group> inheritedGroups = user.getInheritedGroups(user.getQueryOptions());
-//        for (Group group : inheritedGroups) {
-//        }
-        throw new NotImplementedException();
+        final Collection<Group> inheritedGroups = user.getInheritedGroups(user.getQueryOptions());
+        final Map<Integer, Group> groups = new HashMap<>();
+        int highestWeight = Integer.MIN_VALUE;
+        for (Group group : inheritedGroups) {
+            if (group.getWeight().isPresent()) {
+                groups.put(group.getWeight().getAsInt(), group);
+                if (group.getWeight().getAsInt() > highestWeight) highestWeight = group.getWeight().getAsInt();
+            }
+        }
+        return groups.getOrDefault(highestWeight, null);
     }
 
     /**
      * Get an online player's highest group
      *
      * @param player the player to get the group for
-     * @return the group with the highest weight
+     * @return       the group with the highest weight
      */
     @Nullable
     public static Group getPlayerGroup(@NotNull Player player) {
-        final Set<Group> possibleGroups = plugin.luckPermsAPI.getGroupManager().getLoadedGroups();
-        for (Group group : possibleGroups) {
-            if (player.hasPermission("group." + group.getName())) {
-                return group;
-            }
-        }
-        return null;
+        return getGroup(getUser(player));
     }
 
     /**
@@ -58,7 +61,7 @@ public class LuckpermsUtil {
      *
      * @param user      the user to fetch prefixes for
      * @param ranktitle true to include the ranktitle prefix
-     * @return a SortedMap of Integers to Strings where the Integer is the priority of the prefix and the string is the prefix
+     * @return          a SortedMap of Integers to Strings where the Integer is the priority of the prefix and the string is the prefix
      */
     public static SortedMap<Integer, String> getPrefixes(@NotNull User user, boolean ranktitle) {
         final SortedMap<Integer, String> prefixes = new TreeMap<>();
