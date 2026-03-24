@@ -1,5 +1,5 @@
 # DO NOT TOUCH THIS
-config-version: "1.4"
+config-version: "1.4.1"
 
 #Debug mode for extra debug logging
 debug: false
@@ -143,7 +143,7 @@ RankTitle:
   enabled: true
   #if the prefixes priority is higher than this it won't appear in the gui
   #this is also the priority that prefixes will be changed to when the player changes their prefix
-  priority-to-add-prefixes: 45
+  priority-to-add-prefixes: 9999
 
 #join messages module
 JoinMessages:
