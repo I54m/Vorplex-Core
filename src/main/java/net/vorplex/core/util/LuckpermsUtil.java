@@ -42,7 +42,7 @@ public class LuckpermsUtil {
      * @return       the group with the highest weight
      */
     @Nullable
-    public static Group getPlayerGroup(@NotNull Player player) {
+    public static Group getGroup(@NotNull Player player) {
         return getGroup(getUser(player));
     }
 
