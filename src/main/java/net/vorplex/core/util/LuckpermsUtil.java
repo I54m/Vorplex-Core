@@ -1,9 +1,11 @@
 package net.vorplex.core.util;
 
+import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.messaging.MessagingService;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.types.PrefixNode;
+import net.luckperms.api.query.QueryOptions;
 import net.vorplex.core.VorplexCore;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +21,7 @@ public class LuckpermsUtil {
      * Get a User's highest group
      *
      * @param user the user to get the group for
-     * @return the group with the highest weight
+     * @return     the group with the highest weight
      */
     @Nullable
     public static Group getGroup(@NotNull User user) {
@@ -50,7 +52,7 @@ public class LuckpermsUtil {
      * Get a User instance from an online player
      *
      * @param player the online player
-     * @return a user instance of the player
+     * @return       a user instance of the player
      */
     public static User getUser(@NotNull Player player) {
         return plugin.luckPermsAPI.getPlayerAdapter(Player.class).getUser(player);
@@ -69,6 +71,29 @@ public class LuckpermsUtil {
         if (!ranktitle)
             prefixes.remove(plugin.getConfig().getInt("RankTitle.priority-to-add-prefixes"));
         return prefixes;
+    }
+
+    /**
+     * Get the player's prefix with the highest weight
+     *
+     * @param player the user to fetch the prefix for
+     * @return the user's prefix or an empty string if no prefix is found
+     */
+    public static String getPrefix(@NotNull Player player) {
+        return getPrefix(getUser(player));
+    }
+
+    /**
+     * Get the user's prefix with the highest weight
+     *
+     * @param user the user to fetch the prefix for
+     * @return the user's prefix or an empty string if no prefix is found
+     */
+    public static String getPrefix(@NotNull User user) {
+        ContextManager cm = plugin.luckPermsAPI.getContextManager();
+        QueryOptions queryOptions = cm.getQueryOptions(user).orElse(cm.getStaticQueryOptions());
+        String prefix = user.getCachedData().getMetaData(queryOptions).getPrefix();
+        return prefix == null ? "" : prefix;
     }
 
     /**
