@@ -156,7 +156,7 @@ public class VorplexCore extends JavaPlugin {
             getComponentLogger().info(Component.text("Placeholder support will not be enabled!").color(NamedTextColor.RED));
         }
         //load modules
-        if (this.getConfig().getBoolean("buycommand.enabled")) {
+        if (this.getConfig().getBoolean("BuyCommand.enabled")) {
             getComponentLogger().info(Component.text("Enabling Buy Command...").color(NamedTextColor.GREEN));
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(BuyCommand.COMMAND_NODE));
         }
@@ -176,13 +176,13 @@ public class VorplexCore extends JavaPlugin {
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(ToggleAutoPickupCommand.COMMAND_NODE, List.of("tapu")));
             getServer().getPluginManager().registerEvents(new BlockBreak(), this);
         }
-        if (getConfig().getBoolean("chats.staff.enabled") || getConfig().getBoolean("chats.admin.enabled")) {
+        if (getConfig().getBoolean("Chats.Staff.enabled") || getConfig().getBoolean("Chats.Admin.enabled")) {
             getServer().getPluginManager().registerEvents(new AsyncChatListener(), this);
-            if (getConfig().getBoolean("chats.staff.enabled")) {
+            if (getConfig().getBoolean("Chats.Staff.enabled")) {
                 getComponentLogger().info(Component.text("Enabling Staff Chat...").color(NamedTextColor.GREEN));
                 this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(StaffChatCommand.COMMAND_NODE, List.of("sc")));
             }
-            if (getConfig().getBoolean("chats.admin.enabled")) {
+            if (getConfig().getBoolean("Chats.Admin.enabled")) {
                 getComponentLogger().info(Component.text("Enabling Admin Chat...").color(NamedTextColor.GREEN));
                 this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(AdminChatCommand.COMMAND_NODE, List.of("ac")));
             }
@@ -200,11 +200,6 @@ public class VorplexCore extends JavaPlugin {
         }
 
 
-//        if (this.getConfig().getBoolean("VorplexServer.enabled")) {
-//            this.getServer().getPluginManager().registerEvents(new CommandPreProcess(), this);
-//            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-//            getLogger().info("Enabled Server Module");
-//        }
 //        if (getConfig().getBoolean("JoinMessages.enabled") ||
 //                getConfig().getBoolean("Hub.enabled") ||
 //                (getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join") && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")))
@@ -348,18 +343,6 @@ public class VorplexCore extends JavaPlugin {
             stmt.executeUpdate();
             stmt.close();
             getLogger().info(database + " Database Created!");
-            if (getConfig().getBoolean("Titles.enabled")) {
-                String titles = "CREATE TABLE IF NOT EXISTS `" + database + "`.`vorplexcore_titles` ( `ID` SMALLINT NOT NULL AUTO_INCREMENT , `RawTitle` VARCHAR(256) NOT NULL , PRIMARY KEY (`ID`))" +
-                        " ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;";
-                String equippedTitles = "CREATE TABLE IF NOT EXISTS `" + database + "`.`vorplexcore_equippedtitles` ( `UUID` VARCHAR(36) NOT NULL , `TitleID` SMALLINT NOT NULL ," +
-                        " `RawTitle` VARCHAR(256) NOT NULL , PRIMARY KEY (`UUID`)) ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;";
-                PreparedStatement stmt1 = connection.prepareStatement(titles);
-                PreparedStatement stmt2 = connection.prepareStatement(equippedTitles);
-                stmt1.executeUpdate();
-                stmt1.close();
-                stmt2.executeUpdate();
-                stmt2.close();
-            }
             if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
                 String joinMessages = "CREATE TABLE IF NOT EXISTS `" + database + "`.`vorplexcore_joinmessages` ( `UUID` VARCHAR(36) NOT NULL ," +
                         "`RawMessage` VARCHAR(512) NOT NULL , PRIMARY KEY (`UUID`)) ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;";

@@ -1,54 +1,15 @@
 # DO NOT TOUCH THIS
-config-version: "1.4.1"
-
+config-version: "1.5"
 #Debug mode for extra debug logging
 debug: false
-#MYSQL Options for modules that require it
-MySQL:
-  #host use 127.0.0.1 or localhost for localhost
-  host: localhost
-  #name of the database you want the plugin to use (will create it if it doesn't exist)
-  database: vorplexcoredb
-  #username and password you want to plugin to use to access the MYSql database
-  username: vorplexcore
-  password: vorplexcore
-  #the port must be an integer, default is 3306
-  port: 3306
-  #Extra arguments to use in the sql url
-  extraArguments: ?useSSL=false
-
+#Prefix to use in all plugin related messages
 Plugin-Prefix: "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] "
 
-#Safe-login Module
-#if player is inside a block when they log in they will be teleported to the highest block at their position
-SafeLogin:
+#Buy command
+BuyCommand:
   enabled: true
-  TeleportMessage: "<red>You joined in an unsafe location, You have been teleported to the highest safe block!"
-  AllowedWorlds:
-    - world_resource
-    - world_nether
-    - world_end
-
-#Server re-router module
-#permission: vorplexcore.server.switch
-VorplexServer:
-  enabled: false
-  #These are the servers defined in your bungeecord config (case sensitive)
-  serverslist:
-    - server1
-    - server2
-    - server3
-  #the message to be sent to the player when sending them to a server. use %server% for the server name
-  sendingtoservermessage: "&d&lSending you to %server%."
-
-#Staff chat and admin chat module
-chats:
-  #permission: vorplexcore.staffchat
-  staff:
-    enabled: true
-  #permission: vorplexcore.adminchat
-  admin:
-    enabled: true
+  # uses minimessage format
+  message: "<b><gold>Store:</gold></b> <click:open_url:'https://store.vorplex.net'><u><aqua>https://store.vorplex.net</aqua></u></click>"
 
 #auto restart module
 #permission: vorplexcore.autorestart.admin
@@ -105,7 +66,6 @@ AutoAnnouncer:
     - "<click:suggest_command:'That click event worked!'><hover:show_text:'This hover text is working<br>This next line is working'><white>This chat announcer is working!</white></hover></click>"
     - "<click:suggest_command:'That click event worked!'><hover:show_text:'This hover text is working<br>This next line is working'><white>This chat announcer is working!</white></hover></click>"
 
-
 #auto item pickup module
 AutoItemPickup:
   enabled: false
@@ -131,12 +91,24 @@ AutoItemPickup:
     - KELP
     - KELP_PLANT
 
-#hub module (used for hub servers)
-Hub:
-  enabled: false
-  #%player% will be replaced with the players name
-  join-title-message: "&3&lVorplex &b&lNetwork:&7Welcome &c%player%&7. Enjoy your stay!:20:50:20"
-  oxygen-helmet-enabled: true
+#Staff chat and admin chat module
+Chats:
+  #permission: vorplexcore.staffchat
+  Staff:
+    enabled: true
+  #permission: vorplexcore.adminchat
+  Admin:
+    enabled: true
+
+#Safe-login Module
+#if player is inside a block when they log in they will be teleported to the highest block at their position
+SafeLogin:
+  enabled: true
+  TeleportMessage: "<red>You joined in an unsafe location, You have been teleported to the highest safe block!"
+  AllowedWorlds:
+    - world_resource
+    - world_nether
+    - world_end
 
 #give player's the ability to change their donor rank prefix between all prefixes they have.
 RankTitle:
@@ -190,16 +162,25 @@ LeaveMessages:
 Gifts:
   enabled: true
 
-#Buy command
-buycommand:
-  enabled: true
-  # uses minimessage format
-  message: "<b><gold>Store:</gold></b> <click:open_url:'https://store.vorplex.net'><u><aqua>https://store.vorplex.net</aqua></u></click>"
+#hub module (used for hub servers)
+Hub:
+  enabled: false
+  #%player% will be replaced with the players name
+  join-title-message: "&3&lVorplex &b&lNetwork:&7Welcome &c%player%&7. Enjoy your stay!:20:50:20"
+  oxygen-helmet-enabled: true
 
 
 
-
-
-
-
-  
+  #MYSQL Options for modules that require it
+  MySQL:
+    #host use 127.0.0.1 or localhost for localhost
+    host: localhost
+    #name of the database you want the plugin to use (will create it if it doesn't exist)
+    database: vorplexcoredb
+    #username and password you want to plugin to use to access the MYSql database
+    username: vorplexcore
+    password: vorplexcore
+    #the port must be an integer, default is 3306
+    port: 3306
+    #Extra arguments to use in the sql url
+    extraArguments: ?useSSL=false
