@@ -124,11 +124,11 @@ JoinMessages:
   SendOnUnVanish: true
   #set custom join messages per permission use %prefix% for prefix and %name% for player name. you can also use %title% for the player's title (this only works if titles are enabled!!)
   #higher messages in this list override
-  permissionbasedjoinmessages:
+  PermissionBasedJoinMessages:
     enabled: true
     messages:
       #permissions are as follows: vorplexcore.joinmessages.<permission defined here>
-      permission1: "&6&lWelcome %title%%prefix%%name%!"
+      permission1: "&6&lWelcome <prefix><name>!"
       permission2: "&6&ljoin message 2"
       permission3: "&6&ljoin message 3"
   #allows players to make their own join messages - permission: vorplexcore.customjoinmessages & vorplexcore.customjoinmessages.admin for clear command(Requires mysql connection)
