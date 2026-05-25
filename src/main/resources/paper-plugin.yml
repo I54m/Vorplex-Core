@@ -1,6 +1,6 @@
 name: Vorplex-Core
 version: ${project.version}
-api-version: '1.21.8'
+api-version: '1.21.10'
 author: I54m
 website: https://vorplex.net
 description: The Core Plugin for Vorplex.
