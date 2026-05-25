@@ -22,8 +22,8 @@ import net.vorplex.core.chat.AdminChatCommand;
 import net.vorplex.core.chat.AsyncChatListener;
 import net.vorplex.core.chat.StaffChatCommand;
 import net.vorplex.core.commands.*;
-import net.vorplex.core.listeners.BlockBreak;
-import net.vorplex.core.listeners.PlayerJoin;
+import net.vorplex.core.listeners.AutoItemPickupListeners;
+import net.vorplex.core.listeners.SafeLoginListeners;
 import net.vorplex.core.objects.Gift;
 import net.vorplex.core.util.ConfigUpdater;
 import org.bukkit.Bukkit;
@@ -174,7 +174,7 @@ public class VorplexCore extends JavaPlugin {
             getComponentLogger().info(Component.text("Enabling Auto Item Pickup Module...").color(NamedTextColor.GREEN));
             autoPickupConfig = new AutoPickupConfig();
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(ToggleAutoPickupCommand.COMMAND_NODE, List.of("tapu")));
-            getServer().getPluginManager().registerEvents(new BlockBreak(), this);
+            getServer().getPluginManager().registerEvents(new AutoItemPickupListeners(), this);
         }
         if (getConfig().getBoolean("Chats.Staff.enabled") || getConfig().getBoolean("Chats.Admin.enabled")) {
             getServer().getPluginManager().registerEvents(new AsyncChatListener(), this);
@@ -189,7 +189,7 @@ public class VorplexCore extends JavaPlugin {
         }
         if (getConfig().getBoolean("SafeLogin.enabled")) {
             getComponentLogger().info(Component.text("Enabling Safe Login Module...").color(NamedTextColor.GREEN));
-            getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
+            getServer().getPluginManager().registerEvents(new SafeLoginListeners(), this);
         }
         if (getConfig().getBoolean("RankTitle.enabled")) {
             getComponentLogger().info(Component.text("Enabling Rank Title Module...").color(NamedTextColor.GREEN));

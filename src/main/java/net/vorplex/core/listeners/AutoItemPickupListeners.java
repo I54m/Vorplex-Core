@@ -21,7 +21,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class BlockBreak implements Listener {
+public class AutoItemPickupListeners implements Listener {
 
     private final VorplexCore plugin = VorplexCore.getInstance();
     private final AutoPickupConfig config = plugin.getAutoPickupConfig();
