@@ -119,18 +119,17 @@ RankTitle:
 
 #join messages module
 JoinMessages:
-  enabled: true
-  #Will send join messages when a player un vanishes (requires Super Vanish or Premium vanish)
+  #Will send join messages when a player un-vanishes (requires Super Vanish or Premium vanish)
   SendOnUnVanish: true
-  #set custom join messages per permission use %prefix% for prefix and %name% for player name. you can also use %title% for the player's title (this only works if titles are enabled!!)
+  #set join messages per permission use <prefix> for prefix and <name> for player name. Supports PAPI placeholders
   #higher messages in this list override
-  PermissionBasedJoinMessages:
+  PermissionJoinMessages:
     enabled: true
     messages:
       #permissions are as follows: vorplexcore.joinmessages.<permission defined here>
-      permission1: "&6&lWelcome <prefix><name>!"
-      permission2: "&6&ljoin message 2"
-      permission3: "&6&ljoin message 3"
+      permission1: "<gold>Welcome <prefix><name>!</gold>"
+      permission2: "<light_purple>Welcome <prefix><name>!</light_purple>"
+      permission3: "<gray>Welcome <prefix><name>!</gray>"
   #allows players to make their own join messages - permission: vorplexcore.customjoinmessages & vorplexcore.customjoinmessages.admin for clear command(Requires mysql connection)
   customjoinmessages:
     enabled: true
@@ -139,18 +138,17 @@ JoinMessages:
 
 #leave messages module
 LeaveMessages:
-  enabled: true
   #Will send leave messages when a player vanishes (requires Super Vanish or Premium vanish)
   SendOnVanish: true
-  #set custom leave messages per permission use %prefix% for prefix and %name% for player name. you can also use %title% for the player's title (this only works if titles are enabled!!)
+  #set join messages per permission use <prefix> for prefix and <name> for player name. Supports PAPI placeholders
   #higher messages in this list override
-  permissionbasedleavemessages:
+  PermissionLeaveMessages:
     enabled: true
     messages:
       #permissions are as follows: vorplexcore.leavemessages.<permission defined here>
-      permission1: "&6&lGoodbye %title%%prefix%%name%!"
-      permission2: "&6&lleave message 2"
-      permission3: "&6&lleave message 3"
+      permission1: "<gold>Goodbye <prefix><name>!</gold>"
+      permission2: "<light_purple>Goodbye <prefix><name>!</light_purple>"
+      permission3: "<gray>Goodbye <prefix><name>!</gray>"
   #allows players to make their own leave messages - permission: vorplexcore.customleavemessages & vorplexcore.customleavemessages.admin for clear command(Requires mysql connection)
   customleavemessages:
     enabled: true
