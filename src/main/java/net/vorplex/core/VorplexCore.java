@@ -23,6 +23,8 @@ import net.vorplex.core.chat.AsyncChatListener;
 import net.vorplex.core.chat.StaffChatCommand;
 import net.vorplex.core.commands.*;
 import net.vorplex.core.listeners.AutoItemPickupListeners;
+import net.vorplex.core.listeners.JoinMessageListeners;
+import net.vorplex.core.listeners.LeaveMessageListeners;
 import net.vorplex.core.listeners.SafeLoginListeners;
 import net.vorplex.core.objects.Gift;
 import net.vorplex.core.util.ConfigUpdater;
@@ -59,11 +61,10 @@ public class VorplexCore extends JavaPlugin {
     // Dependency variables
     @Getter
     private boolean placeholderAPI;
+    //TODO change to using a getter and deprecate use of public variable
     public LuckPerms luckPermsAPI;
 
     // Plugin storage Hashmaps
-    public Map<String, String> permissionJoinMessages = new HashMap<>();
-    public Map<String, String> permissionLeaveMessages = new HashMap<>();
     public Map<UUID, String> customJoinMessages = new HashMap<>();
     public Map<UUID, String> customLeaveMessages = new HashMap<>();
     public Map<UUID, ArrayList<Gift>> gifts = new HashMap<>();
@@ -96,18 +97,6 @@ public class VorplexCore extends JavaPlugin {
                     AutoAnnouncerScheduler.start();
                 if (getConfig().getBoolean("AutoPickup.enabled"))
                     autoPickupConfig = new AutoPickupConfig();
-//                if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
-//                    permissionJoinMessages.clear();
-//                    for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
-//                        permissionJoinMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("JoinMessages.permissionbasedjoinmessages.messages." + permission)));
-//                    }
-//                }
-//                if (getConfig().getBoolean("LeaveMessages.permissionbasedleavemessages.enabled")) {
-//                    permissionLeaveMessages.clear();
-//                    for (String permission : getConfig().getConfigurationSection("LeaveMessages.permissionbasedleavemessages.messages").getKeys(false)) {
-//                        permissionLeaveMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("LeaveMessages.permissionbasedleavemessages.messages." + permission)));
-//                    }
-//                }
 //                if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
 //                    cacheJoinMessages();
 //                }
@@ -198,10 +187,17 @@ public class VorplexCore extends JavaPlugin {
                 commands.registrar().register(RealRankCommand.COMMAND_NODE, List.of("rankreal", "truerank"));
             });
         }
+        if (getConfig().getBoolean("JoinMessages.PermissionJoinMessages.enabled") || getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled")) {
+            getComponentLogger().info(Component.text("Enabling Join Messages...").color(NamedTextColor.GREEN));
+            getServer().getPluginManager().registerEvents(new JoinMessageListeners(), this);
+        }
+        if (getConfig().getBoolean("LeaveMessages.PermissionLeaveMessages.enabled") || getConfig().getBoolean("LeaveMessages.CustomLeaveMessages.enabled")) {
+            getComponentLogger().info(Component.text("Enabling Leave Messages...").color(NamedTextColor.GREEN));
+            getServer().getPluginManager().registerEvents(new LeaveMessageListeners(), this);
+        }
 
 
-//        if (getConfig().getBoolean("JoinMessages.enabled") ||
-//                getConfig().getBoolean("Hub.enabled") ||
+//        if (getConfig().getBoolean("Hub.enabled") ||
 //                (getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join") && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")))
 //            Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
 //
@@ -219,41 +215,15 @@ public class VorplexCore extends JavaPlugin {
 //            }
 //            getLogger().info("Enabled Hub Module");
 //        }
-//        if (getConfig().getBoolean("JoinMessages.enabled")) {
-//            getLogger().info("Enabled Join Messages Module");
-//            if (getConfig().getBoolean("JoinMessages.permissionbasedjoinmessages.enabled")) {
-//                for (String permission : getConfig().getConfigurationSection("JoinMessages.permissionbasedjoinmessages.messages").getKeys(false)) {
-//                    permissionJoinMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("JoinMessages.permissionbasedjoinmessages.messages." + permission)));
-//                }
-//                getLogger().info("Enabled Permission Based Join Messages");
-//            }
-//            if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
-//                setupSQLConnection();
-//                Bukkit.getPluginCommand("joinmessage").setExecutor(new JoinMessageCommand());
-//                getLogger().info("Enabled Custom Join Messages");
-//            }
-//            if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
-//                if (getConfig().getBoolean("JoinMessages.SendOnUnVanish"))
-//                    Bukkit.getPluginManager().registerEvents(new PlayerShow(), this);
-//            }
+//        if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
+//            setupSQLConnection();
+//            Bukkit.getPluginCommand("joinmessage").setExecutor(new JoinMessageCommand());
+//            getLogger().info("Enabled Custom Join Messages");
 //        }
-//        if (getConfig().getBoolean("LeaveMessages.enabled")) {
-//            getLogger().info("Enabled Leave Messages Module");
-//            if (getConfig().getBoolean("LeaveMessages.permissionbasedleavemessages.enabled")) {
-//                for (String permission : getConfig().getConfigurationSection("LeaveMessages.permissionbasedleavemessages.messages").getKeys(false)) {
-//                    permissionLeaveMessages.put(permission, ChatColor.translateAlternateColorCodes('&', getConfig().getString("LeaveMessages.permissionbasedleavemessages.messages." + permission)));
-//                }
-//                getLogger().info("Enabled Permission Based Leave Messages");
-//            }
-//            if (getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
-//                setupSQLConnection();
-//                Bukkit.getPluginCommand("leavemessage").setExecutor(new LeaveMessageCommand());
-//                getLogger().info("Enabled Custom Leave Messages");
-//            }
-//            if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
-//                if (getConfig().getBoolean("LeaveMessages.SendOnVanish"))
-//                    Bukkit.getPluginManager().registerEvents(new PlayerHide(), this);
-//            }
+//        if (getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
+//            setupSQLConnection();
+//            Bukkit.getPluginCommand("leavemessage").setExecutor(new LeaveMessageCommand());
+//            getLogger().info("Enabled Custom Leave Messages");
 //        }
 //        if (getConfig().getBoolean("Gifts.enabled")) {
 //            try {
