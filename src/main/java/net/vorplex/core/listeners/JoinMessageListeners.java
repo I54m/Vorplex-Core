@@ -77,11 +77,14 @@ public class JoinMessageListeners implements Listener {
     @Nullable
     public Component getPermissionJoinMessage(Player player, String prefix) {
         Debug.log("checking permission based join messages for " + player.getName());
-        for (String permission : plugin.permissionJoinMessages.keySet()) {
+        for (String permission : plugin.getConfig().getConfigurationSection("JoinMessages.PermissionJoinMessages.messages").getKeys(false)) {
             if (player.hasPermission("vorplexcore.joinmessages." + permission)) {
                 Debug.log("Found permission vorplexcore.joinmessages." + permission + " for player: " + player.getName());
-                String parsedJoinMessage = plugin.permissionJoinMessages.get(permission);
-                Debug.log("Raw join Message: " + parsedJoinMessage);
+                String rawJoinMessage = plugin.getConfig().getString("JoinMessages.PermissionJoinMessages.messages." + permission);
+                if (rawJoinMessage == null) return null;
+                String parsedJoinMessage = rawJoinMessage;
+                Debug.log("Raw Leave Message: " + rawJoinMessage);
+                Debug.log("Parsed Leave Message: " + parsedJoinMessage);
                 if (plugin.isPlaceholderAPI())
                     parsedJoinMessage = PlaceholderAPI.setPlaceholders(player, parsedJoinMessage);
                 else
