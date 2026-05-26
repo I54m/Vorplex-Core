@@ -42,7 +42,7 @@ public class ChatUtils {
     }
 
     public static String getPrefix(Player player) {
-        User user = plugin.luckPermsAPI.getUserManager().getUser(player.getUniqueId());
+        User user = plugin.getLuckPermsAPI().getUserManager().getUser(player.getUniqueId());
         if (user == null) return "";
 
         CachedMetaData metaData = user.getCachedData().getMetaData();

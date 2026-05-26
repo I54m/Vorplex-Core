@@ -55,7 +55,7 @@ public class LuckpermsUtil {
      * @return       a user instance of the player
      */
     public static User getUser(@NotNull Player player) {
-        return plugin.luckPermsAPI.getPlayerAdapter(Player.class).getUser(player);
+        return plugin.getLuckPermsAPI().getPlayerAdapter(Player.class).getUser(player);
     }
 
     /**
@@ -90,7 +90,7 @@ public class LuckpermsUtil {
      * @return the user's prefix or an empty string if no prefix is found
      */
     public static String getPrefix(@NotNull User user) {
-        ContextManager cm = plugin.luckPermsAPI.getContextManager();
+        ContextManager cm = plugin.getLuckPermsAPI().getContextManager();
         QueryOptions queryOptions = cm.getQueryOptions(user).orElse(cm.getStaticQueryOptions());
         String prefix = user.getCachedData().getMetaData(queryOptions).getPrefix();
         return prefix == null ? "" : prefix;
@@ -109,7 +109,7 @@ public class LuckpermsUtil {
             user.data().remove(PrefixNode.builder(oldPrefix, plugin.getConfig().getInt("RankTitle.priority-to-add-prefixes")).build());
         }
         user.data().add(PrefixNode.builder(prefix, plugin.getConfig().getInt("RankTitle.priority-to-add-prefixes")).build());
-        plugin.luckPermsAPI.getUserManager().saveUser(user);
-        plugin.luckPermsAPI.getMessagingService().ifPresent(MessagingService::pushUpdate);
+        plugin.getLuckPermsAPI().getUserManager().saveUser(user);
+        plugin.getLuckPermsAPI().getMessagingService().ifPresent(MessagingService::pushUpdate);
     }
 }

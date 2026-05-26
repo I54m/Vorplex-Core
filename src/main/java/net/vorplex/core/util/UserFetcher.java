@@ -16,7 +16,7 @@ public class UserFetcher implements Callable<User> {
 
     @Override
     public User call() throws Exception {
-        UserManager userManager = VorplexCore.getInstance().luckPermsAPI.getUserManager();
+        UserManager userManager = VorplexCore.getInstance().getLuckPermsAPI().getUserManager();
         CompletableFuture<User> userFuture = userManager.loadUser(uuid);
         return userFuture.join();
     }

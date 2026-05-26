@@ -82,7 +82,7 @@ public class JoinMessageCommand implements CommandExecutor {
                         stmt1.close();
                     }
                     plugin.customJoinMessages.put(player.getUniqueId(), joinmessage.toString());
-                    User user = plugin.luckPermsAPI.getUserManager().getUser(player.getName());
+                    User user = plugin.getLuckPermsAPI().getUserManager().getUser(player.getName());
                     if (user == null) {
                         UserFetcher userFetcher = new UserFetcher();
                         userFetcher.setUuid(player.getUniqueId());
@@ -100,7 +100,7 @@ public class JoinMessageCommand implements CommandExecutor {
                             throw new IllegalStateException();
                         }
                     }
-                    ContextManager cm = plugin.luckPermsAPI.getContextManager();
+                    ContextManager cm = plugin.getLuckPermsAPI().getContextManager();
                     QueryOptions queryOptions = cm.getQueryOptions(user).orElse(cm.getStaticQueryOptions());
                     String prefix = user.getCachedData().getMetaData(queryOptions).getPrefix();
                     if (prefix == null) prefix = "";

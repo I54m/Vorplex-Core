@@ -82,7 +82,7 @@ public class LeaveMessageCommand implements CommandExecutor {
                         stmt1.close();
                     }
                     plugin.customLeaveMessages.put(player.getUniqueId(), leavemessage.toString());
-                    User user = plugin.luckPermsAPI.getUserManager().getUser(player.getName());
+                    User user = plugin.getLuckPermsAPI().getUserManager().getUser(player.getName());
                     if (user == null) {
                         UserFetcher userFetcher = new UserFetcher();
                         userFetcher.setUuid(player.getUniqueId());
@@ -100,7 +100,7 @@ public class LeaveMessageCommand implements CommandExecutor {
                             throw new IllegalStateException();
                         }
                     }
-                    ContextManager cm = plugin.luckPermsAPI.getContextManager();
+                    ContextManager cm = plugin.getLuckPermsAPI().getContextManager();
                     QueryOptions queryOptions = cm.getQueryOptions(user).orElse(cm.getStaticQueryOptions());
                     String prefix = user.getCachedData().getMetaData(queryOptions).getPrefix();
                     if (prefix == null) prefix = "";

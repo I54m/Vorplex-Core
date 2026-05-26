@@ -61,8 +61,8 @@ public class VorplexCore extends JavaPlugin {
     // Dependency variables
     @Getter
     private boolean placeholderAPI;
-    //TODO change to using a getter and deprecate use of public variable
-    public LuckPerms luckPermsAPI;
+    @Getter
+    private LuckPerms luckPermsAPI;
 
     // Plugin storage Hashmaps
     public Map<UUID, String> customJoinMessages = new HashMap<>();
