@@ -62,6 +62,8 @@ public class VorplexCore extends JavaPlugin {
     @Getter
     private boolean placeholderAPI;
     @Getter
+    private boolean premiumVanish;
+    @Getter
     private LuckPerms luckPermsAPI;
 
     // Plugin storage Hashmaps
@@ -143,6 +145,14 @@ public class VorplexCore extends JavaPlugin {
             placeholderAPI = false;
             getComponentLogger().info(Component.text("PlaceholderAPI NOT Detected!").color(NamedTextColor.RED));
             getComponentLogger().info(Component.text("Placeholder support will not be enabled!").color(NamedTextColor.RED));
+        }
+        //register premiumVanish
+        if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
+            premiumVanish = true;
+            getComponentLogger().info(Component.text("PremiumVanish Detected!").color(NamedTextColor.GREEN));
+        } else {
+            premiumVanish = true;
+            getComponentLogger().info(Component.text("PremiumVanish NOT Detected!").color(NamedTextColor.RED));
         }
         //load modules
         if (this.getConfig().getBoolean("BuyCommand.enabled")) {
