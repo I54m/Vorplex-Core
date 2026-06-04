@@ -1,6 +1,7 @@
 package net.vorplex.core.listeners;
 
 import de.myzelyam.api.vanish.PlayerHideEvent;
+import de.myzelyam.api.vanish.VanishAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -25,6 +26,8 @@ public class LeaveMessageListeners implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final String prefix = LuckpermsUtil.getPrefix(player);
+        if (plugin.isPremiumVanish())
+            if (VanishAPI.isInvisible(player)) return;
 //        if (plugin.getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
 //            if (player.hasPermission("vorplexcore.customleavemessages")) {
 //                if (plugin.customLeaveMessages.containsKey(player.getUniqueId())) {

@@ -1,6 +1,7 @@
 package net.vorplex.core.listeners;
 
 import de.myzelyam.api.vanish.PlayerShowEvent;
+import de.myzelyam.api.vanish.VanishAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
@@ -25,6 +26,8 @@ public class JoinMessageListeners implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         final String prefix = LuckpermsUtil.getPrefix(player);
+        if (plugin.isPremiumVanish())
+            if (VanishAPI.isInvisible(player)) return;
 //        if (plugin.getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
 //            if (player.hasPermission("vorplexcore.customjoinmessages")) {
 //                if (plugin.customJoinMessages.containsKey(player.getUniqueId())) {
