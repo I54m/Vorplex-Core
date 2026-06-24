@@ -44,7 +44,7 @@ public class LeaveMessageListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerShow(PlayerHideEvent event) {
         if (event.isSilent()) return;
         if (!plugin.getConfig().getBoolean("LeaveMessages.SendOnVanish", true)) return;

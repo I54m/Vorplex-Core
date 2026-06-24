@@ -44,7 +44,7 @@ public class JoinMessageListeners implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerShow(PlayerShowEvent event) {
         if (event.isSilent()) return;
         if (!plugin.getConfig().getBoolean("JoinMessages.SendOnUnVanish", true)) return;
