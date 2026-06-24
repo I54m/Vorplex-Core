@@ -41,6 +41,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class VorplexCore extends JavaPlugin {
 
@@ -51,6 +53,8 @@ public class VorplexCore extends JavaPlugin {
     @Getter
     private String prefix;
     private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
+    @Getter
+    private ExecutorService threadPool;
 
     // Config classes
     @Getter
@@ -127,6 +131,12 @@ public class VorplexCore extends JavaPlugin {
         getComponentLogger().info(Component.text("v" + getPluginMeta().getVersion() + " Running on " + getServer().getVersion()).color(NamedTextColor.RED));
         getComponentLogger().info("───────────────────────────────────────────────────────────");
         setInstance(this);
+        threadPool = Executors.newFixedThreadPool(4,
+                r -> {
+                    Thread thread = new Thread(r);
+                    thread.setName("VorplexCore-Async");
+                    return thread;
+                });
         ConfigUpdater.checkAndUpdate();
         prefix = this.getConfig().getString("Plugin-Prefix", "<dark_purple>[<light_purple>Vorplex-Core<dark_purple>] ");
         LEGACY_PREFIX = PlainTextComponentSerializer.plainText().serialize(MiniMessage.miniMessage().deserialize(prefix));
@@ -259,6 +269,7 @@ public class VorplexCore extends JavaPlugin {
     public void onDisable() {
         AutoRestartScheduler.stop();
         AutoAnnouncerScheduler.stop();
+        threadPool.shutdownNow();
 //        try {
 //            if (hikari != null && !hikari.isClosed()) {
 //                getLogger().info("Closing Storage....");
