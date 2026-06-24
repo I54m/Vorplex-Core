@@ -9,7 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
-//TODO fetcher update - beginCall() & retrieveResult()
+@Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
 @Setter
 public class UserFetcher implements Callable<User> {
     private UUID uuid;
