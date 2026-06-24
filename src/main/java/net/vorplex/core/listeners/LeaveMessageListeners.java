@@ -16,6 +16,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.Nullable;
 
 public class LeaveMessageListeners implements Listener {
@@ -27,7 +28,10 @@ public class LeaveMessageListeners implements Listener {
         final Player player = event.getPlayer();
         final String prefix = LuckpermsUtil.getPrefix(player);
         if (plugin.isPremiumVanish())
-            if (VanishAPI.isInvisible(player)) return;
+            if (isVanished(player) || VanishAPI.isInvisible(player)) {
+                Debug.log("NOT sending leave message for vanished player: " + player.getName());
+                return;
+            }
 //        if (plugin.getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
 //            if (player.hasPermission("vorplexcore.customleavemessages")) {
 //                if (plugin.customLeaveMessages.containsKey(player.getUniqueId())) {
@@ -39,6 +43,7 @@ public class LeaveMessageListeners implements Listener {
 //            }
 //        }
         if (plugin.getConfig().getBoolean("LeaveMessages.PermissionBasedLeaveMessages.enabled", true)) {
+            Debug.log("Sending leave message for player: " + player.getName());
             Component leaveMessage = getPermissionLeaveMessage(player, prefix);
             event.quitMessage(leaveMessage == null ? Component.text("") : leaveMessage);
         }
@@ -100,5 +105,19 @@ public class LeaveMessageListeners implements Listener {
             }
         }
         return null;
+    }
+
+    /**
+     * private helper method to determine if a player is vanished based on their metadata
+     * this is needed for leave events as the palyer can be considered offline during a leave event
+     *
+     * @param player the player to check
+     * @return true if the player is vanished, else false
+     */
+    private boolean isVanished(Player player) {
+        for (MetadataValue meta : player.getMetadata("vanished")) {
+            if (meta.asBoolean()) return true;
+        }
+        return false;
     }
 }
