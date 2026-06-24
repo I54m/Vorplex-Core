@@ -27,7 +27,10 @@ public class JoinMessageListeners implements Listener {
         final Player player = event.getPlayer();
         final String prefix = LuckpermsUtil.getPrefix(player);
         if (plugin.isPremiumVanish())
-            if (VanishAPI.isInvisible(player)) return;
+            if (VanishAPI.isInvisible(player)) {
+                Debug.log("NOT sending join message for vanished player: " + player.getName());
+                return;
+            }
 //        if (plugin.getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
 //            if (player.hasPermission("vorplexcore.customjoinmessages")) {
 //                if (plugin.customJoinMessages.containsKey(player.getUniqueId())) {
@@ -39,6 +42,7 @@ public class JoinMessageListeners implements Listener {
 //            }
 //        }
         if (plugin.getConfig().getBoolean("JoinMessages.PermissionBasedJoinMessages.enabled", true)) {
+            Debug.log("Sending join message for player: " + player.getName());
             Component joinMessage = getPermissionJoinMessage(player, prefix);
             event.joinMessage(joinMessage == null ? Component.text("") : joinMessage);
         }
