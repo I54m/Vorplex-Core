@@ -1,7 +1,9 @@
 package net.vorplex.core.util;
 
+import net.vorplex.core.util.profile.TestProfileCacheProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -25,7 +27,11 @@ class UUIDFetcherTest {
                     thread.setName("VorplexCore-unitTests-Async");
                     return thread;
                 });
-        UUIDFetcher.setCacheProvider(name -> null);
+    }
+
+    @BeforeEach
+    void eachSetup() {
+        UUIDFetcher.setCacheProvider(new TestProfileCacheProvider());
     }
 
     @AfterAll
@@ -35,7 +41,7 @@ class UUIDFetcherTest {
 
 
     @Test
-    void testBlankUUID() {
+    void getBlankUUID_ShouldReturnZeroUuid() {
         UUID expected = new UUID(0L, 0L);
 
         assertEquals(UUIDFetcher.getBLANK_UUID(), expected);
@@ -43,7 +49,7 @@ class UUIDFetcherTest {
 
 
     @Test
-    void testFormatUUIDWithoutDashes() {
+    void formatUUID_WithoutDashes_ShouldReturnFormattedUuid() {
         String raw = "550e8400e29b41d4a716446655440000";
         UUID result = UUIDFetcher.formatUUID(raw);
 
@@ -52,7 +58,7 @@ class UUIDFetcherTest {
 
 
     @Test
-    void testFormatUUIDWithDashes() {
+    void formatUUID_WithDashes_ShouldReturnSameUuid() {
         UUID result = UUIDFetcher.formatUUID("550e8400-e29b-41d4-a716-446655440000");
 
         assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"), result);
@@ -60,13 +66,13 @@ class UUIDFetcherTest {
 
 
     @Test
-    void testInvalidPlayerNameThrowsException() {
+    void fetchUUID_InvalidPlayerName_ShouldThrowException() {
         assertThrows(Exception.class, () -> UUIDFetcher.fetchUUID("invalid player", threadPool));
     }
 
 
     @Test
-    void testConsoleUUID() throws Exception {
+    void fetchUUID_ConsolePlayer_ShouldReturnBlankUuid() throws Exception {
         UUID result = UUIDFetcher.fetchUUID("console", threadPool);
 
         assertEquals(UUIDFetcher.getBLANK_UUID(), result);
@@ -74,7 +80,7 @@ class UUIDFetcherTest {
 
 
     @Test
-    void testConsoleUUIDAsync() throws Exception {
+    void fetchUUIDAsync_ConsolePlayer_ShouldReturnBlankUuid() throws Exception {
         UUID result = UUIDFetcher.fetchUUIDAsync("console", threadPool).get(5, TimeUnit.SECONDS);
 
         assertEquals(UUIDFetcher.getBLANK_UUID(), result);
@@ -82,7 +88,12 @@ class UUIDFetcherTest {
 
 
     @Test
-    void testAsyncFailurePropagates() {
+    void fetchUUIDAsync_FailedLookup_ShouldPropagateException() {
         assertThrows(CompletionException.class, () -> UUIDFetcher.fetchUUIDAsync("bad name!", threadPool).join());
+    }
+
+    @Test
+    void fetchUUID_ValidPlayer_ShouldReturnExpectedUuid() throws Exception {
+        assertEquals(UUID.fromString("74f04a9b-b7f9-409d-a940-b051f14dd3a5"), UUIDFetcher.fetchUUID("I54m", threadPool));
     }
 }
