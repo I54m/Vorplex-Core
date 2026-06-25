@@ -4,20 +4,19 @@ import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 import net.vorplex.core.VorplexCore;
+import net.vorplex.core.util.profile.BukkitProfileCacheProvider;
+import net.vorplex.core.util.profile.MojangProfile;
+import net.vorplex.core.util.profile.ProfileCacheProvider;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.*;
 
 public class UUIDFetcher implements Callable<UUID> {
-
-    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
-    private static final HashMap<String, UUID> UUIDS = new HashMap<>();
 
     @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
     public static void updateStoredUUID(String name, UUID uuid) {
@@ -25,10 +24,6 @@ public class UUIDFetcher implements Callable<UUID> {
 
     @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
     public void fetch(String name) {
-    }
-
-    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
-    public void storeUUID(UUID uuid, String name) {
     }
 
     @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
@@ -43,9 +38,9 @@ public class UUIDFetcher implements Callable<UUID> {
 
 
     @Getter
-    public static final UUID BLANK_UUID = new UUID(0L, 0L);
+    private static final UUID BLANK_UUID = new UUID(0L, 0L);
     @Setter
-    public static UUIDCacheProvider cacheProvider = new BukkitUUIDCacheProvider();
+    private static ProfileCacheProvider cacheProvider = new BukkitProfileCacheProvider();
 
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))
@@ -57,7 +52,7 @@ public class UUIDFetcher implements Callable<UUID> {
      * Create an HTTP Request to the mojang api to fetch the player's UUID
      *
      * @param playerName the name of the player to fetch the uuid for
-     * @return the uuid of the player is fetched
+     * @return the uuid of the player if fetched
      * @throws Exception if any exceptions were encountered
      */
     private static UUID lookupUUID(String playerName) throws Exception {
@@ -84,19 +79,16 @@ public class UUIDFetcher implements Callable<UUID> {
         if (response.statusCode() != 200)
             throw new IllegalStateException("Mojang API responded with a status code of: " + response.statusCode());
 
-        Profile profile = GSON.fromJson(response.body(), Profile.class);
+        MojangProfile profile = GSON.fromJson(response.body(), MojangProfile.class);
 
         if (profile == null || profile.id() == null)
             throw new IllegalStateException("profile or profile.id() was null!");
 
         UUID uuid = formatUUID(profile.id());
 
-        NameFetcher.storeName(uuid, profile.name());
+        cacheProvider.storeProfile(profile);
 
         return uuid;
-    }
-
-    private record Profile(String name, String id) {
     }
 
     /**
