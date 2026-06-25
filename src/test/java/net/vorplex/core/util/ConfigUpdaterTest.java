@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ConfigUpdaterTest {
 
     @Test
-    void mergeCopiesUserValuesButKeepsNewDefaults() {
+    void mergeConfigs_UserValues_ShouldOverwriteNewDefaults() {
         YamlConfiguration oldConfig = new YamlConfiguration();
         oldConfig.set("database.host", "localhost");
         oldConfig.set("database.port", 3307);
@@ -28,7 +28,7 @@ class ConfigUpdaterTest {
     }
 
     @Test
-    void removedKeysAreNotCopied() {
+    void mergeConfigs_RemovedKeys_ShouldNotBeCopied() {
         YamlConfiguration oldConfig = new YamlConfiguration();
         oldConfig.set("old.setting", true);
 
@@ -41,7 +41,7 @@ class ConfigUpdaterTest {
     }
 
     @Test
-    void configVersionIsNeverCopied() {
+    void mergeConfigs_ConfigVersion_ShouldKeepNewVersion() {
         YamlConfiguration oldConfig = new YamlConfiguration();
         oldConfig.set("config-version", "0.5");
 
@@ -54,7 +54,7 @@ class ConfigUpdaterTest {
     }
 
     @Test
-    void nestedSectionsMergeCorrectly() {
+    void mergeConfigs_NestedSections_ShouldMergeCorrectly() {
         YamlConfiguration oldConfig = new YamlConfiguration();
         oldConfig.set("features.auto-save.enabled", true);
         oldConfig.set("features.auto-save.interval", 10);
