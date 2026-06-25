@@ -2,10 +2,8 @@ package net.vorplex.core.util;
 
 import com.google.gson.Gson;
 import lombok.Getter;
+import lombok.Setter;
 import net.vorplex.core.VorplexCore;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,10 +12,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class UUIDFetcher implements Callable<UUID> {
 
@@ -49,6 +44,8 @@ public class UUIDFetcher implements Callable<UUID> {
 
     @Getter
     public static final UUID BLANK_UUID = new UUID(0L, 0L);
+    @Setter
+    public static UUIDCacheProvider cacheProvider = new BukkitUUIDCacheProvider();
 
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))
@@ -67,7 +64,7 @@ public class UUIDFetcher implements Callable<UUID> {
         if (playerName.equalsIgnoreCase("console"))
             return BLANK_UUID;
 
-        UUID cachedUUID = getCachedUUID(playerName);
+        UUID cachedUUID = cacheProvider.getCachedUUID(playerName);
         if (cachedUUID != null)
             return cachedUUID;
 
@@ -99,18 +96,6 @@ public class UUIDFetcher implements Callable<UUID> {
         return uuid;
     }
 
-    /**
-     * get the Bukkit cache of a player's uuid or null if the player's uuid is not cached
-     *
-     * @param playerName the name of the player to get the uuid for
-     * @return the uuid of the player if in the cache
-     */
-    @Nullable
-    private static UUID getCachedUUID(String playerName) {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(playerName);
-        return offlinePlayer == null ? null : offlinePlayer.getUniqueId();
-    }
-
     private record Profile(String name, String id) {
     }
 
@@ -131,16 +116,28 @@ public class UUIDFetcher implements Callable<UUID> {
      * use CompletableFuture#thenAccept() to run an async function once the uuid is fetched
      *
      * @param playerName name of player to fetch
+     * @param executor the thread executor to use
      * @return the UUID of the player
      */
-    public static CompletableFuture<UUID> fetchUUIDAsync(String playerName) {
+    public static CompletableFuture<UUID> fetchUUIDAsync(String playerName, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return lookupUUID(playerName);
             } catch (Exception e) {
                 throw new CompletionException(e);
             }
-        }, VorplexCore.getInstance().getThreadPool());
+        }, executor);
+    }
+
+    /**
+     * Fetch a player's uuid Asynchronously
+     * use CompletableFuture#thenAccept() to run an async function once the uuid is fetched
+     *
+     * @param playerName name of player to fetch
+     * @return the UUID of the player
+     */
+    public static CompletableFuture<UUID> fetchUUIDAsync(String playerName) {
+        return fetchUUIDAsync(playerName, VorplexCore.getInstance().getThreadPool());
     }
 
     /**
@@ -152,5 +149,17 @@ public class UUIDFetcher implements Callable<UUID> {
      */
     public static UUID fetchUUID(String playerName) throws Exception {
         return fetchUUIDAsync(playerName).get(10, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Fetch a player's uuid synchronously, with a 10-second timeout
+     *
+     * @param playerName name of player to fetch
+     * @param executor   the thread executor to use
+     * @return the UUID of the player
+     * @throws Exception any exception that was encountered during UUID fetching
+     */
+    public static UUID fetchUUID(String playerName, Executor executor) throws Exception {
+        return fetchUUIDAsync(playerName, executor).get(10, TimeUnit.SECONDS);
     }
 }
