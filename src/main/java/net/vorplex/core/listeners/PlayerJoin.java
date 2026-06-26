@@ -3,8 +3,6 @@ package net.vorplex.core.listeners;
 //import com.earth2me.essentials.spawn.EssentialsSpawn;
 
 import net.vorplex.core.VorplexCore;
-import net.vorplex.core.util.NameFetcher;
-import net.vorplex.core.util.UUIDFetcher;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -32,8 +30,6 @@ public class PlayerJoin implements Listener {
     public void onPlayerJoinHighest(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         //TODO fetcher update give fetchers their own listener
-        UUIDFetcher.updateStoredUUID(player.getName(), player.getUniqueId());
-        NameFetcher.updateStoredName(player.getUniqueId(), player.getName());
         if (plugin.getConfig().getBoolean("Hub.enabled")) {
             Location location;
 //            if (plugin.essentials) {
