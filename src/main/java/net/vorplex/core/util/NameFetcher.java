@@ -29,11 +29,6 @@ public class NameFetcher {
         return null;
     }
 
-    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
-    public static void updateStoredName(UUID uuid, String name) {
-    }
-
-
     @Setter
     private static ProfileCacheProvider cacheProvider = new BukkitProfileCacheProvider();
 

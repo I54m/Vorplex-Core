@@ -19,10 +19,6 @@ import java.util.concurrent.*;
 public class UUIDFetcher implements Callable<UUID> {
 
     @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
-    public static void updateStoredUUID(String name, UUID uuid) {
-    }
-
-    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
     public void fetch(String name) {
     }
 
