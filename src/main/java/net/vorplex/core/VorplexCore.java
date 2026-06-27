@@ -2,7 +2,6 @@ package net.vorplex.core;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.zaxxer.hikari.HikariDataSource;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -22,6 +21,7 @@ import net.vorplex.core.chat.AdminChatCommand;
 import net.vorplex.core.chat.AsyncChatListener;
 import net.vorplex.core.chat.StaffChatCommand;
 import net.vorplex.core.commands.*;
+import net.vorplex.core.database.*;
 import net.vorplex.core.listeners.AutoItemPickupListeners;
 import net.vorplex.core.listeners.JoinMessageListeners;
 import net.vorplex.core.listeners.LeaveMessageListeners;
@@ -75,13 +75,11 @@ public class VorplexCore extends JavaPlugin {
     public Map<UUID, String> customLeaveMessages = new HashMap<>();
     public Map<UUID, ArrayList<Gift>> gifts = new HashMap<>();
 
-    // SQL Connection variables - to be moved to storage class later
-    private HikariDataSource hikari;
-    private String host, username;
-    private static String database;
-    private int port;
-    public Connection connection;
-    private int cacheTaskid;
+    // Database Management variables
+    @Getter
+    private DatabaseManager databaseManager;
+    @Getter
+    private StorageProvider storageProvider;
 
     // Legacy Variables - deprecated to be removed
     //TODO Temp prefix until all modules have been converted to minimessage format
@@ -89,6 +87,10 @@ public class VorplexCore extends JavaPlugin {
     public String LEGACY_PREFIX;
     @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
     public boolean essentials = false;
+    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
+    public Connection connection;
+    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
+    private int cacheTaskid;
 
     //Plugin reload command
     public final LiteralCommandNode<CommandSourceStack> RELOAD_COMMAND_NODE = Commands.literal("vorplexcorereload")
@@ -165,6 +167,7 @@ public class VorplexCore extends JavaPlugin {
             getComponentLogger().info(Component.text("PremiumVanish NOT Detected!").color(NamedTextColor.RED));
         }
         //load modules
+        boolean databaseRequired = false;
         if (this.getConfig().getBoolean("BuyCommand.enabled")) {
             getComponentLogger().info(Component.text("Enabling Buy Command...").color(NamedTextColor.GREEN));
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(BuyCommand.COMMAND_NODE));
@@ -216,12 +219,31 @@ public class VorplexCore extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new LeaveMessageListeners(), this);
         }
 
+        if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
+            getComponentLogger().info(Component.text("Enabling Custom Join Messages...").color(NamedTextColor.GREEN));
+            databaseRequired = true;
+//            Bukkit.getPluginCommand("joinmessage").setExecutor(new JoinMessageCommand());
+        }
+        if (getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
+            getComponentLogger().info(Component.text("Enabling Custom Leave Messages...").color(NamedTextColor.GREEN));
+            databaseRequired = true;
+//            Bukkit.getPluginCommand("leavemessage").setExecutor(new LeaveMessageCommand());
+        }
 
-//        if (getConfig().getBoolean("Hub.enabled") ||
-//                (getConfig().getBoolean("ViaVersion.enable-legacy-warning-on-join") && Bukkit.getPluginManager().isPluginEnabled("ViaVersion")))
-//            Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
-//
+
+        if (databaseRequired) {
+            StorageType storageType = StorageType.valueOf(getConfig().getString("Database.Type", "SQLITE").toUpperCase());
+            databaseManager = new DatabaseManager(storageType);
+            switch (storageType) {
+                case SQLITE -> storageProvider = new SQLiteStorageProvider(databaseManager);
+                case MYSQL -> storageProvider = new SQLStorageProvider(databaseManager);
+            }
+            databaseManager.initializeConnection();
+            storageProvider.initialize();
+        }
+
 //        if (getConfig().getBoolean("Hub.enabled")) {
+//            Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
 //            if (Bukkit.getPluginManager().isPluginEnabled("EssentialsSpawn")) {
 //                essentials = true;
 //                getLogger().info("Essentials spawn detected, using as adapter for spawn teleporting!");
@@ -235,16 +257,6 @@ public class VorplexCore extends JavaPlugin {
 //            }
 //            getLogger().info("Enabled Hub Module");
 //        }
-//        if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
-//            setupSQLConnection();
-//            Bukkit.getPluginCommand("joinmessage").setExecutor(new JoinMessageCommand());
-//            getLogger().info("Enabled Custom Join Messages");
-//        }
-//        if (getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
-//            setupSQLConnection();
-//            Bukkit.getPluginCommand("leavemessage").setExecutor(new LeaveMessageCommand());
-//            getLogger().info("Enabled Custom Leave Messages");
-//        }
 //        if (getConfig().getBoolean("Gifts.enabled")) {
 //            try {
 //                if (GiftsStorage.exists())
@@ -257,10 +269,6 @@ public class VorplexCore extends JavaPlugin {
 //                getLogger().info("ERROR: Could not enable Gifts Module, GiftsStorage.yml could not be loaded!!");
 //            }
 //        }
-//        if (hikari != null || connection != null) {
-//            setupmysql();
-//            startCaching();
-//        }
         getComponentLogger().info(Component.text("Plugin loaded in: " + (System.nanoTime() - startTime) / 1000000 + "ms!").color(NamedTextColor.GREEN));
         getComponentLogger().info("───────────────────────────────────────────────────────────");
     }
@@ -269,99 +277,8 @@ public class VorplexCore extends JavaPlugin {
     public void onDisable() {
         AutoRestartScheduler.stop();
         AutoAnnouncerScheduler.stop();
+        databaseManager.shutdownConnection();
         threadPool.shutdownNow();
-//        try {
-//            if (hikari != null && !hikari.isClosed()) {
-//                getLogger().info("Closing Storage....");
-//                Bukkit.getScheduler().cancelTask(cacheTaskid);
-//                hikari.close();
-//                connection = null;
-//                hikari = null;
-//                getLogger().info("Storage Closed");
-//            }
-//            if (getConfig().getBoolean("Gifts.enabled")) {
-//                saveGifts();
-//            }
-//        } catch (Exception e) {
-//            getLogger().severe("Could not Close Storage!");
-//            e.printStackTrace();
-//        }
-    }
-
-
-    private void setupSQLConnection() {
-        if (hikari == null || connection == null) {
-            getLogger().info("Establishing MYSQL connection...");
-            host = getConfig().getString("MySQL.host");
-            database = getConfig().getString("MySQL.database");
-            username = getConfig().getString("MySQL.username");
-            String password = getConfig().getString("MySQL.password");
-            port = getConfig().getInt("MySQL.port");
-            String extraArguments = getConfig().getString("MySQL.extraArguments");
-            hikari = new HikariDataSource();
-            hikari.addDataSourceProperty("serverName", host);
-            hikari.addDataSourceProperty("port", port);
-            hikari.addDataSourceProperty("cachePrepStmts", true);
-            hikari.addDataSourceProperty("prepStmtCacheSize", 100);
-            hikari.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
-            hikari.addDataSourceProperty("useServerPrepStmts", true);
-            hikari.setPassword(password);
-            hikari.setUsername(username);
-            hikari.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + extraArguments);
-            hikari.setPoolName("Vorplex-Core");
-            hikari.setMaximumPoolSize(10);
-            hikari.setMinimumIdle(10);
-            try {
-                openConnection();
-            } catch (SQLException e) {
-                getLogger().severe("MYSQL Connection failed!!! (SQLException)");
-            }
-        }
-    }
-
-    private void openConnection() throws SQLException {
-        if (connection != null && !connection.isClosed() || hikari == null)
-            return;
-        connection = hikari.getConnection();
-        getLogger().info("MYSQL Connected to server: " + host + ":" + port + " with user: " + username + "!");
-    }
-
-    private void setupmysql() {
-        try {
-            getLogger().info("Setting up MYSQL...");
-            String createdb = "CREATE DATABASE IF NOT EXISTS " + database;
-            PreparedStatement stmt = connection.prepareStatement(createdb);
-            stmt.executeUpdate();
-            stmt.close();
-            getLogger().info(database + " Database Created!");
-            if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
-                String joinMessages = "CREATE TABLE IF NOT EXISTS `" + database + "`.`vorplexcore_joinmessages` ( `UUID` VARCHAR(36) NOT NULL ," +
-                        "`RawMessage` VARCHAR(512) NOT NULL , PRIMARY KEY (`UUID`)) ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;";
-                PreparedStatement stmt1 = connection.prepareStatement(joinMessages);
-                stmt1.executeUpdate();
-                stmt1.close();
-            }
-            if (getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
-                String joinMessages = "CREATE TABLE IF NOT EXISTS `" + database + "`.`vorplexcore_leavemessages` ( `UUID` VARCHAR(36) NOT NULL ," +
-                        "`RawMessage` VARCHAR(512) NOT NULL , PRIMARY KEY (`UUID`)) ENGINE = InnoDB CHARSET=utf8 COLLATE utf8_general_ci;";
-                PreparedStatement stmt1 = connection.prepareStatement(joinMessages);
-                stmt1.executeUpdate();
-                stmt1.close();
-            }
-            getLogger().info("Tables Created!");
-            String usedb = "USE " + database;
-            PreparedStatement stmt3 = connection.prepareStatement(usedb);
-            stmt3.executeUpdate();
-            stmt3.close();
-            getLogger().info("Database Set to: " + database);
-            getLogger().info("MYSQL setup!");
-            getLogger().info("");
-            getLogger().info("SQL Connection is now online!");
-            getLogger().info("");
-        } catch (SQLException e) {
-            getLogger().severe("Could not Setup MYSQL!!");
-            e.printStackTrace();
-        }
     }
 
     private void startCaching() {
