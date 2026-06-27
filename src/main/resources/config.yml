@@ -1,5 +1,5 @@
 # DO NOT TOUCH THIS
-config-version: "1.5"
+config-version: "1.6"
 #Debug mode for extra debug logging
 debug: false
 #Prefix to use in all plugin related messages
@@ -167,10 +167,13 @@ Hub:
   join-title-message: "&3&lVorplex &b&lNetwork:&7Welcome &c%player%&7. Enjoy your stay!:20:50:20"
   oxygen-helmet-enabled: true
 
+#Database is currently only used for custom join & leave messages
+Database:
+  #Storage type: SQLITE or MYSQL
+  Type: SQLITE
 
-
-  #MYSQL Options for modules that require it
-  MySQL:
+  #Settings for use with MYSQL storage type
+  MYSQL:
     #host use 127.0.0.1 or localhost for localhost
     host: localhost
     #name of the database you want the plugin to use (will create it if it doesn't exist)
@@ -181,4 +184,9 @@ Hub:
     #the port must be an integer, default is 3306
     port: 3306
     #Extra arguments to use in the sql url
-    extraArguments: ?useSSL=false
+    extraArguments: useSSL=false
+
+  #Settings for use with SQLITE storage type
+  SQLite:
+    #file is stored in the vorplex-core plugin folder
+    filename: vorplexcore.db
