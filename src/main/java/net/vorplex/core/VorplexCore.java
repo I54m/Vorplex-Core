@@ -161,7 +161,7 @@ public class VorplexCore extends JavaPlugin {
             premiumVanish = true;
             getComponentLogger().info(Component.text("PremiumVanish Detected!").color(NamedTextColor.GREEN));
         } else {
-            premiumVanish = true;
+            premiumVanish = false;
             getComponentLogger().info(Component.text("PremiumVanish NOT Detected!").color(NamedTextColor.RED));
         }
         //load modules
