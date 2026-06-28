@@ -34,7 +34,7 @@ public class RankTitleCommand {
     private static final NamespacedKey prefixKey = new NamespacedKey(plugin, "rank_title_prefix");
 
     public static final LiteralCommandNode<CommandSourceStack> COMMAND_NODE = Commands.literal("ranktitle")
-            .requires(source -> source.getSender() instanceof Player || source.getSender().hasPermission("vorplexcore.ranktitle"))
+            .requires(source -> source.getSender() instanceof Player && source.getSender().hasPermission("vorplexcore.ranktitle"))
             .executes(RankTitleCommand::openSelf)
             .then(Commands.argument("target", ArgumentTypes.player())
                     .requires(source -> source.getSender().hasPermission("vorplexcore.ranktitle.others"))
