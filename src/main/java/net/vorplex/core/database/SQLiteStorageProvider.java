@@ -33,7 +33,7 @@ public class SQLiteStorageProvider implements StorageProvider {
         if (databaseManager.getStorageType() != StorageType.SQLITE)
             throw new IllegalStateException("Cannot initialize SQLite Storage Provider when storage type is: " + databaseManager.getStorageType());
         try (Connection connection = databaseManager.getConnection()) {
-            plugin.getComponentLogger().info(Component.text("Initializing SQL Storage Provider...").color(NamedTextColor.GREEN));
+            plugin.getComponentLogger().info(Component.text("Initializing SQLite Storage Provider...").color(NamedTextColor.GREEN));
             if (plugin.getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled")) {
                 String joinMessages = """
                             CREATE TABLE IF NOT EXISTS vorplexcore_joinmessages (
@@ -56,7 +56,7 @@ public class SQLiteStorageProvider implements StorageProvider {
                     stmt.executeUpdate();
                 }
             }
-            plugin.getComponentLogger().info(Component.text("SQL Storage Provider initialized!").color(NamedTextColor.GREEN));
+            plugin.getComponentLogger().info(Component.text("SQLite Storage Provider initialized!").color(NamedTextColor.GREEN));
         } catch (SQLException e) {
             throw new StorageException("Failed to initialize tables for custom join & leave messages", e);
         }
