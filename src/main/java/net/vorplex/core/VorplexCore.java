@@ -68,8 +68,10 @@ public class VorplexCore extends JavaPlugin {
     private LuckPerms luckPermsAPI;
 
     // Plugin storage Hashmaps
-    public Map<UUID, String> customJoinMessages = new HashMap<>();
-    public Map<UUID, String> customLeaveMessages = new HashMap<>();
+    @Getter
+    private final Map<UUID, String> customJoinMessagesCache = new HashMap<>();
+    @Getter
+    private final Map<UUID, String> customLeaveMessagesCache = new HashMap<>();
     public Map<UUID, ArrayList<Gift>> gifts = new HashMap<>();
 
     // Database Management variables
@@ -93,6 +95,8 @@ public class VorplexCore extends JavaPlugin {
             .executes((ctx) -> {
                 AutoRestartScheduler.stop();
                 AutoAnnouncerScheduler.stop();
+                boolean customJoinMessagesPreviousState = getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled", true);
+                boolean customLeaveMessagesPreviousState = getConfig().getBoolean("JoinMessages.CustomLeaveMessages.enabled", true);
                 reloadConfig();
                 if (this.getConfig().getBoolean("AutoRestart.enabled"))
                     AutoRestartScheduler.start(new AutoRestartConfig());
@@ -100,12 +104,20 @@ public class VorplexCore extends JavaPlugin {
                     AutoAnnouncerScheduler.start();
                 if (getConfig().getBoolean("AutoPickup.enabled"))
                     autoPickupConfig = new AutoPickupConfig();
-//                if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
-//                    cacheJoinMessages();
-//                }
-//                if (getConfig().getBoolean("LeaveMessages.customLeavemessages.enabled")) {
-//                    cacheLeaveMessages();
-//                }
+                Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+                    if (!getCustomJoinMessagesCache().isEmpty() && !getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled", true))
+                        getCustomJoinMessagesCache().clear();
+                    if (!getCustomLeaveMessagesCache().isEmpty() && !getConfig().getBoolean("JoinMessages.CustomLeaveMessages.enabled", true))
+                        getCustomLeaveMessagesCache().clear();
+
+                    //cache online player custom join messages
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (!customJoinMessagesPreviousState && getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled", true))
+                            getCustomJoinMessagesCache().put(player.getUniqueId(), getStorageProvider().getJoinMessage(player.getUniqueId()));
+                        if (!customLeaveMessagesPreviousState && getConfig().getBoolean("LeaveMessages.CustomLeaveMessages.enabled", true))
+                            getCustomLeaveMessagesCache().put(player.getUniqueId(), getStorageProvider().getLeaveMessage(player.getUniqueId()));
+                    }
+                });
                 ctx.getSource().getSender().sendRichMessage(getPrefix() + "<green>Config reloaded!");
                 return Command.SINGLE_SUCCESS;
             }).build();
