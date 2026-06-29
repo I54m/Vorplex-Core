@@ -54,14 +54,15 @@ public class JoinMessageCommand {
     private static int setSelf(final CommandContext<CommandSourceStack> ctx) {
         final Player player = (Player) ctx.getSource().getSender();
         final String messageArg = ctx.getArgument("message", String.class);
-        final String strippedMessage = plugin.getBasicMM().stripTags(messageArg);
+        final String filteredMessage = messageArg.replace("<br>", "").replace("<newline>", "");
+        final String strippedMessage = plugin.getBasicMM().stripTags(filteredMessage);
         if (strippedMessage.length() > plugin.getConfig().getInt("JoinMessages.CustomJoinMessages.maxlength", 128)) {
             player.sendRichMessage(plugin.getPrefix() + "<red>That Join message is too long, the maximum length for join messages is " + plugin.getConfig().getInt("JoinMessages.CustomJoinMessages.maxlength", 128) + " (excludes MiniMessage Tags)");
             return Command.SINGLE_SUCCESS;
         } else {
             try {
-                plugin.getStorageProvider().setJoinMessage(player.getUniqueId(), messageArg);
-                plugin.getCustomJoinMessagesCache().put(player.getUniqueId(), messageArg);
+                plugin.getStorageProvider().setJoinMessage(player.getUniqueId(), filteredMessage);
+                plugin.getCustomJoinMessagesCache().put(player.getUniqueId(), filteredMessage);
 
                 String prefix = LuckpermsUtil.getPrefix(player);
                 player.sendRichMessage(plugin.getPrefix() + "<green>Set your join message to: ");

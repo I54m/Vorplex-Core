@@ -54,14 +54,15 @@ public class LeaveMessageCommand {
     private static int setSelf(final CommandContext<CommandSourceStack> ctx) {
         final Player player = (Player) ctx.getSource().getSender();
         final String messageArg = ctx.getArgument("message", String.class);
-        final String strippedMessage = plugin.getBasicMM().stripTags(messageArg);
+        final String filteredMessage = messageArg.replace("<br>", "").replace("<newline>", "");
+        final String strippedMessage = plugin.getBasicMM().stripTags(filteredMessage);
         if (strippedMessage.length() > plugin.getConfig().getInt("LeaveMessages.CustomLeaveMessages.maxlength", 128)) {
             player.sendRichMessage(plugin.getPrefix() + "<red>That Leave message is too long, the maximum length for leave messages is " + plugin.getConfig().getInt("LeaveMessages.CustomLeaveMessages.maxlength", 128) + " (excludes MiniMessage Tags)");
             return Command.SINGLE_SUCCESS;
         } else {
             try {
-                plugin.getStorageProvider().setLeaveMessage(player.getUniqueId(), messageArg);
-                plugin.getCustomLeaveMessagesCache().put(player.getUniqueId(), messageArg);
+                plugin.getStorageProvider().setLeaveMessage(player.getUniqueId(), filteredMessage);
+                plugin.getCustomLeaveMessagesCache().put(player.getUniqueId(), filteredMessage);
 
                 String prefix = LuckpermsUtil.getPrefix(player);
                 player.sendRichMessage(plugin.getPrefix() + "<green>Set your leave message to: ");
