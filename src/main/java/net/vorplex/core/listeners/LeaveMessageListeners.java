@@ -30,18 +30,23 @@ public class LeaveMessageListeners implements Listener {
         if (plugin.isPremiumVanish())
             if (isVanished(player) || VanishAPI.isInvisible(player)) {
                 Debug.log("NOT sending leave message for vanished player: " + player.getName());
+                plugin.getCustomLeaveMessagesCache().remove(player.getUniqueId());
+                plugin.getCustomJoinMessagesCache().remove(player.getUniqueId());
                 return;
             }
-//        if (plugin.getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
-//            if (player.hasPermission("vorplexcore.customleavemessages")) {
-//                if (plugin.customLeaveMessages.containsKey(player.getUniqueId())) {
-//                    String placeholder = prefix + ChatColor.RESET + " " + player.getName();
-//                    String leavemessage = plugin.customLeaveMessages.get(player.getUniqueId()).replace("%me%", placeholder).replace("\n", "");
-//                    event.setQuitMessage(ChatColor.translateAlternateColorCodes('&', leavemessage));
-//                    return;
-//                }
-//            }
-//        }
+        if (plugin.getConfig().getBoolean("LeaveMessages.CustomLeaveMessages.enabled", true)) {
+            if (player.hasPermission("vorplexcore.customleavemessages")) {
+                if (plugin.getCustomLeaveMessagesCache().containsKey(player.getUniqueId())) {
+                    Debug.log("Sending Custom leave message for player: " + player.getName());
+                    event.quitMessage(plugin.getBasicMM().deserialize(plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()),
+                            Placeholder.component("me", Component.text(prefix + player.getName()))
+                    ));
+                    plugin.getCustomLeaveMessagesCache().remove(player.getUniqueId());
+                    plugin.getCustomJoinMessagesCache().remove(player.getUniqueId());
+                    return;
+                }
+            }
+        }
         if (plugin.getConfig().getBoolean("LeaveMessages.PermissionBasedLeaveMessages.enabled", true)) {
             Debug.log("Sending leave message for player: " + player.getName());
             Component leaveMessage = getPermissionLeaveMessage(player, prefix);
@@ -55,18 +60,19 @@ public class LeaveMessageListeners implements Listener {
         if (!plugin.getConfig().getBoolean("LeaveMessages.SendOnVanish", true)) return;
         final Player player = event.getPlayer();
         final String prefix = LuckpermsUtil.getPrefix(player);
-//        if (plugin.getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
-//            if (player.hasPermission("vorplexcore.customleavemessages")) {
-//                if (plugin.customLoinMessages.containsKey(player.getUniqueId())) {
-//                    String placeholder = prefix + ChatColor.RESET + " " + player.getName();
-//                    String leavemessage = plugin.customleaveMessages.get(player.getUniqueId()).replace("%me%", placeholder).replace("\n", "");
-//                    for (Player all : Bukkit.getOnlinePlayers()) {
-//                        all.sendMessage(ChatColor.translateAlternateColorCodes('&', leavemessage));
-//                    }
-//                    return;
-//                }
-//            }
-//        }
+
+        if (plugin.getConfig().getBoolean("LeaveMessages.CustomLeaveMessages.enabled", true)) {
+            if (player.hasPermission("vorplexcore.customleavemessages")) {
+                if (plugin.getCustomLeaveMessagesCache().containsKey(player.getUniqueId())) {
+                    Debug.log("Sending Custom leave message for player: " + player.getName());
+                    Component leaveMessage = plugin.getBasicMM().deserialize(plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()),
+                            Placeholder.component("me", Component.text(prefix + player.getName()))
+                    );
+                    Audience.audience(Bukkit.getServer().getOnlinePlayers()).sendMessage(leaveMessage);
+                    return;
+                }
+            }
+        }
         if (plugin.getConfig().getBoolean("LeaveMessages.PermissionBasedLeaveMessages.enabled", true)) {
             Debug.log("Sending fake leave message for player: " + player.getName());
             Component leaveMessage = getPermissionLeaveMessage(player, prefix);
