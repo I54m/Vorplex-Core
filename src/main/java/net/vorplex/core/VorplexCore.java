@@ -58,14 +58,15 @@ public class VorplexCore extends JavaPlugin {
     @Getter
     private final MiniMessage basicMM = MiniMessage.builder()
             .tags(TagResolver.builder()
-                    .resolver(StandardTags.color())
-                    .resolver(StandardTags.decorations())
-                    .resolver(StandardTags.gradient())
-                    .resolver(StandardTags.rainbow())
-                    .resolver(StandardTags.hoverEvent())
-                    .resolver(StandardTags.reset())
-                    .resolver(StandardTags.shadowColor())
-                    .resolver(StandardTags.pride())
+                    .resolvers(
+                            StandardTags.color(),
+                            StandardTags.gradient(),
+                            StandardTags.rainbow(),
+                            StandardTags.pride(),
+                            StandardTags.reset(),
+                            StandardTags.shadowColor(),
+                            StandardTags.decorations()
+                    )
                     .build())
             .build();
 
