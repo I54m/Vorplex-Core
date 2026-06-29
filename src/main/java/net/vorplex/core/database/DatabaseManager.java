@@ -11,17 +11,32 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * A DatabaseManager used to manage the connection to an external database
+ */
 public class DatabaseManager {
 
-    private final VorplexCore plugin = VorplexCore.getInstance();
+    /**
+     * The StorageType used by this DatabaseManager instance
+     */
     @Getter
     private final StorageType storageType;
-    private HikariDataSource hikari;
 
+    private HikariDataSource hikari;
+    private final VorplexCore plugin = VorplexCore.getInstance();
+
+    /**
+     * Constructor for DatabaseManager
+     *
+     * @param storageType the StorageType to use
+     */
     public DatabaseManager(StorageType storageType) {
         this.storageType = storageType;
     }
 
+    /**
+     * Initialize a connection to the external database using the StorageType and options defined in the config.yml
+     */
     public void initializeConnection() {
         if (hikari == null) {
             plugin.getComponentLogger().info(Component.text("Establishing Database connection...").color(NamedTextColor.GREEN));
@@ -67,14 +82,26 @@ public class DatabaseManager {
             throw new IllegalStateException("Cannot Initialize Connection whilst a connection is already established!");
     }
 
+    /**
+     * Get a connection instance to the database
+     * @return the connection instance
+     * @throws SQLException if we were unable to obtain a connection
+     */
     public Connection getConnection() throws SQLException {
         return hikari.getConnection();
     }
 
+    /**
+     * boolean used to check if the DatabaseManager is actually connected to the external database
+     * @return true if the DatabaseManager is initialized, running and not closed
+     */
     public boolean isConnected() {
         return hikari != null && hikari.isRunning() && !hikari.isClosed();
     }
 
+    /**
+     * Shutdown the DatabaseManager and close all open connections
+     */
     public void shutdownConnection() {
         try {
             if (hikari != null && !hikari.isClosed()) {
