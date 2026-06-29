@@ -47,7 +47,8 @@ public class AutoRestartScheduler {
             task.cancel();
         }
         tasks.clear();
-        Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
+        if (bossBarCountdown != null)
+            Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
     }
 
     public static void scheduleReboot(TimeUnit timeUnit, long amount) {
