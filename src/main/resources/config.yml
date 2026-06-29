@@ -130,11 +130,11 @@ JoinMessages:
       permission1: "<gold>Welcome <prefix><name>!</gold>"
       permission2: "<light_purple>Welcome <prefix><name>!</light_purple>"
       permission3: "<gray>Welcome <prefix><name>!</gray>"
-  #allows players to make their own join messages - permission: vorplexcore.customjoinmessages & vorplexcore.customjoinmessages.admin for clear command(Requires mysql connection)
-  customjoinmessages:
+  #allows players to make their own join messages - permission: vorplexcore.customjoinmessages & vorplexcore.customjoinmessages.admin for clear command (Requires database)
+  CustomJoinMessages:
     enabled: true
-    #the maximum length for join messages (excludes color codes)(maximum 64)
-    maxlength: 64
+    #the maximum length for join messages (excludes minimessage tags)(maximum 128)
+    maxlength: 128
 
 #leave messages module
 LeaveMessages:
@@ -149,11 +149,11 @@ LeaveMessages:
       permission1: "<gold>Goodbye <prefix><name>!</gold>"
       permission2: "<light_purple>Goodbye <prefix><name>!</light_purple>"
       permission3: "<gray>Goodbye <prefix><name>!</gray>"
-  #allows players to make their own leave messages - permission: vorplexcore.customleavemessages & vorplexcore.customleavemessages.admin for clear command(Requires mysql connection)
-  customleavemessages:
+  #allows players to make their own leave messages - permission: vorplexcore.customleavemessages & vorplexcore.customleavemessages.admin for clear command (Requires database)
+  CustomLeaveMessages:
     enabled: true
-    #the maximum length for leave messages (excludes color codes)(maximum 64)
-    maxlength: 64
+    #the maximum length for leave messages (excludes minimessage tags)(maximum 128)
+    maxlength: 128
 
 #Gifts module - allows players to send each other items
 #requires permissions: vorplexcore.gifts.send to be able to send gifts & vorplexcore.gifts.claim to be able to claim gifts
