@@ -37,9 +37,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -89,8 +86,6 @@ public class VorplexCore extends JavaPlugin {
     public boolean essentials = false;
     @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
     public Connection connection;
-    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
-    private int cacheTaskid;
 
     //Plugin reload command
     public final LiteralCommandNode<CommandSourceStack> RELOAD_COMMAND_NODE = Commands.literal("vorplexcorereload")
@@ -279,71 +274,6 @@ public class VorplexCore extends JavaPlugin {
         AutoAnnouncerScheduler.stop();
         databaseManager.shutdownConnection();
         threadPool.shutdownNow();
-    }
-
-    private void startCaching() {
-        cacheTaskid = Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            if (getConfig().getBoolean("JoinMessages.customjoinmessages")) {
-                cacheJoinMessages();
-            }
-            if (getConfig().getBoolean("LeaveMessages.customLeavemessages.enabled")) {
-                cacheLeaveMessages();
-            }
-        }, 200, 100);
-        if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
-            cacheJoinMessages();
-        }
-        if (getConfig().getBoolean("LeaveMessages.customLeavemessages.enabled")) {
-            cacheLeaveMessages();
-        }
-    }
-
-    private void cacheJoinMessages() {
-        customJoinMessages.clear();
-        try {
-            String sql = "SELECT * FROM `vorplexcore_joinmessages`;";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            ResultSet results = stmt.executeQuery();
-            while (results.next()) {
-                String joinMessageRaw = results.getString("RawMessage");
-                if (joinMessageRaw.contains("%sinquo%"))
-                    joinMessageRaw = joinMessageRaw.replace("%sinquo%", "'");
-                if (joinMessageRaw.contains("%dubquo%"))
-                    joinMessageRaw = joinMessageRaw.replace("%dubquo%", "\"");
-                if (joinMessageRaw.contains("%bcktck%"))
-                    joinMessageRaw = joinMessageRaw.replace("%bcktck%", "`");
-                customJoinMessages.put(UUID.fromString(results.getString("UUID")), joinMessageRaw);
-            }
-            results.close();
-            stmt.close();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-            getLogger().warning("Unable to cache join messages from mysql database, custom join messages may no longer work!!");
-        }
-    }
-
-    private void cacheLeaveMessages() {
-        customLeaveMessages.clear();
-        try {
-            String sql = "SELECT * FROM `vorplexcore_leavemessages`;";
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            ResultSet results = stmt.executeQuery();
-            while (results.next()) {
-                String leaveMessageRaw = results.getString("RawMessage");
-                if (leaveMessageRaw.contains("%sinquo%"))
-                    leaveMessageRaw = leaveMessageRaw.replace("%sinquo%", "'");
-                if (leaveMessageRaw.contains("%dubquo%"))
-                    leaveMessageRaw = leaveMessageRaw.replace("%dubquo%", "\"");
-                if (leaveMessageRaw.contains("%bcktck%"))
-                    leaveMessageRaw = leaveMessageRaw.replace("%bcktck%", "`");
-                customLeaveMessages.put(UUID.fromString(results.getString("UUID")), leaveMessageRaw);
-            }
-            results.close();
-            stmt.close();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-            getLogger().warning("Unable to cache leave messages from mysql database, custom leave messages may no longer work!!");
-        }
     }
 
     private void saveGifts() {
