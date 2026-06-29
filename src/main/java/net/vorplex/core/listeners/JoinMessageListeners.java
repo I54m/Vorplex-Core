@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.vorplex.core.VorplexCore;
+import net.vorplex.core.database.StorageException;
 import net.vorplex.core.util.Debug;
 import net.vorplex.core.util.LuckpermsUtil;
 import org.bukkit.Bukkit;
@@ -15,12 +16,36 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 public class JoinMessageListeners implements Listener {
 
     private final VorplexCore plugin = VorplexCore.getInstance();
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPrePlayerJoin(AsyncPlayerPreLoginEvent event) {
+        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) return;
+        if (plugin.getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled", true)) {
+            //cache a player's custom join and leave messages on pre login so it is ready to use during login event
+            UUID uuid = event.getUniqueId();
+            try {
+                String customJoinMessage = plugin.getStorageProvider().getJoinMessage(uuid);
+                if (customJoinMessage != null)
+                    plugin.getCustomJoinMessagesCache().put(uuid, customJoinMessage);
+                String customLeaveMessage = plugin.getStorageProvider().getLeaveMessage(uuid);
+                if (customLeaveMessage != null)
+                    plugin.getCustomLeaveMessagesCache().put(uuid, customLeaveMessage);
+            } catch (StorageException se) {
+                plugin.getComponentLogger().error("A Storage Error was encountered while pre-caching a custom join and leave message for: {}", uuid);
+                plugin.getComponentLogger().error("Error message: {}", se.getMessage());
+                plugin.getComponentLogger().error("Cause message: {}", se.getCause().getMessage());
+            }
+        }
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -31,18 +56,19 @@ public class JoinMessageListeners implements Listener {
                 Debug.log("NOT sending join message for vanished player: " + player.getName());
                 return;
             }
-//        if (plugin.getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
-//            if (player.hasPermission("vorplexcore.customjoinmessages")) {
-//                if (plugin.customJoinMessages.containsKey(player.getUniqueId())) {
-//                    String placeholder = prefix + ChatColor.RESET + " " + player.getName();
-//                    String joinmessage = plugin.customJoinMessages.get(player.getUniqueId()).replace("%me%", placeholder).replace("\n", "");
-//                    event.setJoinMessage(ChatColor.translateAlternateColorCodes('&', joinmessage));
-//                    return;
-//                }
-//            }
-//        }
+        if (plugin.getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled", true)) {
+            if (player.hasPermission("vorplexcore.customjoinmessages")) {
+                if (plugin.getCustomJoinMessagesCache().containsKey(player.getUniqueId())) {
+                    Debug.log("Sending Custom join message for player: " + player.getName());
+                    event.joinMessage(plugin.getBasicMM().deserialize(plugin.getCustomJoinMessagesCache().get(player.getUniqueId()),
+                            Placeholder.component("me", Component.text(prefix + player.getName()))
+                    ));
+                    return;
+                }
+            }
+        }
         if (plugin.getConfig().getBoolean("JoinMessages.PermissionBasedJoinMessages.enabled", true)) {
-            Debug.log("Sending join message for player: " + player.getName());
+            Debug.log("Sending Permission Based join message for player: " + player.getName());
             Component joinMessage = getPermissionJoinMessage(player, prefix);
             event.joinMessage(joinMessage == null ? Component.text("") : joinMessage);
         }
@@ -54,20 +80,20 @@ public class JoinMessageListeners implements Listener {
         if (!plugin.getConfig().getBoolean("JoinMessages.SendOnUnVanish", true)) return;
         final Player player = event.getPlayer();
         final String prefix = LuckpermsUtil.getPrefix(player);
-//        if (plugin.getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
-//            if (player.hasPermission("vorplexcore.customjoinmessages")) {
-//                if (plugin.customJoinMessages.containsKey(player.getUniqueId())) {
-//                    String placeholder = prefix + ChatColor.RESET + " " + player.getName();
-//                    String joinmessage = plugin.customJoinMessages.get(player.getUniqueId()).replace("%me%", placeholder).replace("\n", "");
-//                    for (Player all : Bukkit.getOnlinePlayers()) {
-//                        all.sendMessage(ChatColor.translateAlternateColorCodes('&', joinmessage));
-//                    }
-//                    return;
-//                }
-//            }
-//        }
+        if (plugin.getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled", true)) {
+            if (player.hasPermission("vorplexcore.customjoinmessages")) {
+                if (plugin.getCustomJoinMessagesCache().containsKey(player.getUniqueId())) {
+                    Debug.log("Sending fake Custom join message for player: " + player.getName());
+                    Component joinMessage = plugin.getBasicMM().deserialize(plugin.getCustomJoinMessagesCache().get(player.getUniqueId()),
+                            Placeholder.component("me", Component.text(prefix + player.getName()))
+                    );
+                    Audience.audience(Bukkit.getServer().getOnlinePlayers()).sendMessage(joinMessage);
+                    return;
+                }
+            }
+        }
         if (plugin.getConfig().getBoolean("JoinMessages.PermissionBasedJoinMessages.enabled", true)) {
-            Debug.log("Sending fake join message for player: " + player.getName());
+            Debug.log("Sending fake permission based join message for player: " + player.getName());
             Component joinMessage = getPermissionJoinMessage(player, prefix);
             if (joinMessage != null)
                 Audience.audience(Bukkit.getServer().getOnlinePlayers()).sendMessage(joinMessage);
