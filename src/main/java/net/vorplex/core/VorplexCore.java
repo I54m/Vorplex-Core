@@ -243,15 +243,19 @@ public class VorplexCore extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new LeaveMessageListeners(), this);
         }
 
-        if (getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
+        if (getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled")) {
             getComponentLogger().info(Component.text("Enabling Custom Join Messages...").color(NamedTextColor.GREEN));
             databaseRequired = true;
-//            Bukkit.getPluginCommand("joinmessage").setExecutor(new JoinMessageCommand());
+            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands ->
+                    commands.registrar().register(JoinMessageCommand.COMMAND_NODE, List.of("joinm", "jmessage", "joinmsg", "jmsg"))
+            );
         }
-        if (getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
+        if (getConfig().getBoolean("LeaveMessages.CustomLeaveMessages.enabled")) {
             getComponentLogger().info(Component.text("Enabling Custom Leave Messages...").color(NamedTextColor.GREEN));
             databaseRequired = true;
-//            Bukkit.getPluginCommand("leavemessage").setExecutor(new LeaveMessageCommand());
+            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands ->
+                    commands.registrar().register(JoinMessageCommand.COMMAND_NODE, List.of("leavem", "lmessage", "leavemsg", "lmsg"))
+            );
         }
 
 
