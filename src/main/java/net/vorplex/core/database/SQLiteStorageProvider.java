@@ -11,11 +11,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+/**
+ * SQLite implementation of StorageProvider
+ */
 public class SQLiteStorageProvider implements StorageProvider {
 
     private final DatabaseManager databaseManager;
     private final VorplexCore plugin = VorplexCore.getInstance();
 
+    /**
+     * Constructor for SQLiteStorageProvider
+     *
+     * @param databaseManager the DatabaseManager to use to get a connection to the storage
+     */
     public SQLiteStorageProvider(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
     }
@@ -26,7 +34,7 @@ public class SQLiteStorageProvider implements StorageProvider {
             throw new IllegalStateException("Cannot initialize SQLite Storage Provider when storage type is: " + databaseManager.getStorageType());
         try (Connection connection = databaseManager.getConnection()) {
             plugin.getComponentLogger().info(Component.text("Initializing SQL Storage Provider...").color(NamedTextColor.GREEN));
-            if (plugin.getConfig().getBoolean("JoinMessages.customjoinmessages.enabled")) {
+            if (plugin.getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled")) {
                 String joinMessages = """
                             CREATE TABLE IF NOT EXISTS vorplexcore_joinmessages (
                                 UUID TEXT NOT NULL PRIMARY KEY,
@@ -37,7 +45,7 @@ public class SQLiteStorageProvider implements StorageProvider {
                     stmt.executeUpdate();
                 }
             }
-            if (plugin.getConfig().getBoolean("LeaveMessages.customleavemessages.enabled")) {
+            if (plugin.getConfig().getBoolean("LeaveMessages.CustomLeaveMessages.enabled")) {
                 String leaveMessages = """
                             CREATE TABLE IF NOT EXISTS vorplexcore_leavemessages (
                                 UUID TEXT NOT NULL PRIMARY KEY,
