@@ -71,6 +71,10 @@ public class DatabaseManager {
         return hikari.getConnection();
     }
 
+    public boolean isConnected() {
+        return hikari != null && hikari.isRunning() && !hikari.isClosed();
+    }
+
     public void shutdownConnection() {
         try {
             if (hikari != null && !hikari.isClosed()) {
