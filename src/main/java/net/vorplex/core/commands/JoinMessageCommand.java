@@ -100,13 +100,17 @@ public class JoinMessageCommand {
         UUID targetUUID = null;
         try {
             targetUUID = UUIDFetcher.fetchUUID(targetName);
+            if (targetUUID == null) {
+                player.sendRichMessage(plugin.getPrefix() + "<red>Could not find player: " + targetName + "!");
+                return Command.SINGLE_SUCCESS;
+            }
             plugin.getStorageProvider().deleteJoinMessage(targetUUID);
             plugin.getCustomJoinMessagesCache().remove(targetUUID);
 
-            player.sendRichMessage(plugin.getPrefix() + "<green>Cleared your custom join message!");
+            player.sendRichMessage(plugin.getPrefix() + "<green>Cleared " + targetName + "'s custom join message!");
             return Command.SINGLE_SUCCESS;
         } catch (Exception e) {
-            player.sendRichMessage(plugin.getPrefix() + "<red>An Error occurred and we were unable to clear your join message, please try again later!");
+            player.sendRichMessage(plugin.getPrefix() + "<red>An Error occurred and we were unable to clear " + targetName + "'s  join message, please try again later!");
             logException(e, targetName, targetUUID);
             return Command.SINGLE_SUCCESS;
         }

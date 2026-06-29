@@ -100,13 +100,17 @@ public class LeaveMessageCommand {
         UUID targetUUID = null;
         try {
             targetUUID = UUIDFetcher.fetchUUID(targetName);
+            if (targetUUID == null) {
+                player.sendRichMessage(plugin.getPrefix() + "<red>Could not find player: " + targetName + "!");
+                return Command.SINGLE_SUCCESS;
+            }
             plugin.getStorageProvider().deleteLeaveMessage(targetUUID);
             plugin.getCustomLeaveMessagesCache().remove(targetUUID);
 
-            player.sendRichMessage(plugin.getPrefix() + "<green>Cleared your custom leave message!");
+            player.sendRichMessage(plugin.getPrefix() + "<green>Cleared " + targetName + "'s custom leave message!");
             return Command.SINGLE_SUCCESS;
         } catch (Exception e) {
-            player.sendRichMessage(plugin.getPrefix() + "<red>An Error occurred and we were unable to clear your leave message, please try again later!");
+            player.sendRichMessage(plugin.getPrefix() + "<red>An Error occurred and we were unable to clear " + targetName + "'s leave message, please try again later!");
             logException(e, targetName, targetUUID);
             return Command.SINGLE_SUCCESS;
         }
