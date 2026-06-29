@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 /**
- * MYSQL & MARIADB implementation of StorageProvider
+ * MYSQL implementation of StorageProvider
  */
 public class SQLStorageProvider implements StorageProvider {
 
