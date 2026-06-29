@@ -11,6 +11,8 @@ import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.vorplex.core.autoannouncer.AutoAnnouncerScheduler;
@@ -31,6 +33,7 @@ import net.vorplex.core.util.ConfigUpdater;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -52,6 +55,20 @@ public class VorplexCore extends JavaPlugin {
     private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
     @Getter
     private ExecutorService threadPool;
+    @Getter
+    private final MiniMessage basicMM = MiniMessage.builder()
+            .tags(TagResolver.builder()
+                    .resolver(StandardTags.color())
+                    .resolver(StandardTags.decorations())
+                    .resolver(StandardTags.gradient())
+                    .resolver(StandardTags.rainbow())
+                    .resolver(StandardTags.hoverEvent())
+                    .resolver(StandardTags.reset())
+                    .resolver(StandardTags.shadowColor())
+                    .resolver(StandardTags.pride())
+                    .build())
+            .build();
+
 
     // Config classes
     @Getter
