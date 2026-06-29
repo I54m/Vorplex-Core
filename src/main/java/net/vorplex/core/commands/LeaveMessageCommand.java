@@ -1,178 +1,121 @@
 package net.vorplex.core.commands;
 
-import net.luckperms.api.context.ContextManager;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.query.QueryOptions;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.vorplex.core.VorplexCore;
-import net.vorplex.core.util.NameFetcher;
+import net.vorplex.core.database.StorageException;
+import net.vorplex.core.util.LuckpermsUtil;
 import net.vorplex.core.util.UUIDFetcher;
-import net.vorplex.core.util.UserFetcher;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-public class LeaveMessageCommand implements CommandExecutor {
+public class LeaveMessageCommand {
 
-    private VorplexCore plugin = VorplexCore.getInstance();
+    private static final VorplexCore plugin = VorplexCore.getInstance();
 
-    @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if (!(commandSender instanceof Player)){
-            commandSender.sendMessage("You must be a player to use this commmand!");
-            return false;
-        }
-        Player player = (Player) commandSender;
-        if (!player.hasPermission("vorplexcore.customleavemessages")){
-            player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "You do not have permission to use this command!");
-            return false;
-        }
-        if (strings.length < 1){
-            player.sendMessage(ChatColor.LIGHT_PURPLE + "|-----" + ChatColor.DARK_PURPLE + "[" + ChatColor.LIGHT_PURPLE + "Custom Leave Messages Tips" + ChatColor.DARK_PURPLE + "]" + ChatColor.LIGHT_PURPLE + "-----|");
-            player.sendMessage(ChatColor.WHITE + "- To set your custom leave message type /leavemessage set <message>");
-            player.sendMessage(ChatColor.WHITE + "- You can use color codes with '&'");
-            player.sendMessage(ChatColor.WHITE + "- Use %me% to insert your name, rank and title");
-            return false;
-        }
-        if (strings[0].equalsIgnoreCase("set")) {
-            if (strings.length < 2){
-                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Please provide a leave message!");
-                return false;
-            }
-            StringBuilder leavemessage = new StringBuilder();
-            for (int i = 1; i < strings.length; i++) {
-                leavemessage.append(strings[i]).append(" ");
-            }
-            if (ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', leavemessage.toString())).replace(" ", "").length() > plugin.getConfig().getInt("LeaveMessages.customleavemessages.maxlength")) {
-                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "That Leave message is too long, the maximum length for leave messages is " + plugin.getConfig().getInt("LeaveMessages.customleavemessages.maxlength") + " (excludes color codes)");
-                return false;
-            } else {
-                try {
-                    String sql = "SELECT * FROM `vorplexcore_leavemessages` WHERE UUID='" + player.getUniqueId().toString() + "';";
-                    PreparedStatement stmt = plugin.connection.prepareStatement(sql);
-                    ResultSet results = stmt.executeQuery();
-                    String leaveMessageRaw = leavemessage.toString();
-                    if (leaveMessageRaw.contains("'"))
-                        leaveMessageRaw = leaveMessageRaw.replace("'", "%sinquo%");
-                    if (leaveMessageRaw.contains("\""))
-                        leaveMessageRaw = leaveMessageRaw.replace("\"", "%dubquo%");
-                    if (leaveMessageRaw.contains("`"))
-                        leaveMessageRaw = leaveMessageRaw.replace("`", "%bcktck%");
-                    if (results.next()) {
-                        String sql1 = "UPDATE `vorplexcore_leavemessages` SET `RawMessage`='" + leaveMessageRaw + "' WHERE UUID='" + player.getUniqueId().toString() + "';";
-                        PreparedStatement stmt1 = plugin.connection.prepareStatement(sql1);
-                        stmt1.executeUpdate();
-                        stmt1.close();
-                    } else {
-                        String sql1 = "INSERT INTO `vorplexcore_leavemessages` (`UUID`, `RawMessage`)" +
-                                " VALUES ('" + player.getUniqueId().toString() + "','" + leaveMessageRaw + "');";
-                        PreparedStatement stmt1 = plugin.connection.prepareStatement(sql1);
-                        stmt1.executeUpdate();
-                        stmt1.close();
-                    }
-                    plugin.customLeaveMessages.put(player.getUniqueId(), leavemessage.toString());
-                    User user = plugin.getLuckPermsAPI().getUserManager().getUser(player.getName());
-                    if (user == null) {
-                        UserFetcher userFetcher = new UserFetcher();
-                        userFetcher.setUuid(player.getUniqueId());
-                        ExecutorService executorService = Executors.newSingleThreadExecutor();
-                        Future<User> userFuture = executorService.submit(userFetcher);
-                        try {
-                            user = userFuture.get(5, TimeUnit.SECONDS);
-                        } catch (Exception e) {
-                            executorService.shutdown();
-                            player.sendMessage(ChatColor.RED + "We were unable to fetch your permission information please try again later!");
-                            return false;
-                        }
-                        executorService.shutdown();
-                        if (user == null) {
-                            throw new IllegalStateException();
-                        }
-                    }
-                    ContextManager cm = plugin.getLuckPermsAPI().getContextManager();
-                    QueryOptions queryOptions = cm.getQueryOptions(user).orElse(cm.getStaticQueryOptions());
-                    String prefix = user.getCachedData().getMetaData(queryOptions).getPrefix();
-                    if (prefix == null) prefix = "";
-                    String placeholder = prefix + ChatColor.RESET + " " + player.getName();
-                    player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.GREEN + "Set your leave message to: " + ChatColor.RESET + ChatColor.translateAlternateColorCodes('&', leavemessage.toString().replace("%me%", placeholder).replace("\n", "")));
-                    return true;
-                } catch (SQLException sqle) {
-                    sqle.printStackTrace();
-                    player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "An Error occurred in our database and we were unable to save your leave message, please try again later!!");
-                    return false;
-                }
+    public static final LiteralCommandNode<CommandSourceStack> COMMAND_NODE = Commands.literal("leavemessage")
+            .requires(source -> source.getSender() instanceof Player && source.getSender().hasPermission("vorplexcore.customleavemessages"))
+            .then(Commands.literal("set")
+                    .then(Commands.argument("message", StringArgumentType.greedyString())
+                            .executes(LeaveMessageCommand::setSelf)
+                    )
+                    .executes(LeaveMessageCommand::help)
+            )
+            .then(Commands.literal("clear")
+                    .executes(LeaveMessageCommand::clearSelf)
+            )
+            .then(Commands.argument("target", StringArgumentType.string())
+                    .requires(source -> source.getSender().hasPermission("vorplexcore.ranktitle.others"))
+                    .then(Commands.literal("clear")
+                            .executes(LeaveMessageCommand::clearOther)
+                    )
+            )
+            .executes(LeaveMessageCommand::help)
+            .build();
 
+    private static int help(final CommandContext<CommandSourceStack> ctx) {
+        final Player player = (Player) ctx.getSource().getSender();
+        player.sendRichMessage("<light_purple>|<st>      </st><dark_purple>[</dark_purple><white>Custom Leave Messages Tips</white><dark_purple>]</dark_purple><st>     </st>|</light_purple>");
+        player.sendRichMessage("<white>- To set your custom leave message type /leavemessage set <message></white>");
+        player.sendRichMessage("<white>- To clear your custom leave message type /leavemessage clear</white>");
+        player.sendRichMessage("<white>- Use mini message codes to color your message</white>");
+        player.sendRichMessage("<white>- Mini message hover events are supported</white>");
+        player.sendRichMessage("<white>- Use <me> to insert your name and prefix</white>");
+        return Command.SINGLE_SUCCESS;
+    }
+
+    private static int setSelf(final CommandContext<CommandSourceStack> ctx) {
+        final Player player = (Player) ctx.getSource().getSender();
+        final String messageArg = ctx.getArgument("message", String.class);
+        final String strippedMessage = plugin.getBasicMM().stripTags(messageArg);
+        if (strippedMessage.length() > plugin.getConfig().getInt("LeaveMessages.CustomLeaveMessages.maxlength", 128)) {
+            player.sendRichMessage(plugin.getPrefix() + "<red>That Leave message is too long, the maximum length for leave messages is " + plugin.getConfig().getInt("LeaveMessages.CustomLeaveMessages.maxlength", 128) + " (excludes MiniMessage Tags)");
+            return Command.SINGLE_SUCCESS;
+        } else {
+            try {
+                plugin.getStorageProvider().setLeaveMessage(player.getUniqueId(), messageArg);
+                plugin.getCustomLeaveMessagesCache().put(player.getUniqueId(), messageArg);
+
+                String prefix = LuckpermsUtil.getPrefix(player);
+                player.sendRichMessage(plugin.getPrefix() + "<green>Set your leave message to: ");
+                player.sendMessage(plugin.getBasicMM().deserialize(plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()), Placeholder.component("me", Component.text(prefix + player.getName()))));
+                return Command.SINGLE_SUCCESS;
+            } catch (StorageException se) {
+                player.sendRichMessage(plugin.getPrefix() + "<red>An Error occurred and we were unable to save your leave message, please try again later!");
+                logException(se, player.getName(), player.getUniqueId());
+                return Command.SINGLE_SUCCESS;
             }
-        }else if (strings[0].equalsIgnoreCase("clear")){
-            if (!player.hasPermission("vorplexcore.customleavemessages.admin")){
-                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "You do not have permission to use that command!");
-                return false;
-            }
-            if (strings.length < 2){
-                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Usage: /leavemessage clear <player> - clear a player's leave message.");
-                return false;
-            }
-            UUID targetuuid = null;
-            Player findTarget = Bukkit.getPlayerExact(strings[0]);
-            Future<UUID> future = null;
-            ExecutorService executorService = null;
-            if (findTarget != null) {
-                targetuuid = findTarget.getUniqueId();
-            } else {
-                UUIDFetcher uuidFetcher = new UUIDFetcher();
-                uuidFetcher.fetch(strings[1]);
-                executorService = Executors.newSingleThreadExecutor();
-                future = executorService.submit(uuidFetcher);
-            }
-            if (future != null) {
-                try {
-                    targetuuid = future.get(10, TimeUnit.SECONDS);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "Unable to fetch player's uuid!");
-                    executorService.shutdown();
-                    return false;
-                }
-                executorService.shutdown();
-            }
-            if (targetuuid == null) {
-                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "That is not a player's name!");
-                return false;
-            }
-            String targetName = NameFetcher.getName(targetuuid);
-            if (targetName == null) {
-                targetName = strings[0];
-            }
-            try{
-                String sql1 = "DELETE FROM `vorplexcore_leavemessages` WHERE UUID='" + targetuuid.toString() + "'";
-                PreparedStatement stmt1 = plugin.connection.prepareStatement(sql1);
-                stmt1.executeUpdate();
-                stmt1.close();
-                plugin.customLeaveMessages.remove(targetuuid);
-                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.GREEN + "Cleared leave message for player: " + targetName + "!");
-            }catch (SQLException sqle){
-                sqle.printStackTrace();
-                player.sendMessage(plugin.LEGACY_PREFIX + ChatColor.RED + "An Error occurred in our database and we were unable to clear that player's leave message!");
-                return false;
-            }
-        }else{
-            player.sendMessage(ChatColor.LIGHT_PURPLE + "|-----" + ChatColor.DARK_PURPLE + "[" + ChatColor.LIGHT_PURPLE + "Custom Leave Messages Tips" + ChatColor.DARK_PURPLE + "]" + ChatColor.LIGHT_PURPLE + "-----|");
-            player.sendMessage(ChatColor.WHITE + "- To set your custom leave message type /leavemessage set <message>");
-            player.sendMessage(ChatColor.WHITE + "- You can use color codes with '&'");
-            player.sendMessage(ChatColor.WHITE + "- Use %me% to insert your name, rank and title");
-            return false;
         }
-        return false;
+    }
+
+    private static int clearSelf(final CommandContext<CommandSourceStack> ctx) {
+        final Player player = (Player) ctx.getSource().getSender();
+        try {
+            plugin.getStorageProvider().deleteLeaveMessage(player.getUniqueId());
+            plugin.getCustomLeaveMessagesCache().remove(player.getUniqueId());
+
+            player.sendRichMessage(plugin.getPrefix() + "<green>Cleared your custom leave message!");
+            return Command.SINGLE_SUCCESS;
+        } catch (StorageException se) {
+            player.sendRichMessage(plugin.getPrefix() + "<red>An Error occurred and we were unable to clear your leave message, please try again later!");
+            logException(se, player.getName(), player.getUniqueId());
+            return Command.SINGLE_SUCCESS;
+        }
+    }
+
+    private static int clearOther(final CommandContext<CommandSourceStack> ctx) {
+        final Player player = (Player) ctx.getSource().getSender();
+        final String targetName = ctx.getArgument("target", String.class);
+        if (targetName.contains("\"") || targetName.contains(" ")) {
+            player.sendRichMessage(plugin.getPrefix() + "<red>That is an invalid player's name!");
+            return Command.SINGLE_SUCCESS;
+        }
+        UUID targetUUID = null;
+        try {
+            targetUUID = UUIDFetcher.fetchUUID(targetName);
+            plugin.getStorageProvider().deleteLeaveMessage(targetUUID);
+            plugin.getCustomLeaveMessagesCache().remove(targetUUID);
+
+            player.sendRichMessage(plugin.getPrefix() + "<green>Cleared your custom leave message!");
+            return Command.SINGLE_SUCCESS;
+        } catch (Exception e) {
+            player.sendRichMessage(plugin.getPrefix() + "<red>An Error occurred and we were unable to clear your leave message, please try again later!");
+            logException(e, targetName, targetUUID);
+            return Command.SINGLE_SUCCESS;
+        }
+    }
+
+    private static void logException(Exception e, String playerName, UUID playerUUID) {
+        plugin.getComponentLogger().error("An Error was encountered while trying to delete a custom leave message for: {} (UUID: {})", playerName, playerUUID == null ? "null" : playerUUID);
+        plugin.getComponentLogger().error("Error message: {}", e.getMessage());
+        if (e.getCause() != null)
+            plugin.getComponentLogger().error("Cause message: {}", e.getCause().getMessage());
     }
 }
