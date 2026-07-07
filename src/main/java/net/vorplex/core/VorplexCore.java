@@ -137,6 +137,8 @@ public class VorplexCore extends JavaPlugin {
                     }
                 });
                 ctx.getSource().getSender().sendRichMessage(getPrefix() + "<green>Config reloaded!");
+                if (databaseManager.isConnected())
+                    ctx.getSource().getSender().sendRichMessage(getPrefix() + "<red>Database changes require a reboot!");
                 return Command.SINGLE_SUCCESS;
             }).build();
 
