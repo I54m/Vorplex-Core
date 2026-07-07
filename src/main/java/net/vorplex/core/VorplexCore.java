@@ -257,7 +257,7 @@ public class VorplexCore extends JavaPlugin {
             getComponentLogger().info(Component.text("Enabling Custom Leave Messages...").color(NamedTextColor.GREEN));
             databaseRequired = true;
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands ->
-                    commands.registrar().register(JoinMessageCommand.COMMAND_NODE, List.of("leavem", "lmessage", "leavemsg", "lmsg"))
+                    commands.registrar().register(LeaveMessageCommand.COMMAND_NODE, List.of("leavem", "lmessage", "leavemsg", "lmsg"))
             );
         }
 
