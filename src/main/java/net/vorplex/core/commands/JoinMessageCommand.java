@@ -30,10 +30,8 @@ public class JoinMessageCommand {
             )
             .then(Commands.literal("clear")
                     .executes(JoinMessageCommand::clearSelf)
-            )
-            .then(Commands.argument("target", StringArgumentType.string())
-                    .requires(source -> source.getSender().hasPermission("vorplexcore.ranktitle.others"))
-                    .then(Commands.literal("clear")
+                    .then(Commands.argument("target", StringArgumentType.string())
+                            .requires(source -> source.getSender().hasPermission("vorplexcore.ranktitle.others"))
                             .executes(JoinMessageCommand::clearOther)
                     )
             )
@@ -46,8 +44,8 @@ public class JoinMessageCommand {
         player.sendRichMessage("<white>- To set your custom join message type /joinmessage set <message></white>");
         player.sendRichMessage("<white>- To clear your custom join message type /joinmessage clear</white>");
         player.sendRichMessage("<white>- Use mini message codes to color your message</white>");
-        player.sendRichMessage("<white>- Mini message hover events are supported</white>");
-        player.sendRichMessage("<white>- Use <me> to insert your name and prefix</white>");
+        player.sendRichMessage("<white>- Use <name> to insert your name</white>");
+        player.sendRichMessage("<white>- Use <prefix> to insert your rank prefix</white>");
         return Command.SINGLE_SUCCESS;
     }
 
@@ -66,7 +64,7 @@ public class JoinMessageCommand {
 
                 String prefix = LuckpermsUtil.getPrefix(player);
                 player.sendRichMessage(plugin.getPrefix() + "<green>Set your join message to: ");
-                player.sendMessage(plugin.getBasicMM().deserialize(plugin.getCustomJoinMessagesCache().get(player.getUniqueId()), Placeholder.component("me", Component.text(prefix + player.getName()))));
+                player.sendMessage(plugin.getBasicMM().deserialize(plugin.getCustomJoinMessagesCache().get(player.getUniqueId()), Placeholder.parsed("prefix", prefix), Placeholder.component("name", Component.text(player.getName()))));
                 return Command.SINGLE_SUCCESS;
             } catch (StorageException se) {
                 player.sendRichMessage(plugin.getPrefix() + "<red>An Error occurred and we were unable to save your join message, please try again later!");
