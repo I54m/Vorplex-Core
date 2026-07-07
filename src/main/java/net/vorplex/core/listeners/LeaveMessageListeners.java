@@ -39,7 +39,8 @@ public class LeaveMessageListeners implements Listener {
                 if (plugin.getCustomLeaveMessagesCache().containsKey(player.getUniqueId())) {
                     Debug.log("Sending Custom leave message for player: " + player.getName());
                     event.quitMessage(plugin.getBasicMM().deserialize(plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()),
-                            Placeholder.component("me", Component.text(prefix + player.getName()))
+                            Placeholder.parsed("prefix", prefix),
+                            Placeholder.component("name", Component.text(player.getName()))
                     ));
                     plugin.getCustomLeaveMessagesCache().remove(player.getUniqueId());
                     plugin.getCustomJoinMessagesCache().remove(player.getUniqueId());
@@ -66,7 +67,8 @@ public class LeaveMessageListeners implements Listener {
                 if (plugin.getCustomLeaveMessagesCache().containsKey(player.getUniqueId())) {
                     Debug.log("Sending Custom leave message for player: " + player.getName());
                     Component leaveMessage = plugin.getBasicMM().deserialize(plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()),
-                            Placeholder.component("me", Component.text(prefix + player.getName()))
+                            Placeholder.parsed("prefix", prefix),
+                            Placeholder.component("name", Component.text(player.getName()))
                     );
                     Audience.audience(Bukkit.getServer().getOnlinePlayers()).sendMessage(leaveMessage);
                     return;

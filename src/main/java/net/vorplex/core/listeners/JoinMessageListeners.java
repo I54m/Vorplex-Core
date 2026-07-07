@@ -61,7 +61,8 @@ public class JoinMessageListeners implements Listener {
                 if (plugin.getCustomJoinMessagesCache().containsKey(player.getUniqueId())) {
                     Debug.log("Sending Custom join message for player: " + player.getName());
                     event.joinMessage(plugin.getBasicMM().deserialize(plugin.getCustomJoinMessagesCache().get(player.getUniqueId()),
-                            Placeholder.component("me", Component.text(prefix + player.getName()))
+                            Placeholder.parsed("prefix", prefix),
+                            Placeholder.component("name", Component.text(player.getName()))
                     ));
                     return;
                 }
@@ -85,7 +86,8 @@ public class JoinMessageListeners implements Listener {
                 if (plugin.getCustomJoinMessagesCache().containsKey(player.getUniqueId())) {
                     Debug.log("Sending fake Custom join message for player: " + player.getName());
                     Component joinMessage = plugin.getBasicMM().deserialize(plugin.getCustomJoinMessagesCache().get(player.getUniqueId()),
-                            Placeholder.component("me", Component.text(prefix + player.getName()))
+                            Placeholder.parsed("prefix", prefix),
+                            Placeholder.component("name", Component.text(player.getName()))
                     );
                     Audience.audience(Bukkit.getServer().getOnlinePlayers()).sendMessage(joinMessage);
                     return;
