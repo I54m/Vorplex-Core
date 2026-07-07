@@ -102,10 +102,6 @@ public class VorplexCore extends JavaPlugin {
     //TODO Temp prefix until all modules have been converted to minimessage format
     @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
     public String LEGACY_PREFIX;
-    @Deprecated(since = "2.0-SNAPSHOT", forRemoval = true)
-    public boolean essentials = false;
-    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
-    public Connection connection;
 
     //Plugin reload command
     public final LiteralCommandNode<CommandSourceStack> RELOAD_COMMAND_NODE = Commands.literal("vorplexcorereload")
