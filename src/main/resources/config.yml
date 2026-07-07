@@ -110,7 +110,7 @@ SafeLogin:
     - world_nether
     - world_end
 
-#give player's the ability to change their donor rank prefix between all prefixes they have.
+#give player's the ability to change their donor rank prefix between all prefixes they have. (/realrank = vorplexcore.realrank, /ranktitle = vorplexcore.ranktitle & vorplexcore.ranktitle.others)
 RankTitle:
   enabled: true
   #if the prefixes priority is higher than this it won't appear in the gui
@@ -133,7 +133,7 @@ JoinMessages:
   #allows players to make their own join messages - permission: vorplexcore.customjoinmessages & vorplexcore.customjoinmessages.admin for clear command (Requires database)
   CustomJoinMessages:
     enabled: true
-    #the maximum length for join messages (excludes minimessage tags)(maximum 128)
+    #the maximum length for join messages (excludes minimessage tags)
     maxlength: 128
 
 #leave messages module
@@ -152,7 +152,7 @@ LeaveMessages:
   #allows players to make their own leave messages - permission: vorplexcore.customleavemessages & vorplexcore.customleavemessages.admin for clear command (Requires database)
   CustomLeaveMessages:
     enabled: true
-    #the maximum length for leave messages (excludes minimessage tags)(maximum 128)
+    #the maximum length for leave messages (excludes minimessage tags)
     maxlength: 128
 
 #Gifts module - allows players to send each other items
