@@ -31,7 +31,7 @@ public class LeaveMessageCommand {
             .then(Commands.literal("clear")
                     .executes(LeaveMessageCommand::clearSelf)
                     .then(Commands.argument("target", StringArgumentType.string())
-                            .requires(source -> source.getSender().hasPermission("vorplexcore.ranktitle.others"))
+                            .requires(source -> source.getSender().hasPermission("vorplexcore.customleavemessages.admin"))
                             .executes(LeaveMessageCommand::clearOther)
                     )
             )

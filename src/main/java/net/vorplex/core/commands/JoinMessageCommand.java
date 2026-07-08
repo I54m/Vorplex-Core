@@ -31,7 +31,7 @@ public class JoinMessageCommand {
             .then(Commands.literal("clear")
                     .executes(JoinMessageCommand::clearSelf)
                     .then(Commands.argument("target", StringArgumentType.string())
-                            .requires(source -> source.getSender().hasPermission("vorplexcore.ranktitle.others"))
+                            .requires(source -> source.getSender().hasPermission("vorplexcore.customjoinmessages.admin"))
                             .executes(JoinMessageCommand::clearOther)
                     )
             )
