@@ -7,6 +7,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.vorplex.core.VorplexCore;
 import net.vorplex.core.database.StorageException;
@@ -64,7 +65,16 @@ public class LeaveMessageCommand {
 
                 String prefix = LuckpermsUtil.getPrefix(player);
                 player.sendRichMessage(plugin.getPrefix() + "<green>Set your leave message to: ");
-                player.sendMessage(plugin.getBasicMM().deserialize(plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()), Placeholder.parsed("prefix", prefix), Placeholder.component("name", Component.text(player.getName()))));
+                player.sendMessage(plugin.getBasicMM().deserialize(plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()),
+                                Placeholder.parsed("prefix", prefix),
+                                Placeholder.component("name", Component.text(player.getName()))
+                        ).hoverEvent(
+                                Component.text().append(Component.text("This is ", NamedTextColor.GRAY))
+                                        .append(Component.text(prefix + player.getName()))
+                                        .append(Component.text("'s Custom Leave Message!", NamedTextColor.GRAY))
+                                        .build()
+                        )
+                );
                 return Command.SINGLE_SUCCESS;
             } catch (StorageException se) {
                 player.sendRichMessage(plugin.getPrefix() + "<red>An Error occurred and we were unable to save your leave message, please try again later!");

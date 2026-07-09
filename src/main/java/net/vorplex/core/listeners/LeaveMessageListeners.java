@@ -5,6 +5,7 @@ import de.myzelyam.api.vanish.VanishAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.vorplex.core.VorplexCore;
@@ -41,6 +42,11 @@ public class LeaveMessageListeners implements Listener {
                     event.quitMessage(plugin.getBasicMM().deserialize(plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()),
                             Placeholder.parsed("prefix", prefix),
                             Placeholder.component("name", Component.text(player.getName()))
+                    ).hoverEvent(
+                            Component.text().append(Component.text("This is ", NamedTextColor.GRAY))
+                                    .append(Component.text(prefix + player.getName()))
+                                    .append(Component.text("'s Custom Leave Message!", NamedTextColor.GRAY))
+                                    .build()
                     ));
                     plugin.getCustomLeaveMessagesCache().remove(player.getUniqueId());
                     plugin.getCustomJoinMessagesCache().remove(player.getUniqueId());
@@ -69,6 +75,11 @@ public class LeaveMessageListeners implements Listener {
                     Component leaveMessage = plugin.getBasicMM().deserialize(plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()),
                             Placeholder.parsed("prefix", prefix),
                             Placeholder.component("name", Component.text(player.getName()))
+                    ).hoverEvent(
+                            Component.text().append(Component.text("This is ", NamedTextColor.GRAY))
+                                    .append(Component.text(prefix + player.getName()))
+                                    .append(Component.text("'s Custom Leave Message!", NamedTextColor.GRAY))
+                                    .build()
                     );
                     Audience.audience(Bukkit.getServer().getOnlinePlayers()).sendMessage(leaveMessage);
                     return;

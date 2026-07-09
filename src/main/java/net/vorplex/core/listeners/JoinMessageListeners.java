@@ -5,6 +5,7 @@ import de.myzelyam.api.vanish.VanishAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.vorplex.core.VorplexCore;
@@ -63,6 +64,11 @@ public class JoinMessageListeners implements Listener {
                     event.joinMessage(plugin.getBasicMM().deserialize(plugin.getCustomJoinMessagesCache().get(player.getUniqueId()),
                             Placeholder.parsed("prefix", prefix),
                             Placeholder.component("name", Component.text(player.getName()))
+                    ).hoverEvent(
+                            Component.text().append(Component.text("This is ", NamedTextColor.GRAY))
+                                    .append(Component.text(prefix + player.getName()))
+                                    .append(Component.text("'s Custom Join Message!", NamedTextColor.GRAY))
+                                    .build()
                     ));
                     return;
                 }
@@ -88,6 +94,11 @@ public class JoinMessageListeners implements Listener {
                     Component joinMessage = plugin.getBasicMM().deserialize(plugin.getCustomJoinMessagesCache().get(player.getUniqueId()),
                             Placeholder.parsed("prefix", prefix),
                             Placeholder.component("name", Component.text(player.getName()))
+                    ).hoverEvent(
+                            Component.text().append(Component.text("This is ", NamedTextColor.GRAY))
+                                    .append(Component.text(prefix + player.getName()))
+                                    .append(Component.text("'s Custom Join Message!", NamedTextColor.GRAY))
+                                    .build()
                     );
                     Audience.audience(Bukkit.getServer().getOnlinePlayers()).sendMessage(joinMessage);
                     return;
