@@ -126,7 +126,7 @@ public class LeaveMessageCommand {
     }
 
     private static void logException(Exception e, String playerName, UUID playerUUID) {
-        plugin.getComponentLogger().error("An Error was encountered while trying to delete a custom leave message for: {} (UUID: {})", playerName, playerUUID == null ? "null" : playerUUID);
+        plugin.getComponentLogger().error("An Error was encountered while trying to delete or create a custom leave message for: {} (UUID: {})", playerName, playerUUID == null ? "null" : playerUUID);
         plugin.getComponentLogger().error("Error message: {}", e.getMessage());
         if (e.getCause() != null)
             plugin.getComponentLogger().error("Cause message: {}", e.getCause().getMessage());
