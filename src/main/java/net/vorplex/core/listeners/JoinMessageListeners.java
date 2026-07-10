@@ -5,7 +5,6 @@ import de.myzelyam.api.vanish.VanishAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.vorplex.core.VorplexCore;
@@ -25,7 +24,7 @@ import java.util.UUID;
 
 public class JoinMessageListeners implements Listener {
 
-    private final VorplexCore plugin = VorplexCore.getInstance();
+    private static final VorplexCore plugin = VorplexCore.getInstance();
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPrePlayerJoin(AsyncPlayerPreLoginEvent event) {
@@ -61,15 +60,7 @@ public class JoinMessageListeners implements Listener {
             if (player.hasPermission("vorplexcore.customjoinmessages")) {
                 if (plugin.getCustomJoinMessagesCache().containsKey(player.getUniqueId())) {
                     Debug.log("Sending Custom join message for player: " + player.getName());
-                    event.joinMessage(plugin.getBasicMM().deserialize(plugin.getCustomJoinMessagesCache().get(player.getUniqueId()),
-                            Placeholder.parsed("prefix", prefix),
-                            Placeholder.component("name", Component.text(player.getName()))
-                    ).hoverEvent(
-                            Component.text().append(Component.text("This is ", NamedTextColor.GRAY))
-                                    .append(Component.text(prefix + player.getName()))
-                                    .append(Component.text("'s Custom Join Message!", NamedTextColor.GRAY))
-                                    .build()
-                    ));
+                    event.joinMessage(getCustomJoinMessage(player, prefix));
                     return;
                 }
             }
@@ -91,16 +82,7 @@ public class JoinMessageListeners implements Listener {
             if (player.hasPermission("vorplexcore.customjoinmessages")) {
                 if (plugin.getCustomJoinMessagesCache().containsKey(player.getUniqueId())) {
                     Debug.log("Sending fake Custom join message for player: " + player.getName());
-                    Component joinMessage = plugin.getBasicMM().deserialize(plugin.getCustomJoinMessagesCache().get(player.getUniqueId()),
-                            Placeholder.parsed("prefix", prefix),
-                            Placeholder.component("name", Component.text(player.getName()))
-                    ).hoverEvent(
-                            Component.text().append(Component.text("This is ", NamedTextColor.GRAY))
-                                    .append(Component.text(prefix + player.getName()))
-                                    .append(Component.text("'s Custom Join Message!", NamedTextColor.GRAY))
-                                    .build()
-                    );
-                    Audience.audience(Bukkit.getServer().getOnlinePlayers()).sendMessage(joinMessage);
+                    Audience.audience(Bukkit.getServer().getOnlinePlayers()).sendMessage(getCustomJoinMessage(player, prefix));
                     return;
                 }
             }
@@ -143,5 +125,30 @@ public class JoinMessageListeners implements Listener {
             }
         }
         return null;
+    }
+
+    /**
+     * Get a player's custom join message
+     *
+     * @param player the player to get the custom join message for
+     * @param prefix the player's prefix (rank)
+     * @return the join message in a formatted component or null if the player does not have a cached custom join message
+     * @throws IllegalStateException if there is no custom join message cached for the player
+     */
+    public static Component getCustomJoinMessage(Player player, String prefix) {
+        if (!plugin.getCustomJoinMessagesCache().containsKey(player.getUniqueId()))
+            throw new IllegalStateException("No custom join message cached for player: " + player.getName());
+
+        return plugin.getBasicMM().deserialize(
+                plugin.getCustomJoinMessagesCache().get(player.getUniqueId()),
+                Placeholder.parsed("prefix", prefix),
+                Placeholder.component("name", Component.text(player.getName()))
+        ).hoverEvent(
+                MiniMessage.miniMessage().deserialize(
+                        "<white>This is <prefix><name>'s Custom Join Message!</white>",
+                        Placeholder.parsed("prefix", prefix),
+                        Placeholder.component("name", Component.text(player.getName()))
+                )
+        );
     }
 }
