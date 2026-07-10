@@ -5,7 +5,6 @@ import de.myzelyam.api.vanish.VanishAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.vorplex.core.VorplexCore;
@@ -22,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class LeaveMessageListeners implements Listener {
 
-    private final VorplexCore plugin = VorplexCore.getInstance();
+    private static final VorplexCore plugin = VorplexCore.getInstance();
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
@@ -39,15 +38,7 @@ public class LeaveMessageListeners implements Listener {
             if (player.hasPermission("vorplexcore.customleavemessages")) {
                 if (plugin.getCustomLeaveMessagesCache().containsKey(player.getUniqueId())) {
                     Debug.log("Sending Custom leave message for player: " + player.getName());
-                    event.quitMessage(plugin.getBasicMM().deserialize(plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()),
-                            Placeholder.parsed("prefix", prefix),
-                            Placeholder.component("name", Component.text(player.getName()))
-                    ).hoverEvent(
-                            Component.text().append(Component.text("This is ", NamedTextColor.GRAY))
-                                    .append(Component.text(prefix + player.getName()))
-                                    .append(Component.text("'s Custom Leave Message!", NamedTextColor.GRAY))
-                                    .build()
-                    ));
+                    event.quitMessage(getCustomLeaveMessage(player, prefix));
                     plugin.getCustomLeaveMessagesCache().remove(player.getUniqueId());
                     plugin.getCustomJoinMessagesCache().remove(player.getUniqueId());
                     return;
@@ -72,16 +63,7 @@ public class LeaveMessageListeners implements Listener {
             if (player.hasPermission("vorplexcore.customleavemessages")) {
                 if (plugin.getCustomLeaveMessagesCache().containsKey(player.getUniqueId())) {
                     Debug.log("Sending Custom leave message for player: " + player.getName());
-                    Component leaveMessage = plugin.getBasicMM().deserialize(plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()),
-                            Placeholder.parsed("prefix", prefix),
-                            Placeholder.component("name", Component.text(player.getName()))
-                    ).hoverEvent(
-                            Component.text().append(Component.text("This is ", NamedTextColor.GRAY))
-                                    .append(Component.text(prefix + player.getName()))
-                                    .append(Component.text("'s Custom Leave Message!", NamedTextColor.GRAY))
-                                    .build()
-                    );
-                    Audience.audience(Bukkit.getServer().getOnlinePlayers()).sendMessage(leaveMessage);
+                    Audience.audience(Bukkit.getServer().getOnlinePlayers()).sendMessage(getCustomLeaveMessage(player, prefix));
                     return;
                 }
             }
@@ -124,6 +106,31 @@ public class LeaveMessageListeners implements Listener {
             }
         }
         return null;
+    }
+
+    /**
+     * Get a player's custom leave message
+     *
+     * @param player the player to get the custom leave message for
+     * @param prefix the player's prefix (rank)
+     * @return the leave message in a formatted component or null if the player does not have a cached custom leave message
+     * @throws IllegalStateException if there is no custom leave message cached for the player
+     */
+    public static Component getCustomLeaveMessage(Player player, String prefix) {
+        if (!plugin.getCustomLeaveMessagesCache().containsKey(player.getUniqueId()))
+            throw new IllegalStateException("No custom leave message cached for player: " + player.getName());
+
+        return plugin.getBasicMM().deserialize(
+                plugin.getCustomLeaveMessagesCache().get(player.getUniqueId()),
+                Placeholder.parsed("prefix", prefix),
+                Placeholder.component("name", Component.text(player.getName()))
+        ).hoverEvent(
+                MiniMessage.miniMessage().deserialize(
+                        "<white>This is <prefix><name>'s Custom Leave Message!</white>",
+                        Placeholder.parsed("prefix", prefix),
+                        Placeholder.component("name", Component.text(player.getName()))
+                )
+        );
     }
 
     /**
