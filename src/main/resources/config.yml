@@ -1,5 +1,5 @@
 # DO NOT TOUCH THIS
-config-version: "1.6"
+config-version: "1.7"
 #Debug mode for extra debug logging
 debug: false
 #Prefix to use in all plugin related messages
@@ -66,31 +66,6 @@ AutoAnnouncer:
     - "<click:suggest_command:'That click event worked!'><hover:show_text:'This hover text is working<br>This next line is working'><white>This chat announcer is working!</white></hover></click>"
     - "<click:suggest_command:'That click event worked!'><hover:show_text:'This hover text is working<br>This next line is working'><white>This chat announcer is working!</white></hover></click>"
 
-#auto item pickup module
-AutoItemPickup:
-  enabled: false
-  InventoryFullSound: true
-  AllowedItems:
-    - SUGAR_CANE
-    - WHEAT
-    - PALE_HANGING_MOSS
-    - CARROTS
-    - BEETROOTS
-    - PUMPKIN
-    - MELON
-    - NETHER_WART
-    - COCOA
-    - POTATOES
-    - BAMBOO
-    - TWISTING_VINES
-    - TWISTING_VINES_PLANT
-    - WEEPING_VINES
-    - WEEPING_VINES_PLANT
-    - CAVE_VINES
-    - CAVE_VINES_PLANT
-    - KELP
-    - KELP_PLANT
-
 #Staff chat and admin chat module
 Chats:
   #permission: vorplexcore.staffchat
@@ -154,11 +129,6 @@ LeaveMessages:
     enabled: true
     #the maximum length for leave messages (excludes minimessage tags)
     maxlength: 128
-
-#Gifts module - allows players to send each other items
-#requires permissions: vorplexcore.gifts.send to be able to send gifts & vorplexcore.gifts.claim to be able to claim gifts
-Gifts:
-  enabled: true
 
 #hub module (used for hub servers)
 Hub:
