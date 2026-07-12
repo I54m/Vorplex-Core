@@ -2,7 +2,7 @@ name: Vorplex-Core
 version: ${project.version}
 api-version: '1.21.10'
 author: I54m
-website: https://vorplex.net
+website: https://ci.i54m.com/job/Vorplex%20Core/
 description: The Core Plugin for Vorplex.
 main: net.vorplex.core.VorplexCore
 bootstrap: net.vorplex.core.plugin.PaperBootstrap
@@ -25,23 +25,22 @@ dependencies:
 ####################################################################################[Permissions]#########################################################################################
 
 permissions:
-  vorplexcore.autoitempickup:
-    description: Allows the user to use autoitempickup
-    default: op
   vorplexcore.autorestart.admin:
     description: Allows the user to use /autorestart commands.
     default: op
+
   vorplexcore.joinmessages.*:
     description: Main permission node for permission based join messages.
     default: op
+  vorplexcore.leavemessages.*:
+    description: Main permission node for permission based leave messages.
+    default: op
+
   vorplexcore.customjoinmessages:
     description: Main permission node for custom join messages.
     default: op
   vorplexcore.customjoinmessages.admin:
     description: Allows the user to change other's join messages.
-    default: op
-  vorplexcore.leavemessages.*:
-    description: Main permission node for permission based leave messages.
     default: op
   vorplexcore.customleavemessages:
     description: Main permission node for custom leave messages.
@@ -49,14 +48,22 @@ permissions:
   vorplexcore.customleavemessages.admin:
     description: Allows the user to change other's leave messages.
     default: op
-  vectorcore.gifts.send:
-    description: Send other players a gift.
+
+  vorplexcore.realrank:
+    description: Allows the user to use the /realrank command.
+    default: true
+  vectorcore.ranktitle:
+    description: Allows players to change their rank prefix.
     default: op
-  vectorcore.gifts.claim:
-    description: claim gifts that players have sent you.
+  vectorcore.ranktitle.others:
+    description: Allows staff to change a players rank prefix.
     default: op
-  vectorcore.ranktitles:
-    description: allows players to change their rank prefix.
+
+  vorplexcore.staffchat:
+    description: Allows the user to talk in admin chat.
+    default: op
+  vorplexcore.adminchat:
+    description: Allows the user to talk in admin chat.
     default: op
   vorplexcore.server.switch:
     description: Allows the user to use the /server command.
