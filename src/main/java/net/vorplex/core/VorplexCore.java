@@ -31,7 +31,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,6 @@ public class VorplexCore extends JavaPlugin {
     public static VorplexCore instance;
     @Getter
     private String prefix;
-    private final File GiftsStorage = new File(this.getDataFolder(), "GiftsStorage.yml");
     @Getter
     private ExecutorService threadPool;
     @Getter
