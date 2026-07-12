@@ -1,4 +1,4 @@
-package net.vorplex.core.objects;
+package net.vorplex.core.util;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,7 +6,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.vorplex.core.VorplexCore;
-import net.vorplex.core.util.Debug;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
