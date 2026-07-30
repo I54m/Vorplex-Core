@@ -15,13 +15,13 @@ BuyCommand:
 WikiCommand:
   enabled: true
   # uses minimessage format
-  message: "<b><gold>Store:</gold></b> <click:open_url:'https://vorplex.fandom.com/'><u><aqua>https://vorplex.fandom.com/</aqua></u></click>"
+  message: "<b><gold>Wiki:</gold></b> <click:open_url:'https://vorplex.fandom.com/'><u><aqua>https://vorplex.fandom.com/</aqua></u></click>"
 
 #Map command
 MapCommand:
   enabled: true
   # uses minimessage format
-  message: "<b><gold>Store:</gold></b> <click:open_url:'https://map.vorplex.net'><u><aqua>https://map.vorplex.net</aqua></u></click>"
+  message: "<b><gold>Map:</gold></b> <click:open_url:'https://map.vorplex.net'><u><aqua>https://map.vorplex.net</aqua></u></click>"
 
 #auto restart module
 #permission: vorplexcore.autorestart.admin
