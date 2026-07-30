@@ -177,6 +177,14 @@ public class VorplexCore extends JavaPlugin {
             getComponentLogger().info(Component.text("Enabling Buy Command...").color(NamedTextColor.GREEN));
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(BuyCommand.COMMAND_NODE));
         }
+        if (this.getConfig().getBoolean("MapCommand.enabled")) {
+            getComponentLogger().info(Component.text("Enabling Map Command...").color(NamedTextColor.GREEN));
+            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(MapCommand.COMMAND_NODE));
+        }
+        if (this.getConfig().getBoolean("WikiCommand.enabled")) {
+            getComponentLogger().info(Component.text("Enabling Wiki Command...").color(NamedTextColor.GREEN));
+            this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(WikiCommand.COMMAND_NODE));
+        }
         if (this.getConfig().getBoolean("AutoRestart.enabled")) {
             getComponentLogger().info(Component.text("Enabling AutoRestart Module...").color(NamedTextColor.GREEN));
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(AutoRestartCommand.COMMAND_NODE, List.of("restart", "reboot", "autoreboot", "autore")));
