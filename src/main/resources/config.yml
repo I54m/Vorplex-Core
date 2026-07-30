@@ -1,5 +1,5 @@
 # DO NOT TOUCH THIS
-config-version: "1.7"
+config-version: "1.8"
 #Debug mode for extra debug logging
 debug: false
 #Prefix to use in all plugin related messages
@@ -10,6 +10,18 @@ BuyCommand:
   enabled: true
   # uses minimessage format
   message: "<b><gold>Store:</gold></b> <click:open_url:'https://store.vorplex.net'><u><aqua>https://store.vorplex.net</aqua></u></click>"
+
+#Wiki command
+WikiCommand:
+  enabled: true
+  # uses minimessage format
+  message: "<b><gold>Store:</gold></b> <click:open_url:'https://vorplex.fandom.com/'><u><aqua>https://vorplex.fandom.com/</aqua></u></click>"
+
+#Map command
+MapCommand:
+  enabled: true
+  # uses minimessage format
+  message: "<b><gold>Store:</gold></b> <click:open_url:'https://map.vorplex.net'><u><aqua>https://map.vorplex.net</aqua></u></click>"
 
 #auto restart module
 #permission: vorplexcore.autorestart.admin
