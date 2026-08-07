@@ -8,7 +8,6 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
-import net.luckperms.api.model.group.Group;
 import net.vorplex.core.util.LuckpermsUtil;
 import org.bukkit.entity.Player;
 
@@ -25,13 +24,14 @@ public class RealRankCommand {
         final Player player = (Player) ctx.getSource().getSender();
         final PlayerSelectorArgumentResolver targetResolver = ctx.getArgument("target", PlayerSelectorArgumentResolver.class);
         final Player target = targetResolver.resolve(ctx.getSource()).getFirst();
-        final Group group = LuckpermsUtil.getGroup(target);
-        if (group == null || group.getCachedData().getMetaData().getPrefix() == null) {
-            player.sendRichMessage("<red>" + target.getName() + "'s realrank could not be found!");
+        final String prefix = LuckpermsUtil.getPrefixes(LuckpermsUtil.getUser(target), false).sequencedValues().getLast();
+
+        if (prefix == null || prefix.isBlank()) {
+            player.sendRichMessage("<red>" + target.getName() + "'s real rank could not be found!");
             return Command.SINGLE_SUCCESS;
         }
 
-        player.sendRichMessage(target.getName() + "'s real rank is: " + group.getCachedData().getMetaData().getPrefix());
+        player.sendRichMessage(target.getName() + "'s real rank is: " + prefix);
         return Command.SINGLE_SUCCESS;
     }
 }
