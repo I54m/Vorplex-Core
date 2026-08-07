@@ -70,4 +70,31 @@ class ConfigUpdaterTest {
         assertEquals(10, newConfig.getInt("features.auto-save.interval"));
         assertFalse(newConfig.getBoolean("features.auto-save.async"));
     }
+
+
+    @Test
+    void mergeConfigs_SectionsWithCustomKeys_ShouldAlwaysCopyOld() {
+        YamlConfiguration oldConfig = new YamlConfiguration();
+        oldConfig.set("JoinMessages.PermissionJoinMessages.enabled", true);
+        oldConfig.set("JoinMessages.PermissionJoinMessages.messages.customvalue1", "oldvalue1");
+        oldConfig.set("JoinMessages.PermissionJoinMessages.messages.customvalue2", "oldvalue2");
+        oldConfig.set("JoinMessages.PermissionJoinMessages.messages.customvalue3", "oldvalue3");
+
+        YamlConfiguration newConfig = new YamlConfiguration();
+        newConfig.set("JoinMessages.PermissionJoinMessages.enabled", true);
+        newConfig.set("JoinMessages.PermissionJoinMessages.messages.value1", "newvalue1");
+        newConfig.set("JoinMessages.PermissionJoinMessages.messages.value2", "newvalue2");
+        newConfig.set("JoinMessages.PermissionJoinMessages.messages.value3", "newvalue3");
+
+        ConfigUpdater.mergeConfigs(oldConfig, newConfig, "");
+
+        assertTrue(newConfig.getBoolean("JoinMessages.PermissionJoinMessages.enabled"));
+        assertEquals("oldvalue1", newConfig.getString("JoinMessages.PermissionJoinMessages.messages.customvalue1"));
+        assertEquals("oldvalue2", newConfig.getString("JoinMessages.PermissionJoinMessages.messages.customvalue2"));
+        assertEquals("oldvalue3", newConfig.getString("JoinMessages.PermissionJoinMessages.messages.customvalue3"));
+        //Assert default/new keys do not get copied into config
+        assertNull(newConfig.getString("JoinMessages.PermissionJoinMessages.messages.value1"));
+        assertNull(newConfig.getString("JoinMessages.PermissionJoinMessages.messages.value2"));
+        assertNull(newConfig.getString("JoinMessages.PermissionJoinMessages.messages.value3"));
+    }
 }
