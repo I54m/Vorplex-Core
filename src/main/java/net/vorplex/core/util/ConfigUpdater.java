@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class to handle all configuration updates and versioning
@@ -20,6 +21,10 @@ public class ConfigUpdater {
      * Hard-coded current config version used in this version of the plugin
      */
     private static final String CURRENT_CONFIG_VERSION = "1.8";
+    /**
+     * Hard-coded list of config sections with custom keys
+     */
+    private static final List<String> CUSTOM_KEY_SECTIONS = List.of("messages", "periods");
 
     /**
      * Main usage for ConfigUpdater.
@@ -102,6 +107,11 @@ public class ConfigUpdater {
             }
 
             Object oldValue = oldConfig.get(key);
+
+            if (CUSTOM_KEY_SECTIONS.contains(key.toLowerCase())) {
+                // Old config always wins for sections with custom defined keys
+                newConfig.set(key, oldValue);
+            }
 
             if (oldValue instanceof ConfigurationSection oldSection) {
                 ConfigurationSection newSection = newConfig.getConfigurationSection(key);
