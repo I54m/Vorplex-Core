@@ -41,6 +41,8 @@ public class AutoAnnouncerScheduler {
             announcerTask.cancel();
             announcerTask = null;
         }
+        previousMessageNumber = 0;
+        messages.clear();
     }
 
     private static void runAnnouncement() {
@@ -49,10 +51,8 @@ public class AutoAnnouncerScheduler {
             if (plugin.getConfig().getBoolean("AutoAnnouncer.Random", true))
                 messageNumber = ThreadLocalRandom.current().nextInt(messages.size());
             else {
-                messageNumber = previousMessageNumber + 1;
-                if (previousMessageNumber >= messages.size())
-                    previousMessageNumber = 0;
-                else previousMessageNumber++;
+                previousMessageNumber = (previousMessageNumber + 1) % messages.size();
+                messageNumber = previousMessageNumber;
             }
             Audience players = Audience.audience(Bukkit.getOnlinePlayers());
             players.sendMessage(MiniMessage.miniMessage().deserialize(prefix + " " + messages.get(messageNumber)));
