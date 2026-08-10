@@ -6,6 +6,7 @@ import net.vorplex.core.VorplexCore;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.util.Arrays;
@@ -57,16 +58,7 @@ public class ConfigUpdater {
      * @throws IllegalStateException if the current config could not be renamed
      */
     private static void updateConfig() throws IllegalStateException {
-        File configFile = new File(plugin.getDataFolder(), "config.yml");
-        File oldConfigFile = new File(plugin.getDataFolder(), "old-config.yml");
-
-        // Overwrite old-config.yml if it exists
-        if (oldConfigFile.exists())
-            oldConfigFile.delete();
-
-        // Rename current config - throw error on failure
-        if (!configFile.renameTo(oldConfigFile))
-            throw new IllegalStateException("Failed to rename config.yml to old-config.yml");
+        File oldConfigFile = moveConfigFile();
 
         // Force Save fresh default config
         plugin.saveResource("config.yml", true);
@@ -83,6 +75,27 @@ public class ConfigUpdater {
 
         plugin.getComponentLogger().info(Component.text("[ConfigUpdater] Config update complete!").color(NamedTextColor.GREEN));
         plugin.getComponentLogger().info(Component.text("[ConfigUpdater] Please check config.yml to ensure settings are as expected!").color(NamedTextColor.RED));
+    }
+
+    /**
+     * Moves the config.yml and returns the newly created old-config.yml
+     *
+     * @return the newly created old-config.yml
+     * @throws IllegalStateException if the current config could not be renamed
+     */
+    private static @NonNull File moveConfigFile() throws IllegalStateException {
+        File configFile = new File(plugin.getDataFolder(), "config.yml");
+        File oldConfigFile = new File(plugin.getDataFolder(), "old-config.yml");
+
+        // Overwrite old-config.yml if it exists
+        if (oldConfigFile.exists())
+            //noinspection ResultOfMethodCallIgnored
+            oldConfigFile.delete();
+
+        // Rename current config - throw error on failure
+        if (!configFile.renameTo(oldConfigFile))
+            throw new IllegalStateException("Failed to rename config.yml to old-config.yml");
+        return oldConfigFile;
     }
 
 
