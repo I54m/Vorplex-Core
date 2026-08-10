@@ -18,8 +18,8 @@ public class ChatUtils {
     private static final String ADMIN_CHAT_FORMAT = "<gray>[<blue><bold>AC</blue>]</gray> <rank><sender><white>: <blue><message></blue>";
     private static final VorplexCore plugin = VorplexCore.getInstance();
 
-    public static List<Player> staffChat = new ArrayList<>();
-    public static List<Player> adminChat = new ArrayList<>();
+    public static final List<Player> staffChat = new ArrayList<>();
+    public static final List<Player> adminChat = new ArrayList<>();
 
     public static boolean isStaffChatOn(Player player) {
         return staffChat.contains(player);
