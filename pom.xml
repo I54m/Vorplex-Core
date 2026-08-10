@@ -148,7 +148,7 @@
                     <relocations>
                         <relocation>
                             <pattern>com.zaxxer.hikari</pattern>
-                            <shadedPattern>net.vorplex.core.internal.hikari</shadedPattern>
+                            <shadedPattern>net.vorplex.core.lib.hikari</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
