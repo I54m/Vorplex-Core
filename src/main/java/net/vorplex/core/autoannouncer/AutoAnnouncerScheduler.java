@@ -8,14 +8,14 @@ import net.vorplex.core.VorplexCore;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class AutoAnnouncerScheduler {
 
     private static final VorplexCore plugin = VorplexCore.getInstance();
 
-    private static ArrayList<String> messages = new ArrayList<>();
+    private static List<String> messages;
     private static int previousMessageNumber;
     private static BukkitTask announcerTask;
     private static String prefix;
@@ -23,8 +23,8 @@ public class AutoAnnouncerScheduler {
 
     public static void start() {
         prefix = plugin.getConfig().getString("AutoAnnouncer.Prefix", "<dark_purple>[<light_purple><b>Tip</b></light_purple>]</dark_purple>");
-        messages = (ArrayList<String>) plugin.getConfig().getList("AutoAnnouncer.Messages");
-        if (messages == null || messages.isEmpty()) {
+        messages = plugin.getConfig().getStringList("AutoAnnouncer.Messages");
+        if (messages.isEmpty()) {
             plugin.getComponentLogger().error("No messages were loaded for Auto Announcer!");
             plugin.getComponentLogger().error("Module will not be enabled!");
             return;
