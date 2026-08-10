@@ -19,15 +19,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 public class NameFetcher {
-    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
-    public static String getName(String uuid) {
-        return null;
-    }
-
-    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
-    public static String getName(UUID uuid) {
-        return null;
-    }
 
     @Setter
     private static ProfileCacheProvider cacheProvider = new BukkitProfileCacheProvider();
