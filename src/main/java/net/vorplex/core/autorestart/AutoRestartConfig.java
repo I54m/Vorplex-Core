@@ -79,8 +79,8 @@ public class AutoRestartConfig {
 
 
     public static class TitleMessage {
-        Component title, subtitle;
-        int fadeIn, stay, fadeOut;
+        final Component title, subtitle;
+        final int fadeIn, stay, fadeOut;
 
         TitleMessage(String description) {
             String[] descriptionArray = description.split(" :: ");
