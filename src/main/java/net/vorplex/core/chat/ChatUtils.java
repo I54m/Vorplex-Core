@@ -29,14 +29,14 @@ public class ChatUtils {
         return adminChat.contains(player);
     }
 
-    public static List<Player> getOnlineStaff() {
-        return (List<Player>) Bukkit.getOnlinePlayers().stream()
+    public static List<? extends Player> getOnlineStaff() {
+        return Bukkit.getOnlinePlayers().stream()
                 .filter(player -> player.hasPermission("vorplexcore.staffchat"))
                 .toList();
     }
 
-    public static List<Player> getOnlineAdmins() {
-        return (List<Player>) Bukkit.getOnlinePlayers().stream()
+    public static List<? extends Player> getOnlineAdmins() {
+        return Bukkit.getOnlinePlayers().stream()
                 .filter(player -> player.hasPermission("vorplexcore.adminchat"))
                 .toList();
     }
