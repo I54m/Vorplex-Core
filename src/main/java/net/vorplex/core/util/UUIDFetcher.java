@@ -14,24 +14,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
-public class UUIDFetcher implements Callable<UUID> {
-
-    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
-    public void fetch(String name) {
-    }
-
-    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
-    public UUIDFetcher() {
-    }
-
-    @Deprecated(since = "2.0-SNAPSHOT-1.4.2", forRemoval = true)
-    @Override
-    public UUID call() throws Exception {
-        return null;
-    }
-
+public class UUIDFetcher {
 
     @Getter
     private static final UUID BLANK_UUID = new UUID(0L, 0L);
