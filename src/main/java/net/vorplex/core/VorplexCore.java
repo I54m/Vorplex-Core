@@ -67,6 +67,8 @@ public class VorplexCore extends JavaPlugin {
     // Config classes
     @Getter
     public AutoRestartConfig autoRestartConfig;
+    @Getter
+    public AutoRestartScheduler autoRestartScheduler;
 
     // Dependency variables
     @Getter
@@ -92,13 +94,16 @@ public class VorplexCore extends JavaPlugin {
     public final LiteralCommandNode<CommandSourceStack> RELOAD_COMMAND_NODE = Commands.literal("vorplexcorereload")
             .requires(ctx -> ctx.getSender().isOp())
             .executes((ctx) -> {
-                AutoRestartScheduler.stop();
+                autoRestartScheduler.stop();
                 AutoAnnouncerScheduler.stop();
                 boolean customJoinMessagesPreviousState = getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled", true);
                 boolean customLeaveMessagesPreviousState = getConfig().getBoolean("JoinMessages.CustomLeaveMessages.enabled", true);
                 reloadConfig();
-                if (this.getConfig().getBoolean("AutoRestart.enabled"))
-                    AutoRestartScheduler.start(new AutoRestartConfig());
+                if (this.getConfig().getBoolean("AutoRestart.enabled")) {
+                    autoRestartConfig = new AutoRestartConfig();
+                    autoRestartScheduler = new AutoRestartScheduler(this);
+                    autoRestartScheduler.start(autoRestartConfig);
+                }
                 if (this.getConfig().getBoolean("AutoAnnouncer.enabled"))
                     AutoAnnouncerScheduler.start();
                 Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
@@ -189,7 +194,8 @@ public class VorplexCore extends JavaPlugin {
             getComponentLogger().info(Component.text("Enabling AutoRestart Module...").color(NamedTextColor.GREEN));
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(AutoRestartCommand.COMMAND_NODE, List.of("restart", "reboot", "autoreboot", "autore")));
             autoRestartConfig = new AutoRestartConfig();
-            AutoRestartScheduler.start(autoRestartConfig);
+            autoRestartScheduler = new AutoRestartScheduler(this);
+            autoRestartScheduler.start(autoRestartConfig);
         }
         if (getConfig().getBoolean("AutoAnnouncer.enabled")) {
             getComponentLogger().info(Component.text("Enabling Auto Announcer Module...").color(NamedTextColor.GREEN));
@@ -274,7 +280,7 @@ public class VorplexCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        AutoRestartScheduler.stop();
+        autoRestartScheduler.stop();
         AutoAnnouncerScheduler.stop();
         if (databaseManager.isConnected())
             databaseManager.shutdownConnection();

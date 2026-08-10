@@ -25,24 +25,28 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class AutoRestartScheduler {
-    public static List<BukkitTask> tasks = new ArrayList<>();
-    public static ZonedDateTime nextTime;
+    public List<BukkitTask> tasks = new ArrayList<>();
+    public ZonedDateTime nextTime;
 
-    private static final VorplexCore plugin = VorplexCore.getInstance();
+    private final VorplexCore plugin;
 
-    private static BossBar bossBarCountdown;
+    private BossBar bossBarCountdown;
 
-    public static void start(AutoRestartConfig autoRestartConfig) {
+    public AutoRestartScheduler(VorplexCore plugin) {
+        this.plugin = plugin;
+    }
+
+    public void start(AutoRestartConfig autoRestartConfig) {
         if (!autoRestartConfig.valid) return;
         plugin.autoRestartConfig = autoRestartConfig;
         long delayTicks = getDelayTicks(autoRestartConfig.schedule);
         tasks = new ArrayList<>();
 
         scheduleNotify(autoRestartConfig, delayTicks);
-        tasks.add(Bukkit.getScheduler().runTaskLater(plugin, AutoRestartScheduler::shutdownServer, delayTicks));
+        tasks.add(Bukkit.getScheduler().runTaskLater(plugin, this::shutdownServer, delayTicks));
     }
 
-    public static void stop() {
+    public void stop() {
         for (BukkitTask task : tasks){
             task.cancel();
         }
@@ -51,11 +55,11 @@ public class AutoRestartScheduler {
             Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
     }
 
-    public static void scheduleReboot(TimeUnit timeUnit, long amount) {
+    public void scheduleReboot(TimeUnit timeUnit, long amount) {
         scheduleReboot(timeUnit.toSeconds(amount) * 20);
     }
 
-    public static void scheduleReboot(long initDelayTicks) {
+    public void scheduleReboot(long initDelayTicks) {
         //stop current reboot tasks
         stop();
         //set nextTime variable
@@ -63,10 +67,10 @@ public class AutoRestartScheduler {
         nextTime = ZonedDateTime.now().plusSeconds(delaySeconds);
         //schedule requested reboot
         scheduleNotify(new AutoRestartConfig(), initDelayTicks);
-        tasks.add(Bukkit.getScheduler().runTaskLater(plugin, AutoRestartScheduler::shutdownServer, initDelayTicks));
+        tasks.add(Bukkit.getScheduler().runTaskLater(plugin, this::shutdownServer, initDelayTicks));
     }
 
-    private static void scheduleNotify(AutoRestartConfig autoRestartConfig, long initDelayTicks) {
+    private void scheduleNotify(AutoRestartConfig autoRestartConfig, long initDelayTicks) {
         if (autoRestartConfig.notifyChatEnabled) {
             autoRestartConfig.notifyChatPeriods.forEach((key, message) -> {
                 long notifyDelay = initDelayTicks - key * 20L;
@@ -139,7 +143,7 @@ public class AutoRestartScheduler {
         }
     }
 
-    private static long getDelayTicks(List<String> schedule) {
+    private long getDelayTicks(List<String> schedule) {
         long nextDelayTicks = Long.MAX_VALUE;
 
         for (String cronTime : schedule) {
@@ -157,7 +161,7 @@ public class AutoRestartScheduler {
         return nextDelayTicks;
     }
 
-    private static void shutdownServer() {
+    private void shutdownServer() {
         plugin.getComponentLogger().info("Server Shutdown requested via autorestart module");
         Bukkit.getServer().savePlayers();
         for (World world : Bukkit.getServer().getWorlds()) {
