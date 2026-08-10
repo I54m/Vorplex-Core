@@ -28,7 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 public class AutoRestartCommand {
     private static final VorplexCore plugin = VorplexCore.getInstance();
-    private static final AutoRestartConfig autoRestartConfig = new AutoRestartConfig();
+    private static final AutoRestartConfig autoRestartConfig = plugin.getAutoRestartConfig();
+    private static final AutoRestartScheduler autoRestartScheduler = plugin.getAutoRestartScheduler();
 
 
     public static final LiteralCommandNode<CommandSourceStack> COMMAND_NODE = Commands.literal("autorestart")
@@ -59,7 +60,7 @@ public class AutoRestartCommand {
 
     private static int restartNow(final CommandContext<CommandSourceStack> ctx) {
         final CommandSender sender = ctx.getSource().getSender();
-        AutoRestartScheduler.scheduleReboot(620);
+        autoRestartScheduler.scheduleReboot(620);
         sender.sendRichMessage(plugin.getPrefix() + "<green>Rebooting in 30 seconds!");
         return Command.SINGLE_SUCCESS;
     }
@@ -83,7 +84,7 @@ public class AutoRestartCommand {
             sender.sendRichMessage(plugin.getPrefix() + "<red>" + timeunitString + " is not a valid timeunit!");
             return Command.SINGLE_SUCCESS;
         }
-        AutoRestartScheduler.scheduleReboot(timeUnit, amountOfTime);
+        autoRestartScheduler.scheduleReboot(timeUnit, amountOfTime);
 
         String time = amountOfTime + " " + timeunitString.toLowerCase();
         sender.sendRichMessage(plugin.getPrefix() + "<green>Queued auto reboot for <time> from now!", Placeholder.parsed("time", time));
@@ -92,8 +93,8 @@ public class AutoRestartCommand {
     }
 
     private static int startScheduler(final CommandContext<CommandSourceStack> ctx) {
-        if (AutoRestartScheduler.tasks.isEmpty()) {
-            AutoRestartScheduler.start(new AutoRestartConfig());
+        if (autoRestartScheduler.tasks.isEmpty()) {
+            autoRestartScheduler.start(new AutoRestartConfig());
             ctx.getSource().getSender().sendRichMessage(plugin.getPrefix() + "<green>Started all auto reboot tasks!");
         } else
             ctx.getSource().getSender().sendRichMessage(plugin.getPrefix() + "<red>There are auto reboot tasks already running!");
@@ -101,8 +102,8 @@ public class AutoRestartCommand {
     }
 
     private static int stopScheduler(final CommandContext<CommandSourceStack> ctx) {
-        if (!AutoRestartScheduler.tasks.isEmpty()) {
-            AutoRestartScheduler.stop();
+        if (!autoRestartScheduler.tasks.isEmpty()) {
+            autoRestartScheduler.stop();
             Audience audience = Audience.audience(Bukkit.getServer().getOnlinePlayers());
             if (autoRestartConfig.notifyChatEnabled)
                 audience.sendMessage(Component.text("Reboot was aborted!").color(NamedTextColor.GREEN));
@@ -117,7 +118,7 @@ public class AutoRestartCommand {
     }
 
     private static int restartInfo(final CommandContext<CommandSourceStack> ctx) {
-        ZonedDateTime nextTime = AutoRestartScheduler.nextTime;
+        ZonedDateTime nextTime = autoRestartScheduler.nextTime;
         String date = "<red>No auto reboot tasks are currently scheduled!";
         if (nextTime != null) date = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss (O)").format(nextTime);
         ctx.getSource().getSender().sendMessage(plugin.getPrefix() + "<green>Next restart: " + date);
