@@ -20,6 +20,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class JoinMessageListeners implements Listener {
@@ -52,6 +53,7 @@ public class JoinMessageListeners implements Listener {
         final Player player = event.getPlayer();
         final String prefix = LuckpermsUtil.getPrefix(player);
         if (plugin.isPremiumVanish())
+            //noinspection ConstantValue
             if (VanishAPI.isInvisible(player)) {
                 Debug.log("NOT sending join message for vanished player: " + player.getName());
                 return;
@@ -105,7 +107,7 @@ public class JoinMessageListeners implements Listener {
     @Nullable
     public Component getPermissionJoinMessage(Player player, String prefix) {
         Debug.log("checking permission based join messages for " + player.getName());
-        for (String permission : plugin.getConfig().getConfigurationSection("JoinMessages.PermissionJoinMessages.messages").getKeys(false)) {
+        for (String permission : Objects.requireNonNull(plugin.getConfig().getConfigurationSection("JoinMessages.PermissionJoinMessages.messages")).getKeys(false)) {
             if (player.hasPermission("vorplexcore.joinmessages." + permission)) {
                 Debug.log("Found permission vorplexcore.joinmessages." + permission + " for player: " + player.getName());
                 String rawJoinMessage = plugin.getConfig().getString("JoinMessages.PermissionJoinMessages.messages." + permission);

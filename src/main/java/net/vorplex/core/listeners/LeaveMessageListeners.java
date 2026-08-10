@@ -19,6 +19,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 public class LeaveMessageListeners implements Listener {
 
     private static final VorplexCore plugin = VorplexCore.getInstance();
@@ -28,6 +30,7 @@ public class LeaveMessageListeners implements Listener {
         final Player player = event.getPlayer();
         final String prefix = LuckpermsUtil.getPrefix(player);
         if (plugin.isPremiumVanish())
+            //noinspection ConstantValue
             if (isVanished(player) || VanishAPI.isInvisible(player)) {
                 Debug.log("NOT sending leave message for vanished player: " + player.getName());
                 plugin.getCustomLeaveMessagesCache().remove(player.getUniqueId());
@@ -86,7 +89,7 @@ public class LeaveMessageListeners implements Listener {
     @Nullable
     public Component getPermissionLeaveMessage(Player player, String prefix) {
         Debug.log("checking permission based leave messages for " + player.getName());
-        for (String permission : plugin.getConfig().getConfigurationSection("LeaveMessages.PermissionLeaveMessages.messages").getKeys(false)) {
+        for (String permission : Objects.requireNonNull(plugin.getConfig().getConfigurationSection("LeaveMessages.PermissionLeaveMessages.messages")).getKeys(false)) {
             if (player.hasPermission("vorplexcore.leavemessages." + permission)) {
                 Debug.log("Found permission vorplexcore.leavemessages." + permission + " for player: " + player.getName());
                 String rawLeaveMessage = plugin.getConfig().getString("LeaveMessages.PermissionLeaveMessages.messages." + permission);
