@@ -69,7 +69,7 @@ public class AutoRestartScheduler {
     private static void scheduleNotify(AutoRestartConfig autoRestartConfig, long initDelayTicks) {
         if (autoRestartConfig.notifyChatEnabled) {
             autoRestartConfig.notifyChatPeriods.forEach((key, message) -> {
-                long notifyDelay = initDelayTicks - key * 20;
+                long notifyDelay = initDelayTicks - key * 20L;
                 if (notifyDelay < 1) return;
 
                 tasks.add(Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -82,7 +82,7 @@ public class AutoRestartScheduler {
 
         if (autoRestartConfig.notifyTitleEnabled) {
             autoRestartConfig.notifyTitlePeriods.forEach((key, titleMessage) -> {
-                long notifyDelay = initDelayTicks - key * 20;
+                long notifyDelay = initDelayTicks - key * 20L;
                 if (notifyDelay < 1) return;
 
                 tasks.add(Bukkit.getScheduler().runTaskLater(plugin, () -> {
