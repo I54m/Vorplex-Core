@@ -1,11 +1,6 @@
 package net.vorplex.core.autorestart;
 
-import com.cronutils.model.Cron;
-import com.cronutils.model.CronType;
-import com.cronutils.model.definition.CronDefinition;
-import com.cronutils.model.definition.CronDefinitionBuilder;
-import com.cronutils.model.time.ExecutionTime;
-import com.cronutils.parser.CronParser;
+import lombok.Getter;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
@@ -16,21 +11,28 @@ import net.vorplex.core.VorplexCore;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitTask;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
 
 import java.time.Duration;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class AutoRestartScheduler {
-    public List<BukkitTask> tasks = new ArrayList<>();
-    public ZonedDateTime nextTime;
+    @Getter
+    private ZonedDateTime restartTime;
+
+    private static final long BOSS_BAR_DURATION_SECONDS = 60;
 
     private final VorplexCore plugin;
 
+    private Scheduler quartzScheduler;
     private BossBar bossBarCountdown;
+    private BukkitTask bossBarCountdownTask;
 
     public AutoRestartScheduler(VorplexCore plugin) {
         this.plugin = plugin;
@@ -38,130 +40,196 @@ public class AutoRestartScheduler {
 
     public void start(AutoRestartConfig autoRestartConfig) {
         if (!autoRestartConfig.valid) return;
-        plugin.autoRestartConfig = autoRestartConfig;
-        long delayTicks = getDelayTicks(autoRestartConfig.schedule);
-        tasks = new ArrayList<>();
 
-        scheduleNotify(autoRestartConfig, delayTicks);
-        tasks.add(Bukkit.getScheduler().runTaskLater(plugin, this::shutdownServer, delayTicks));
+        plugin.autoRestartConfig = autoRestartConfig;
+
+        try {
+            quartzScheduler = StdSchedulerFactory.getDefaultScheduler();
+            quartzScheduler.start();
+
+            ZonedDateTime nextRestart = null;
+
+            for (String cron : autoRestartConfig.schedule) {
+
+                CronTrigger trigger = TriggerBuilder.newTrigger()
+                        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+                        .build();
+
+                ZonedDateTime candidate = trigger.getNextFireTime()
+                        .toInstant()
+                        .atZone(ZoneId.systemDefault());
+
+                if (nextRestart == null || candidate.isBefore(nextRestart)) {
+                    nextRestart = candidate;
+                }
+            }
+
+            if (nextRestart != null)
+                scheduleRestart(nextRestart);
+
+        } catch (SchedulerException e) {
+            plugin.getComponentLogger().error("Failed to start AutoRestart Quartz scheduler", e);
+        }
     }
 
     public void stop() {
-        for (BukkitTask task : tasks){
-            task.cancel();
+        restartTime = null;
+        if (quartzScheduler != null) {
+            try {
+                quartzScheduler.shutdown();
+            } catch (SchedulerException e) {
+                plugin.getComponentLogger().error("An Exception was encountered while trying to shutdown the quartz scheduler for autorestart", e);
+            }
         }
-        tasks.clear();
-        if (bossBarCountdown != null)
+        if (bossBarCountdownTask != null) {
+            bossBarCountdownTask.cancel();
+            bossBarCountdownTask = null;
+        }
+        if (bossBarCountdown != null) {
             Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
-    }
-
-    public void scheduleReboot(TimeUnit timeUnit, long amount) {
-        scheduleReboot(timeUnit.toSeconds(amount) * 20);
-    }
-
-    public void scheduleReboot(long initDelayTicks) {
-        //stop current reboot tasks
-        stop();
-        //set nextTime variable
-        long delaySeconds = initDelayTicks / 20;
-        nextTime = ZonedDateTime.now().plusSeconds(delaySeconds);
-        //schedule requested reboot
-        scheduleNotify(new AutoRestartConfig(), initDelayTicks);
-        tasks.add(Bukkit.getScheduler().runTaskLater(plugin, this::shutdownServer, initDelayTicks));
-    }
-
-    private void scheduleNotify(AutoRestartConfig autoRestartConfig, long initDelayTicks) {
-        if (autoRestartConfig.notifyChatEnabled) {
-            autoRestartConfig.notifyChatPeriods.forEach((key, message) -> {
-                long notifyDelay = initDelayTicks - key * 20L;
-                if (notifyDelay < 1) return;
-
-                tasks.add(Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    Audience audienceLater = Audience.audience(Bukkit.getServer().getOnlinePlayers());
-                    audienceLater.sendMessage(MiniMessage.miniMessage().deserialize(message));
-                    if (autoRestartConfig.notifySoundEnabled) audienceLater.playSound(autoRestartConfig.notifySound);
-                }, notifyDelay));
-            });
+            bossBarCountdown = null;
         }
+    }
 
-        if (autoRestartConfig.notifyTitleEnabled) {
-            autoRestartConfig.notifyTitlePeriods.forEach((key, titleMessage) -> {
-                long notifyDelay = initDelayTicks - key * 20L;
-                if (notifyDelay < 1) return;
+    private void scheduleRestart(ZonedDateTime restartTime) {
+        try {
+            this.restartTime = restartTime;
+            quartzScheduler.getContext().put("autoRestartScheduler", this);
+            scheduleShutdown(restartTime);
+            scheduleNotifications(plugin.getAutoRestartConfig(), restartTime);
+        } catch (SchedulerException e) {
+            plugin.getComponentLogger().error("An Exception was encountered while trying to schedule a restart for: {}", restartTime);
+            plugin.getComponentLogger().error("Error:", e);
+        }
+    }
 
-                tasks.add(Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                    Audience audienceLater = Audience.audience(Bukkit.getServer().getOnlinePlayers());
+    public void rescheduleRestart(ChronoUnit chronoUnit, long amount) {
+        stop();
+        scheduleRestart(ZonedDateTime.now().plus(amount, chronoUnit));
+    }
 
-                    audienceLater.showTitle(Title.title(
-                            titleMessage.title,
-                            titleMessage.subtitle,
-                            titleMessage.fadeIn,
-                            titleMessage.stay,
-                            titleMessage.fadeOut
-                    ));
-                    // if no sound from chat notify at same time, then play from title notify
-                    if (!autoRestartConfig.notifyChatEnabled || !autoRestartConfig.notifyChatPeriods.containsKey(key))
-                        if (autoRestartConfig.notifySoundEnabled)
-                            audienceLater.playSound(autoRestartConfig.notifySound);
-                }, notifyDelay));
-            });
+    private void scheduleNotifications(AutoRestartConfig autoRestartConfig, ZonedDateTime restartTime) throws SchedulerException {
+        Set<Integer> notificationPeriods = new TreeSet<>();
+
+        notificationPeriods.addAll(autoRestartConfig.notifyChatPeriods.keySet());
+        notificationPeriods.addAll(autoRestartConfig.notifyTitlePeriods.keySet());
+
+        for (Integer secondsBefore : notificationPeriods) {
+            ZonedDateTime notificationTime = restartTime.minusSeconds(secondsBefore);
+
+            if (!notificationTime.isAfter(ZonedDateTime.now())) continue;
+
+            TriggerKey triggerKey = new TriggerKey("autorestart-notification-trigger-" + secondsBefore, "autorestart");
+            JobKey jobKey = new JobKey("autorestart-notification-" + secondsBefore, "autorestart");
+
+            Trigger trigger = TriggerBuilder.newTrigger().withIdentity(triggerKey).startAt(Date.from(notificationTime.toInstant())).build();
+            JobDetail job = JobBuilder.newJob(AutoRestartNotifyJob.class).withIdentity(jobKey).usingJobData("seconds", secondsBefore).build();
+            quartzScheduler.scheduleJob(job, trigger);
         }
 
         if (autoRestartConfig.bossBarCountdownEnabled) {
+            ZonedDateTime bossBarStartTime = restartTime.minusSeconds(BOSS_BAR_DURATION_SECONDS);
 
-            long bossbarTicks = Math.min(1200, initDelayTicks);
+            if (bossBarStartTime.isAfter(ZonedDateTime.now())) {
+
+                JobKey jobKey = new JobKey("autorestart-bossbar", "autorestart");
+
+                TriggerKey triggerKey = new TriggerKey("autorestart-bossbar-trigger", "autorestart");
+
+                JobDetail job = JobBuilder.newJob(AutoRestartBossBarJob.class)
+                        .withIdentity(jobKey)
+                        .usingJobData("restartTime", restartTime.toInstant().toEpochMilli())
+                        .build();
+
+                Trigger trigger = TriggerBuilder.newTrigger()
+                        .withIdentity(triggerKey)
+                        .startAt(Date.from(bossBarStartTime.toInstant()))
+                        .build();
+
+                quartzScheduler.scheduleJob(job, trigger);
+            }
+        }
+    }
+
+    protected void sendNotification(AutoRestartConfig autoRestartConfig, int seconds) {
+        if (autoRestartConfig.notifyChatEnabled) {
+            if (autoRestartConfig.notifyChatPeriods.containsKey(seconds)) {
+                String message = autoRestartConfig.notifyChatPeriods.get(seconds);
+                Audience audienceLater = Audience.audience(Bukkit.getServer().getOnlinePlayers());
+                audienceLater.sendMessage(MiniMessage.miniMessage().deserialize(message));
+                if (autoRestartConfig.notifySoundEnabled) audienceLater.playSound(autoRestartConfig.notifySound);
+            }
+        }
+
+        if (autoRestartConfig.notifyTitleEnabled) {
+            if (autoRestartConfig.notifyTitlePeriods.containsKey(seconds)) {
+                AutoRestartConfig.TitleMessage titleMessage = autoRestartConfig.notifyTitlePeriods.get(seconds);
+                Audience audienceLater = Audience.audience(Bukkit.getServer().getOnlinePlayers());
+
+                audienceLater.showTitle(Title.title(
+                        titleMessage.title,
+                        titleMessage.subtitle,
+                        titleMessage.fadeIn,
+                        titleMessage.stay,
+                        titleMessage.fadeOut
+                ));
+                // if no sound from chat notify at same time, then play from title notify
+                if (!autoRestartConfig.notifyChatEnabled || !autoRestartConfig.notifyChatPeriods.containsKey(seconds))
+                    if (autoRestartConfig.notifySoundEnabled)
+                        audienceLater.playSound(autoRestartConfig.notifySound);
+            }
+        }
+    }
+
+    protected void beginBossBarCountdown(AutoRestartConfig autoRestartConfig, ZonedDateTime restartTime) {
+        if (autoRestartConfig.bossBarCountdownEnabled) {
+            long seconds = Duration.between(ZonedDateTime.now(), restartTime).getSeconds();
 
             bossBarCountdown = BossBar.bossBar(
-                    Component.text("Server Rebooting in ").append(Component.text(bossbarTicks / 20).color(NamedTextColor.RED), Component.text(" seconds!")),
+                    Component.text("Server Rebooting in ").append(Component.text(seconds).color(NamedTextColor.RED), Component.text(" seconds!")),
                     1.0f,
                     BossBar.Color.PINK,
                     BossBar.Overlay.NOTCHED_6
             );
 
-            AtomicLong remainingTicks = new AtomicLong(Math.min(1200, initDelayTicks));
-
-            tasks.add(Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-
-                long ticksLeft = remainingTicks.addAndGet(-20);
-
-                long secondsLeft = ticksLeft / 20;
-                if (secondsLeft < 0) {
-                    Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
-                    return;
-                }
-                float progress = secondsLeft <= 0 ? 0.0f : Math.min(1.0f, secondsLeft / (float) (bossbarTicks / 20));
-
-                bossBarCountdown.progress(progress);
-                bossBarCountdown.name(
-                        Component.text("Server Rebooting in ").append(Component.text(secondsLeft).color(NamedTextColor.RED), Component.text(" seconds!"))
-                );
-                if (secondsLeft <= 5) bossBarCountdown.color(BossBar.Color.RED);
-                else if (secondsLeft <= 10) bossBarCountdown.color(BossBar.Color.YELLOW);
-
-                Audience.audience(Bukkit.getOnlinePlayers()).showBossBar(bossBarCountdown);
-            }, Math.max(20, initDelayTicks - 1200), 20L));
+            bossBarCountdownTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> updateBossBarCountdown(autoRestartConfig, seconds), 0L, 20L);
         }
     }
 
-    private long getDelayTicks(List<String> schedule) {
-        long nextDelayTicks = Long.MAX_VALUE;
-
-        for (String cronTime : schedule) {
-            CronDefinition definition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
-            Cron cron = new CronParser(definition).parse(cronTime);
-            ZonedDateTime runTime = ExecutionTime.forCron(cron)
-                    .nextExecution(ZonedDateTime.now())
-                    .orElseThrow();
-            long delayTicks = Duration.between(ZonedDateTime.now(), runTime).toSeconds() * 20;
-            if (delayTicks < nextDelayTicks) {
-                nextDelayTicks = delayTicks;
-                nextTime = runTime;
+    private void updateBossBarCountdown(AutoRestartConfig autoRestartConfig, long seconds) {
+        if (autoRestartConfig.bossBarCountdownEnabled && bossBarCountdown != null) {
+            if (seconds <= 0) {
+                Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
+                return;
             }
+            float progress = Math.clamp(seconds / (float) BOSS_BAR_DURATION_SECONDS, 0.0f, 1.0f);
+
+            bossBarCountdown.progress(progress);
+            bossBarCountdown.name(
+                    Component.text("Server Rebooting in ").append(Component.text(seconds).color(NamedTextColor.RED), Component.text(" seconds!"))
+            );
+            if (seconds <= 5) bossBarCountdown.color(BossBar.Color.RED);
+            else if (seconds <= 15) bossBarCountdown.color(BossBar.Color.YELLOW);
+
+            Audience.audience(Bukkit.getOnlinePlayers()).showBossBar(bossBarCountdown);
         }
-        return nextDelayTicks;
     }
 
-    private void shutdownServer() {
+    private void scheduleShutdown(ZonedDateTime restartTime) throws SchedulerException {
+        JobDetail job = JobBuilder.newJob(AutoRestartShutdownJob.class)
+                .withIdentity("autorestart-shutdownjob", "autorestart")
+                .usingJobData("plugin", plugin.getName())
+                .build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity("autorestart-shutdowntrigger", "autorestart")
+                .startAt(Date.from(restartTime.toInstant()))
+                .forJob(job)
+                .build();
+
+        quartzScheduler.scheduleJob(job, trigger);
+    }
+
+    protected void shutdownServer() {
         plugin.getComponentLogger().info("Server Shutdown requested via autorestart module");
         Bukkit.getServer().savePlayers();
         for (World world : Bukkit.getServer().getWorlds()) {
