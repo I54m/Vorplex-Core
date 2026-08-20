@@ -174,7 +174,7 @@
                             <shadedPattern>net.vorplex.core.lib.hikari</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>org.quartz-scheduler.quartz</pattern>
+                            <pattern>org.quartz</pattern>
                             <shadedPattern>net.vorplex.core.lib.quartz</shadedPattern>
                         </relocation>
                     </relocations>
