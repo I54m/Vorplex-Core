@@ -23,8 +23,8 @@ import org.bukkit.command.CommandSender;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 public class AutoRestartCommand {
     private static final VorplexCore plugin = VorplexCore.getInstance();
@@ -51,17 +51,18 @@ public class AutoRestartCommand {
             .build();
 
     private static CompletableFuture<Suggestions> getTimeUnitSuggestions(final CommandContext<CommandSourceStack> ctx, final SuggestionsBuilder builder) {
-        for (TimeUnit timeunit : TimeUnit.values()) {
-            builder.suggest(timeunit.toString());
-        }
+        builder.suggest("DAYS");
+        builder.suggest("HOURS");
+        builder.suggest("MINUTES");
+        builder.suggest("SECONDS");
         return builder.buildFuture();
     }
 
 
     private static int restartNow(final CommandContext<CommandSourceStack> ctx) {
         final CommandSender sender = ctx.getSource().getSender();
-        autoRestartScheduler.scheduleReboot(620);
-        sender.sendRichMessage(plugin.getPrefix() + "<green>Rebooting in 30 seconds!");
+        autoRestartScheduler.rescheduleRestart(ChronoUnit.SECONDS, 60);
+        sender.sendRichMessage(plugin.getPrefix() + "<green>Rebooting in 60 seconds!");
         return Command.SINGLE_SUCCESS;
     }
 
@@ -77,14 +78,14 @@ public class AutoRestartCommand {
             sender.sendRichMessage(plugin.getPrefix() + "<red>/autorestart queue <timeunit> <amount of time> ");
             return Command.SINGLE_SUCCESS;
         }
-        TimeUnit timeUnit;
+        ChronoUnit chronoUnit;
         try {
-            timeUnit = TimeUnit.valueOf(timeunitString);
+            chronoUnit = ChronoUnit.valueOf(timeunitString);
         } catch (IllegalArgumentException iae) {
             sender.sendRichMessage(plugin.getPrefix() + "<red>" + timeunitString + " is not a valid timeunit!");
             return Command.SINGLE_SUCCESS;
         }
-        autoRestartScheduler.scheduleReboot(timeUnit, amountOfTime);
+        autoRestartScheduler.rescheduleRestart(chronoUnit, amountOfTime);
 
         String time = amountOfTime + " " + timeunitString.toLowerCase();
         sender.sendRichMessage(plugin.getPrefix() + "<green>Queued auto reboot for <time> from now!", Placeholder.parsed("time", time));
@@ -93,7 +94,7 @@ public class AutoRestartCommand {
     }
 
     private static int startScheduler(final CommandContext<CommandSourceStack> ctx) {
-        if (autoRestartScheduler.tasks.isEmpty()) {
+        if (autoRestartScheduler.getRestartTime() == null) {
             autoRestartScheduler.start(new AutoRestartConfig());
             ctx.getSource().getSender().sendRichMessage(plugin.getPrefix() + "<green>Started all auto reboot tasks!");
         } else
@@ -102,7 +103,7 @@ public class AutoRestartCommand {
     }
 
     private static int stopScheduler(final CommandContext<CommandSourceStack> ctx) {
-        if (!autoRestartScheduler.tasks.isEmpty()) {
+        if (autoRestartScheduler.getRestartTime() != null) {
             autoRestartScheduler.stop();
             Audience audience = Audience.audience(Bukkit.getServer().getOnlinePlayers());
             if (autoRestartConfig.notifyChatEnabled)
@@ -118,7 +119,8 @@ public class AutoRestartCommand {
     }
 
     private static int restartInfo(final CommandContext<CommandSourceStack> ctx) {
-        ZonedDateTime nextTime = autoRestartScheduler.nextTime;
+        //TODO add last restart time
+        ZonedDateTime nextTime = autoRestartScheduler.getRestartTime();
         String date = "<red>No auto reboot tasks are currently scheduled!";
         if (nextTime != null) date = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss (O)").format(nextTime);
         ctx.getSource().getSender().sendMessage(plugin.getPrefix() + "<green>Next restart: " + date);
