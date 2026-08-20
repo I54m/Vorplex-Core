@@ -76,6 +76,19 @@
         </dependency>
 
         <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.5.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>net.essentialsx</groupId>
             <artifactId>EssentialsX</artifactId>
             <version>2.19.0</version>
@@ -159,6 +172,10 @@
                         <relocation>
                             <pattern>com.zaxxer.hikari</pattern>
                             <shadedPattern>net.vorplex.core.lib.hikari</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.quartz-scheduler.quartz</pattern>
+                            <shadedPattern>net.vorplex.core.lib.quartz</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
