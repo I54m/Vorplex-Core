@@ -280,7 +280,9 @@ public class VorplexCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        autoRestartScheduler.stop();
+        if (autoRestartScheduler != null) {
+            autoRestartScheduler.stop();
+        }
         AutoAnnouncerScheduler.stop();
         if (databaseManager.isConnected())
             databaseManager.shutdownConnection();
