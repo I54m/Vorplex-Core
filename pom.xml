@@ -163,6 +163,18 @@
                             <pattern>org.quartz</pattern>
                             <shadedPattern>net.vorplex.core.lib.quartz</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>jakarta.xml</pattern>
+                            <shadedPattern>net.vorplex.core.lib.jakarta-xml</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>jakarta.activation</pattern>
+                            <shadedPattern>net.vorplex.core.lib.jakarta-activation</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.cronutils</pattern>
+                            <shadedPattern>net.vorplex.core.lib.cronutils</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
                 <executions>
