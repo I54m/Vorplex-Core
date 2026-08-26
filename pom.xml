@@ -21,6 +21,12 @@
         </repository>
 
         <repository>
+            <id>premium-vanish</id>
+            <name>jcenter-bintray</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+
+        <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
