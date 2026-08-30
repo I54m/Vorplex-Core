@@ -110,7 +110,7 @@ public class AutoRestartCommand {
     private static int stopScheduler(final CommandContext<CommandSourceStack> ctx) {
         final CommandSender sender = ctx.getSource().getSender();
         if (autoRestartScheduler.getRestartTime() != null) {
-            autoRestartScheduler.stop();
+            autoRestartScheduler.cancelRestart();
             Audience audience = Audience.audience(Bukkit.getServer().getOnlinePlayers());
             if (autoRestartConfig.notifyChatEnabled)
                 audience.sendMessage(Component.text("Reboot was aborted!").color(NamedTextColor.GREEN));
