@@ -15,6 +15,7 @@ import org.jspecify.annotations.NonNull;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
+import java.text.ParseException;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -49,27 +50,26 @@ public class AutoRestartScheduler {
             quartzScheduler = getQuartzSchedulerFactory().getScheduler();
             quartzScheduler.start();
 
+            Date now = new Date();
             ZonedDateTime nextRestart = null;
 
             for (String cron : autoRestartConfig.schedule) {
+                CronExpression cronExpression = new CronExpression(cron);
+                Date nextFireTime = cronExpression.getNextValidTimeAfter(now);
 
-                CronTrigger trigger = TriggerBuilder.newTrigger()
-                        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
-                        .build();
+                if (nextFireTime == null)
+                    continue;
 
-                ZonedDateTime candidate = trigger.getNextFireTime()
-                        .toInstant()
-                        .atZone(ZoneId.systemDefault());
+                ZonedDateTime candidate = nextFireTime.toInstant().atZone(ZoneId.systemDefault());
 
-                if (nextRestart == null || candidate.isBefore(nextRestart)) {
+                if (nextRestart == null || candidate.isBefore(nextRestart))
                     nextRestart = candidate;
-                }
             }
 
             if (nextRestart != null)
                 scheduleRestart(nextRestart);
 
-        } catch (SchedulerException e) {
+        } catch (ParseException | SchedulerException e) {
             plugin.getComponentLogger().error("Failed to start AutoRestart Quartz scheduler", e);
         }
     }
