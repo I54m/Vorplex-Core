@@ -98,7 +98,7 @@ public class VorplexCore extends JavaPlugin {
     public final LiteralCommandNode<CommandSourceStack> RELOAD_COMMAND_NODE = Commands.literal("vorplexcorereload")
             .requires(ctx -> ctx.getSender().isOp())
             .executes((ctx) -> {
-                autoRestartScheduler.stop();
+                autoRestartScheduler.shutdown();
                 AutoAnnouncerScheduler.stop();
                 boolean customJoinMessagesPreviousState = getConfig().getBoolean("JoinMessages.CustomJoinMessages.enabled", true);
                 boolean customLeaveMessagesPreviousState = getConfig().getBoolean("JoinMessages.CustomLeaveMessages.enabled", true);
@@ -291,7 +291,7 @@ public class VorplexCore extends JavaPlugin {
             AutoRestartLogger.info("Server Shutting down...");
         AutoRestartLogger.close();
         if (autoRestartScheduler != null) {
-            autoRestartScheduler.stop();
+            autoRestartScheduler.shutdown();
         }
         AutoAnnouncerScheduler.stop();
         if (databaseManager.isConnected())
