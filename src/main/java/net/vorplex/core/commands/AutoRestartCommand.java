@@ -16,6 +16,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.title.Title;
 import net.vorplex.core.VorplexCore;
 import net.vorplex.core.autorestart.AutoRestartConfig;
+import net.vorplex.core.autorestart.AutoRestartLogger;
 import net.vorplex.core.autorestart.AutoRestartScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -61,7 +62,8 @@ public class AutoRestartCommand {
 
     private static int restartNow(final CommandContext<CommandSourceStack> ctx) {
         final CommandSender sender = ctx.getSource().getSender();
-        autoRestartScheduler.rescheduleRestart(ChronoUnit.SECONDS, 60);
+        autoRestartScheduler.rescheduleRestart(ChronoUnit.SECONDS, 62);
+        AutoRestartLogger.warning(sender.getName() + " has requested an auto restart NOW!");
         sender.sendRichMessage(plugin.getPrefix() + "<green>Rebooting in 60 seconds!");
         return Command.SINGLE_SUCCESS;
     }
@@ -86,6 +88,7 @@ public class AutoRestartCommand {
             return Command.SINGLE_SUCCESS;
         }
         autoRestartScheduler.rescheduleRestart(chronoUnit, amountOfTime);
+        AutoRestartLogger.warning(sender.getName() + " has requested an auto restart in " + amountOfTime + " " + timeunitString + "!");
 
         String time = amountOfTime + " " + timeunitString.toLowerCase();
         sender.sendRichMessage(plugin.getPrefix() + "<green>Queued auto reboot for <time> from now!", Placeholder.parsed("time", time));
@@ -94,15 +97,18 @@ public class AutoRestartCommand {
     }
 
     private static int startScheduler(final CommandContext<CommandSourceStack> ctx) {
+        final CommandSender sender = ctx.getSource().getSender();
         if (autoRestartScheduler.getRestartTime() == null) {
             autoRestartScheduler.start(new AutoRestartConfig());
-            ctx.getSource().getSender().sendRichMessage(plugin.getPrefix() + "<green>Started all auto reboot tasks!");
+            sender.sendRichMessage(plugin.getPrefix() + "<green>Started all auto reboot tasks!");
+            AutoRestartLogger.warning(sender.getName() + " has STARTED the auto restart scheduler!");
         } else
-            ctx.getSource().getSender().sendRichMessage(plugin.getPrefix() + "<red>There are auto reboot tasks already running!");
+            sender.sendRichMessage(plugin.getPrefix() + "<red>There are auto reboot tasks already running!");
         return Command.SINGLE_SUCCESS;
     }
 
     private static int stopScheduler(final CommandContext<CommandSourceStack> ctx) {
+        final CommandSender sender = ctx.getSource().getSender();
         if (autoRestartScheduler.getRestartTime() != null) {
             autoRestartScheduler.stop();
             Audience audience = Audience.audience(Bukkit.getServer().getOnlinePlayers());
@@ -112,18 +118,31 @@ public class AutoRestartCommand {
                 audience.showTitle(Title.title(Component.text("Reboot was aborted!").color(NamedTextColor.GREEN), Component.empty(),
                         Title.Times.times(Duration.ofMillis(500), Duration.ofMillis(3000), Duration.ofMillis(1000))));
             audience.playSound(autoRestartConfig.notifySound);
-            ctx.getSource().getSender().sendRichMessage(plugin.getPrefix() + "<green>Stopped all auto reboot tasks!");
+            sender.sendRichMessage(plugin.getPrefix() + "<green>Stopped all auto reboot tasks!");
+            AutoRestartLogger.severe(sender.getName() + " has STOPPED the auto restart scheduler!");
         } else
-            ctx.getSource().getSender().sendMessage(plugin.getPrefix() + "<red>There are no auto reboot tasks running!");
+            sender.sendMessage(plugin.getPrefix() + "<red>There are no auto reboot tasks running!");
         return Command.SINGLE_SUCCESS;
     }
 
     private static int restartInfo(final CommandContext<CommandSourceStack> ctx) {
-        //TODO add last restart time
+        final CommandSender sender = ctx.getSource().getSender();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss (O)");
         ZonedDateTime nextTime = autoRestartScheduler.getRestartTime();
-        String date = "<red>No auto reboot tasks are currently scheduled!";
-        if (nextTime != null) date = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss (O)").format(nextTime);
-        ctx.getSource().getSender().sendMessage(plugin.getPrefix() + "<green>Next restart: " + date);
+        String nextDate = "<red>No auto reboot tasks are currently scheduled!";
+        if (nextTime != null) nextDate = dateTimeFormatter.format(nextTime);
+        ZonedDateTime lastTime = plugin.getStartTime();
+        String lastDate = "<red>Unknown";
+        if (!lastTime.isAfter(ZonedDateTime.now())) lastDate = dateTimeFormatter.format(lastTime);
+        Duration uptime = Duration.between(lastTime, ZonedDateTime.now());
+        String formattedUptime = String.format("%02dh %02dm %02ds",
+                uptime.toHours(),
+                uptime.toMinutesPart(),
+                uptime.toSecondsPart()
+        );
+        sender.sendMessage(plugin.getPrefix() + "<green>Last restart: " + lastDate);
+        sender.sendMessage(plugin.getPrefix() + "<green>Uptime: " + formattedUptime);
+        sender.sendMessage(plugin.getPrefix() + "<green>Next restart: " + nextDate);
         return Command.SINGLE_SUCCESS;
     }
 
