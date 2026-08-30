@@ -74,7 +74,7 @@ public class AutoRestartScheduler {
         }
     }
 
-    private static @NonNull StdSchedulerFactory getQuartzSchedulerFactory() throws SchedulerException {
+    private @NonNull StdSchedulerFactory getQuartzSchedulerFactory() throws SchedulerException {
         Properties quartzProperties = new Properties();
         quartzProperties.setProperty("org.quartz.scheduler.instanceName", "VorplexCore-AutoRestart");
         quartzProperties.setProperty("org.quartz.threadPool.class", "net.vorplex.core.lib.quartz.simpl.SimpleThreadPool");
@@ -207,12 +207,14 @@ public class AutoRestartScheduler {
                     BossBar.Overlay.NOTCHED_6
             );
 
-            bossBarCountdownTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> updateBossBarCountdown(autoRestartConfig, seconds), 0L, 20L);
+            bossBarCountdownTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> updateBossBarCountdown(autoRestartConfig), 0L, 20L);
         }
     }
 
-    private void updateBossBarCountdown(AutoRestartConfig autoRestartConfig, long seconds) {
+    private void updateBossBarCountdown(AutoRestartConfig autoRestartConfig) {
         if (autoRestartConfig.bossBarCountdownEnabled && bossBarCountdown != null) {
+            long seconds = Duration.between(ZonedDateTime.now(), restartTime).getSeconds();
+
             if (seconds <= 0) {
                 Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
                 return;
