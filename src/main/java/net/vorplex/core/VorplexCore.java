@@ -16,6 +16,7 @@ import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import net.luckperms.api.LuckPerms;
 import net.vorplex.core.autoannouncer.AutoAnnouncerScheduler;
 import net.vorplex.core.autorestart.AutoRestartConfig;
+import net.vorplex.core.autorestart.AutoRestartLogger;
 import net.vorplex.core.autorestart.AutoRestartScheduler;
 import net.vorplex.core.chat.AdminChatCommand;
 import net.vorplex.core.chat.AsyncChatListener;
@@ -31,6 +32,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,8 @@ public class VorplexCore extends JavaPlugin {
     private String prefix;
     @Getter
     private ExecutorService threadPool;
+    @Getter
+    private final ZonedDateTime startTime = ZonedDateTime.now();
     @Getter
     private final MiniMessage basicMM = MiniMessage.builder()
             .tags(TagResolver.builder()
@@ -193,6 +197,9 @@ public class VorplexCore extends JavaPlugin {
         if (this.getConfig().getBoolean("AutoRestart.enabled")) {
             getComponentLogger().info(Component.text("Enabling AutoRestart Module...").color(NamedTextColor.GREEN));
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> commands.registrar().register(AutoRestartCommand.COMMAND_NODE, List.of("restart", "reboot", "autoreboot", "autore")));
+            AutoRestartLogger.init();
+            AutoRestartLogger.info("Server Starting up...");
+            AutoRestartLogger.info("Server was started at: " + getStartTime());
             autoRestartConfig = new AutoRestartConfig();
             autoRestartScheduler = new AutoRestartScheduler(this);
             autoRestartScheduler.start(autoRestartConfig);
@@ -280,6 +287,9 @@ public class VorplexCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (this.getConfig().getBoolean("AutoRestart.enabled"))
+            AutoRestartLogger.info("Server Shutting down...");
+        AutoRestartLogger.close();
         if (autoRestartScheduler != null) {
             autoRestartScheduler.stop();
         }
