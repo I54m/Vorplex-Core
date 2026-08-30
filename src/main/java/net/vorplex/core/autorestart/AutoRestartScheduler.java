@@ -11,6 +11,7 @@ import net.vorplex.core.VorplexCore;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitTask;
+import org.jspecify.annotations.NonNull;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 
@@ -19,6 +20,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -44,7 +46,7 @@ public class AutoRestartScheduler {
         plugin.autoRestartConfig = autoRestartConfig;
 
         try {
-            quartzScheduler = StdSchedulerFactory.getDefaultScheduler();
+            quartzScheduler = getQuartzSchedulerFactory().getScheduler();
             quartzScheduler.start();
 
             ZonedDateTime nextRestart = null;
@@ -72,11 +74,22 @@ public class AutoRestartScheduler {
         }
     }
 
+    private static @NonNull StdSchedulerFactory getQuartzSchedulerFactory() throws SchedulerException {
+        Properties quartzProperties = new Properties();
+        quartzProperties.setProperty("org.quartz.scheduler.instanceName", "VorplexCore-AutoRestart");
+        quartzProperties.setProperty("org.quartz.threadPool.class", "net.vorplex.core.lib.quartz.simpl.SimpleThreadPool");
+        quartzProperties.setProperty("org.quartz.threadPool.threadCount", "1");
+        quartzProperties.setProperty("org.quartz.threadPool.threadPriority", "5");
+        quartzProperties.setProperty("org.quartz.jobStore.class", "net.vorplex.core.lib.quartz.simpl.RAMJobStore");
+
+        return new StdSchedulerFactory(quartzProperties);
+    }
+
     public void stop() {
         restartTime = null;
         if (quartzScheduler != null) {
             try {
-                quartzScheduler.shutdown();
+                quartzScheduler.shutdown(false);
             } catch (SchedulerException e) {
                 plugin.getComponentLogger().error("An Exception was encountered while trying to shutdown the quartz scheduler for autorestart", e);
             }
