@@ -89,6 +89,7 @@ public class AutoRestartScheduler {
             Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
             bossBarCountdown = null;
         }
+        AutoRestartLogger.info("Cancelled Auto restart");
     }
 
     private void scheduleRestart(ZonedDateTime restartTime) {
@@ -97,6 +98,7 @@ public class AutoRestartScheduler {
             quartzScheduler.getContext().put("autoRestartScheduler", this);
             scheduleShutdown(restartTime);
             scheduleNotifications(plugin.getAutoRestartConfig(), restartTime);
+            AutoRestartLogger.info("Scheduled restart for: " + restartTime);
         } catch (SchedulerException e) {
             plugin.getComponentLogger().error("An Exception was encountered while trying to schedule a restart for: {}", restartTime);
             plugin.getComponentLogger().error("Error:", e);
@@ -237,6 +239,7 @@ public class AutoRestartScheduler {
         }
         plugin.getComponentLogger().info("Player and world data saved!");
         plugin.getComponentLogger().info("Shutting down server!");
+        AutoRestartLogger.info("Server Shutting down due to Auto Restart");
         Bukkit.getServer().shutdown();
     }
 }
