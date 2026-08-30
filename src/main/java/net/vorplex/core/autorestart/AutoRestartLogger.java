@@ -2,6 +2,7 @@ package net.vorplex.core.autorestart;
 
 import net.vorplex.core.VorplexCore;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -18,7 +19,10 @@ public class AutoRestartLogger {
     public static void init() {
         if (initialized) return;
         try {
-            fileHandler = new FileHandler(plugin.getDataFolder() + "autorestart.log", true);
+            File logFile = new File(plugin.getDataFolder(), "AutoRestart.log");
+            if (!logFile.exists()) logFile.createNewFile();
+
+            fileHandler = new FileHandler(logFile.getPath(), true);
 
             fileHandler.setFormatter(new SimpleFormatter());
             logger.addHandler(fileHandler);
