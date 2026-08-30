@@ -14,16 +14,14 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jspecify.annotations.NonNull;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.matchers.GroupMatcher;
 
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.Properties;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class AutoRestartScheduler {
     @Getter
@@ -85,15 +83,9 @@ public class AutoRestartScheduler {
         return new StdSchedulerFactory(quartzProperties);
     }
 
-    public void stop() {
+    public void cancelRestart() {
+        AutoRestartLogger.info("Cancelling Auto restart...");
         restartTime = null;
-        if (quartzScheduler != null) {
-            try {
-                quartzScheduler.shutdown(false);
-            } catch (SchedulerException e) {
-                plugin.getComponentLogger().error("An Exception was encountered while trying to shutdown the quartz scheduler for autorestart", e);
-            }
-        }
         if (bossBarCountdownTask != null) {
             bossBarCountdownTask.cancel();
             bossBarCountdownTask = null;
@@ -102,11 +94,54 @@ public class AutoRestartScheduler {
             Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
             bossBarCountdown = null;
         }
-        AutoRestartLogger.info("Cancelled Auto restart");
+        cancelQuartzJobs();
+    }
+
+    private void cancelQuartzJobs() {
+        try {
+            if (quartzScheduler == null || quartzScheduler.isShutdown())
+                return;
+            Set<JobKey> jobKeys = quartzScheduler.getJobKeys(GroupMatcher.jobGroupEquals("autorestart"));
+            quartzScheduler.deleteJobs(new ArrayList<>(jobKeys));
+
+            AutoRestartLogger.info("Cancelled Auto restart!");
+        } catch (SchedulerException e) {
+            plugin.getComponentLogger().error("Failed to cancel AutoRestart Quartz jobs", e);
+        }
+    }
+
+
+    public void shutdown() {
+        try {
+            restartTime = null;
+            if (quartzScheduler != null && !quartzScheduler.isShutdown()) {
+                try {
+                    quartzScheduler.shutdown(false);
+                } catch (SchedulerException e) {
+                    plugin.getComponentLogger().error("An Exception was encountered while trying to shutdown the quartz scheduler for autorestart", e);
+                }
+            }
+            if (bossBarCountdownTask != null) {
+                bossBarCountdownTask.cancel();
+                bossBarCountdownTask = null;
+            }
+            if (bossBarCountdown != null) {
+                Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
+                bossBarCountdown = null;
+            }
+            AutoRestartLogger.info("Shutting down Auto restart Scheduler");
+        } catch (SchedulerException e) {
+            plugin.getComponentLogger().error("Failed to shutdown AutoRestart scheduler", e);
+        }
     }
 
     private void scheduleRestart(ZonedDateTime restartTime) {
         try {
+            if (quartzScheduler == null)
+                throw new IllegalStateException("AutoRestart Quartz scheduler has not been initialized");
+            if (quartzScheduler.isShutdown())
+                throw new IllegalStateException("AutoRestart Quartz scheduler has been shut down");
+
             this.restartTime = restartTime;
             quartzScheduler.getContext().put("autoRestartScheduler", this);
             scheduleShutdown(restartTime);
@@ -119,7 +154,7 @@ public class AutoRestartScheduler {
     }
 
     public void rescheduleRestart(ChronoUnit chronoUnit, long amount) {
-        stop();
+        cancelRestart();
         scheduleRestart(ZonedDateTime.now().plus(amount, chronoUnit));
     }
 
