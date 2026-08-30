@@ -1,16 +1,14 @@
 package net.vorplex.core.autorestart;
 
-import com.cronutils.model.CronType;
-import com.cronutils.model.definition.CronDefinition;
-import com.cronutils.model.definition.CronDefinitionBuilder;
-import com.cronutils.parser.CronParser;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.vorplex.core.VorplexCore;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.quartz.CronExpression;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,9 +32,8 @@ public class AutoRestartConfig {
         // check if cron time format valid
         for (String cronTime : schedule) {
             try {
-                CronDefinition definition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
-                new CronParser(definition).parse(cronTime);
-            } catch (IllegalArgumentException ex) {
+                CronExpression.validateExpression(cronTime);
+            } catch (ParseException ex) {
                 valid = false;
                 plugin.getLogger().warning("Cron time format is invalid: " + cronTime);
                 plugin.getLogger().warning("Error: " + ex.getMessage());
