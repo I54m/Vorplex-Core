@@ -30,8 +30,6 @@ import java.util.concurrent.CompletableFuture;
 public class AutoRestartCommand {
     private static final VorplexCore plugin = VorplexCore.getInstance();
     private static final AutoRestartConfig autoRestartConfig = plugin.getAutoRestartConfig();
-    private static final AutoRestartScheduler autoRestartScheduler = plugin.getAutoRestartScheduler();
-
 
     public static final LiteralCommandNode<CommandSourceStack> COMMAND_NODE = Commands.literal("autorestart")
             .requires(source -> source.getSender().hasPermission("vorplexcore.autorestart.admin"))
@@ -61,6 +59,7 @@ public class AutoRestartCommand {
 
 
     private static int restartNow(final CommandContext<CommandSourceStack> ctx) {
+        final AutoRestartScheduler autoRestartScheduler = plugin.getAutoRestartScheduler();
         final CommandSender sender = ctx.getSource().getSender();
         autoRestartScheduler.rescheduleRestart(ChronoUnit.SECONDS, 62);
         AutoRestartLogger.warning(sender.getName() + " has requested an auto restart NOW!");
@@ -69,6 +68,7 @@ public class AutoRestartCommand {
     }
 
     private static int queueRestart(final CommandContext<CommandSourceStack> ctx) {
+        final AutoRestartScheduler autoRestartScheduler = plugin.getAutoRestartScheduler();
         final CommandSender sender = ctx.getSource().getSender();
         final String timeunitString;
         final long amountOfTime;
@@ -97,6 +97,7 @@ public class AutoRestartCommand {
     }
 
     private static int startScheduler(final CommandContext<CommandSourceStack> ctx) {
+        final AutoRestartScheduler autoRestartScheduler = plugin.getAutoRestartScheduler();
         final CommandSender sender = ctx.getSource().getSender();
         if (autoRestartScheduler.getRestartTime() == null) {
             autoRestartScheduler.start();
@@ -108,6 +109,7 @@ public class AutoRestartCommand {
     }
 
     private static int stopScheduler(final CommandContext<CommandSourceStack> ctx) {
+        final AutoRestartScheduler autoRestartScheduler = plugin.getAutoRestartScheduler();
         final CommandSender sender = ctx.getSource().getSender();
         if (autoRestartScheduler.getRestartTime() != null) {
             autoRestartScheduler.cancelRestart();
@@ -126,6 +128,7 @@ public class AutoRestartCommand {
     }
 
     private static int restartInfo(final CommandContext<CommandSourceStack> ctx) {
+        final AutoRestartScheduler autoRestartScheduler = plugin.getAutoRestartScheduler();
         final CommandSender sender = ctx.getSource().getSender();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss (O)");
         ZonedDateTime nextTime = autoRestartScheduler.getRestartTime();
