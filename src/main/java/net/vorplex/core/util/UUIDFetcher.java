@@ -19,6 +19,10 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class used to fetch a player's uuid from their name
+ * Tries the cache provider first, if it's not found there then we make a request to the mojang api
+ */
 public class UUIDFetcher {
 
     @Getter

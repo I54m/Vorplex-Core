@@ -40,12 +40,15 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * The main class of the plugin
+ */
 public class VorplexCore extends JavaPlugin {
 
     // Misc Plugin variables
     @Getter
     @Setter(AccessLevel.PRIVATE)
-    public static VorplexCore instance;
+    private static VorplexCore instance;
     @Getter
     private String prefix;
     @Getter
@@ -70,9 +73,10 @@ public class VorplexCore extends JavaPlugin {
 
     // Config classes
     @Getter
-    public AutoRestartConfig autoRestartConfig;
+    @Setter
+    private AutoRestartConfig autoRestartConfig;
     @Getter
-    public AutoRestartScheduler autoRestartScheduler;
+    private AutoRestartScheduler autoRestartScheduler;
 
     // Dependency variables
     @Getter

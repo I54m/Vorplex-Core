@@ -7,6 +7,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
+/**
+ * Class to provide profile caching for Bukkit based servers
+ * Used by UUIDFetcher and NameFetcher
+ */
 public class BukkitProfileCacheProvider implements ProfileCacheProvider {
 
     /**

@@ -6,10 +6,18 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.SchedulerException;
 
+/**
+ * Quartz job to manage the notification messages and titles sent
+ */
 public class AutoRestartNotifyJob implements Job {
 
     private final VorplexCore plugin = VorplexCore.getInstance();
 
+    /**
+     * Execute the Notify job to send notifications at the specified amount of seconds
+     *
+     * @param context the job context that quartz provides
+     */
     @Override
     public void execute(JobExecutionContext context) {
         try {

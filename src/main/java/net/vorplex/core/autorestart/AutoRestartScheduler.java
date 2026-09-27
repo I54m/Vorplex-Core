@@ -23,6 +23,9 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+/**
+ * Class used to control the auto restart functionality
+ */
 public class AutoRestartScheduler {
     @Getter
     private ZonedDateTime restartTime;
@@ -35,6 +38,11 @@ public class AutoRestartScheduler {
     private BossBar bossBarCountdown;
     private BukkitTask bossBarCountdownTask;
 
+    /**
+     * Create an instance of the AutoRestartScheduler
+     *
+     * @param plugin the instance of the VorplexCore plugin class
+     */
     public AutoRestartScheduler(VorplexCore plugin) {
         this.plugin = plugin;
     }
@@ -50,10 +58,14 @@ public class AutoRestartScheduler {
         return new StdSchedulerFactory(quartzProperties);
     }
 
+    /**
+     * Initialize the Scheduler and start the auto restart countdown
+     * @param autoRestartConfig the config instance to use for the scheduler
+     */
     public void init(AutoRestartConfig autoRestartConfig) {
         if (!autoRestartConfig.valid) return;
 
-        plugin.autoRestartConfig = autoRestartConfig;
+        plugin.setAutoRestartConfig(autoRestartConfig);
 
         try {
             quartzScheduler = getQuartzSchedulerFactory().getScheduler();
@@ -65,6 +77,9 @@ public class AutoRestartScheduler {
         start();
     }
 
+    /**
+     * Start the auto restart scheduler from the plugin's autoRestartConfig
+     */
     public void start() {
         if (restartTime != null) return;
 
@@ -72,7 +87,7 @@ public class AutoRestartScheduler {
         ZonedDateTime nextRestart = null;
 
         try {
-            for (String cron : plugin.autoRestartConfig.schedule) {
+            for (String cron : plugin.getAutoRestartConfig().schedule) {
                 CronExpression cronExpression = new CronExpression(cron);
                 Date nextFireTime = cronExpression.getNextValidTimeAfter(now);
 
@@ -92,6 +107,9 @@ public class AutoRestartScheduler {
         }
     }
 
+    /**
+     * Cancel the running restart tasks
+     */
     public void cancelRestart() {
         AutoRestartLogger.info("Cancelling Auto restart...");
         restartTime = null;
@@ -106,6 +124,9 @@ public class AutoRestartScheduler {
         cancelQuartzJobs();
     }
 
+    /**
+     * Cancel the running quartz jobs
+     */
     private void cancelQuartzJobs() {
         try {
             if (quartzScheduler == null || quartzScheduler.isShutdown())
@@ -119,6 +140,9 @@ public class AutoRestartScheduler {
         }
     }
 
+    /**
+     * Shutdown the Auto Restart Scheduler
+     */
     public void shutdown() {
         try {
             restartTime = null;
@@ -143,6 +167,10 @@ public class AutoRestartScheduler {
         }
     }
 
+    /**
+     * Schedule a restart for a specific time (Does not cancel currently running tasks)
+     * @param restartTime The ZonedDateTime to restart at
+     */
     private void scheduleRestart(ZonedDateTime restartTime) {
         try {
             if (quartzScheduler == null)
@@ -161,11 +189,22 @@ public class AutoRestartScheduler {
         }
     }
 
+    /**
+     * Cancel the running restart tasks and reschedule them amount of timeunits later
+     * @param chronoUnit the time unit to use (e.g. Seconds, Minutes etc.)
+     * @param amount the amount of time until the new restart
+     */
     public void rescheduleRestart(ChronoUnit chronoUnit, long amount) {
         cancelRestart();
         scheduleRestart(ZonedDateTime.now().plus(amount, chronoUnit));
     }
 
+    /**
+     * Schedule the notification jobs
+     * @param autoRestartConfig config to use for the notifications and times
+     * @param restartTime the time to restart at
+     * @throws SchedulerException thrown if an exception was encountered while scheduling tasks
+     */
     private void scheduleNotifications(AutoRestartConfig autoRestartConfig, ZonedDateTime restartTime) throws SchedulerException {
         Set<Integer> notificationPeriods = new TreeSet<>();
 
@@ -209,6 +248,11 @@ public class AutoRestartScheduler {
         }
     }
 
+    /**
+     * Send a Notification
+     * @param autoRestartConfig the config to get the message from
+     * @param seconds the seconds until the restart
+     */
     protected void sendNotification(AutoRestartConfig autoRestartConfig, int seconds) {
         if (autoRestartConfig.notifyChatEnabled) {
             if (autoRestartConfig.notifyChatPeriods.containsKey(seconds)) {
@@ -239,6 +283,11 @@ public class AutoRestartScheduler {
         }
     }
 
+    /**
+     * Start the boss bar countdown
+     * @param autoRestartConfig the config to use for the boss bar countdown
+     * @param restartTime the time when the restart will occur
+     */
     protected void beginBossBarCountdown(AutoRestartConfig autoRestartConfig, ZonedDateTime restartTime) {
         if (autoRestartConfig.bossBarCountdownEnabled) {
             long seconds = Duration.between(ZonedDateTime.now(), restartTime).getSeconds();
@@ -254,6 +303,10 @@ public class AutoRestartScheduler {
         }
     }
 
+    /**
+     * Update the boss bar with the remaining seconds until the restart
+     * @param autoRestartConfig the config to use for the boss bar
+     */
     private void updateBossBarCountdown(AutoRestartConfig autoRestartConfig) {
         if (autoRestartConfig.bossBarCountdownEnabled && bossBarCountdown != null) {
             long seconds = Duration.between(ZonedDateTime.now(), restartTime).getSeconds() + 1;
@@ -275,6 +328,11 @@ public class AutoRestartScheduler {
         }
     }
 
+    /**
+     * Schedule the server shutdown task
+     * @param restartTime the time the restart will happen
+     * @throws SchedulerException thrown if an exception was encountered during scheduling
+     */
     private void scheduleShutdown(ZonedDateTime restartTime) throws SchedulerException {
         JobDetail job = JobBuilder.newJob(AutoRestartShutdownJob.class)
                 .withIdentity("autorestart-shutdownjob", "autorestart")
@@ -289,6 +347,9 @@ public class AutoRestartScheduler {
         quartzScheduler.scheduleJob(job, trigger);
     }
 
+    /**
+     * Shutdown the server via the auto restart module
+     */
     protected void shutdownServer() {
         plugin.getComponentLogger().info("Server Shutdown requested via autorestart module");
         Bukkit.getServer().savePlayers();

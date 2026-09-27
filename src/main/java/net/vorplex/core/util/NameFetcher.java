@@ -18,6 +18,10 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class used to fetch a player's name from their uuid
+ * Tries the cache provider first, if it's not found there then we make a request to the mojang api
+ */
 public class NameFetcher {
 
     @Setter

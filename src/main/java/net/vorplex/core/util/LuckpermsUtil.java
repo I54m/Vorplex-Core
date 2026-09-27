@@ -13,6 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ * Helper class for luckperms integration
+ */
 public class LuckpermsUtil {
 
     private static final VorplexCore plugin = VorplexCore.getInstance();

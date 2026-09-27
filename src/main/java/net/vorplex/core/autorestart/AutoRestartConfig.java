@@ -14,19 +14,52 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+/**
+ * Class used to maintain the auto restart module's configuration
+ */
 public class AutoRestartConfig {
     private final VorplexCore plugin = VorplexCore.getInstance();
 
+    /**
+     * True if the auto restart config section is valid
+     */
     public boolean valid;
+    /**
+     * The cron schedule to use for auto restarts
+     */
     public List<String> schedule;
+    /**
+     * The sound to play when an auto restart notification is sent
+     */
     public Sound notifySound;
+    /**
+     * True if the notification sound is enabled
+     */
     public boolean notifySoundEnabled;
+    /**
+     * True if the chat notifications are enabled
+     */
     public boolean notifyChatEnabled;
+    /**
+     * True if the boss bar countdown is enabled
+     */
     public boolean bossBarCountdownEnabled;
+    /**
+     * The chat notification messages and their periods
+     */
     public Map<Integer, String> notifyChatPeriods;
+    /**
+     * True if the Title notifications are enabled
+     */
     public boolean notifyTitleEnabled;
+    /**
+     * The title notification messages and their periods
+     */
     public Map<Integer, TitleMessage> notifyTitlePeriods;
 
+    /**
+     * Load the config and ensure it is valid
+     */
     public AutoRestartConfig() {
         valid = loadConfig();
         // check if cron time format valid
@@ -41,7 +74,11 @@ public class AutoRestartConfig {
         }
     }
 
-
+    /**
+     * Load the config, checking if it is valid
+     *
+     * @return true if validation passes, else false
+     */
     private boolean loadConfig() {
         try {
             FileConfiguration config = plugin.getConfig();
@@ -74,11 +111,17 @@ public class AutoRestartConfig {
         return true;
     }
 
-
+    /**
+     * Class to decode the title message from teh config
+     */
     public static class TitleMessage {
         final Component title, subtitle;
         final int fadeIn, stay, fadeOut;
 
+        /**
+         * Get title message from the provided config value
+         * @param description the config value to decode
+         */
         TitleMessage(String description) {
             String[] descriptionArray = description.split(" :: ");
             title = MiniMessage.miniMessage().deserialize(descriptionArray[0]);

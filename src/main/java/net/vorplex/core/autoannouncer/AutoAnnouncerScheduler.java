@@ -11,6 +11,9 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Static class for managing the auto announcer
+ */
 public class AutoAnnouncerScheduler {
 
     private static final VorplexCore plugin = VorplexCore.getInstance();
@@ -21,6 +24,9 @@ public class AutoAnnouncerScheduler {
     private static String prefix;
     private static boolean playSound;
 
+    /**
+     * Start the auto announcer and begin auto announcer tasks
+     */
     public static void start() {
         prefix = plugin.getConfig().getString("AutoAnnouncer.Prefix", "<dark_purple>[<light_purple><b>Tip</b></light_purple>]</dark_purple>");
         messages = plugin.getConfig().getStringList("AutoAnnouncer.Messages");
@@ -36,6 +42,9 @@ public class AutoAnnouncerScheduler {
                 (plugin.getConfig().getInt("AutoAnnouncer.Interval", 120) * 20L));
     }
 
+    /**
+     * Stop all auto announcer tasks
+     */
     public static void stop() {
         if (announcerTask != null) {
             announcerTask.cancel();
@@ -45,6 +54,9 @@ public class AutoAnnouncerScheduler {
         messages.clear();
     }
 
+    /**
+     * Run one announcement
+     */
     private static void runAnnouncement() {
         if (!messages.isEmpty()) {
             int messageNumber;

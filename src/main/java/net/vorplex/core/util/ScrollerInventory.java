@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+/**
+ * Class used to create item menus with scrolling functionality
+ */
 public class ScrollerInventory implements Listener, InventoryHolder {
 
     // Constants
@@ -270,6 +273,11 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         renderPage(player);
     }
 
+    /**
+     * Run click events for the next/prev arrows if they exist, run the click action if there is one attached to this scroller inventory
+     *
+     * @param event the event being called by the server
+     */
     @EventHandler(ignoreCancelled = true)
     public void onClick(@NotNull InventoryClickEvent event) {
         Inventory inventory = event.getView().getTopInventory();
@@ -331,6 +339,10 @@ public class ScrollerInventory implements Listener, InventoryHolder {
         }
     }
 
+    /**
+     * Run close action if there is one attached to this scroller inventory
+     * @param event the event that was triggered by the server
+     */
     @EventHandler
     public void onInventoryClose(@NotNull InventoryCloseEvent event) {
         if (!(event.getPlayer() instanceof Player player)) return;

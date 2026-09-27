@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.logging.*;
 
+/**
+ * Custom logger for the auto restart module
+ */
 public class AutoRestartLogger {
     private static final Logger logger = Logger.getLogger(AutoRestartLogger.class.getName());
     private static final VorplexCore plugin = VorplexCore.getInstance();
@@ -14,6 +17,9 @@ public class AutoRestartLogger {
     private static FileHandler fileHandler = null;
     private static boolean initialized = false;
 
+    /**
+     * Initialize the logger and prepare for logging
+     */
     public static void init() {
         if (initialized) return;
         try {
@@ -44,24 +50,45 @@ public class AutoRestartLogger {
         }
     }
 
+    /**
+     * Stop all logging and save the log file
+     */
     public static void close() {
         if (initialized && fileHandler != null)
             fileHandler.close();
     }
 
+    /**
+     * Log message at the specified level
+     *
+     * @param level   the level to log the message at
+     * @param message the message to log
+     */
     public static void log(Level level, String message) {
         if (!initialized) init();
         logger.log(level, message);
     }
 
+    /**
+     * Log a message at the info level
+     * @param message the message to log
+     */
     public static void info(String message) {
         log(Level.INFO, message);
     }
 
+    /**
+     * Log a message at the warning level
+     * @param message the message to log
+     */
     public static void warning(String message) {
         log(Level.WARNING, message);
     }
 
+    /**
+     * Log a message at the severe level
+     * @param message the message to log
+     */
     public static void severe(String message) {
         log(Level.SEVERE, message);
     }
