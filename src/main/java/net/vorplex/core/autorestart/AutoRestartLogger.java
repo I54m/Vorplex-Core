@@ -4,10 +4,8 @@ import net.vorplex.core.VorplexCore;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.Date;
+import java.util.logging.*;
 
 public class AutoRestartLogger {
     private static final Logger logger = Logger.getLogger(AutoRestartLogger.class.getName());
@@ -24,7 +22,17 @@ public class AutoRestartLogger {
 
             fileHandler = new FileHandler(logFile.getPath(), true);
 
-            fileHandler.setFormatter(new SimpleFormatter());
+            fileHandler.setFormatter(new Formatter() {
+                @Override
+                public String format(LogRecord record) {
+                    return String.format("%1$tb %1$td, %1$tY %1$tr %2$s: %3$s%n",
+                            new Date(record.getMillis()),
+                            record.getLevel().getLocalizedName(),
+                            formatMessage(record)
+                    );
+                }
+            });
+
             logger.addHandler(fileHandler);
 
             // Disable logging to console
