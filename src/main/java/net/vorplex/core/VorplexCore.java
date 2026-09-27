@@ -200,9 +200,8 @@ public class VorplexCore extends JavaPlugin {
             AutoRestartLogger.init();
             AutoRestartLogger.info("Server Starting up...");
             AutoRestartLogger.info("Server was started at: " + getStartTime());
-            autoRestartConfig = new AutoRestartConfig();
             autoRestartScheduler = new AutoRestartScheduler(this);
-            autoRestartScheduler.init(autoRestartConfig);
+            autoRestartScheduler.init(new AutoRestartConfig());
         }
         if (getConfig().getBoolean("AutoAnnouncer.enabled")) {
             getComponentLogger().info(Component.text("Enabling Auto Announcer Module...").color(NamedTextColor.GREEN));
