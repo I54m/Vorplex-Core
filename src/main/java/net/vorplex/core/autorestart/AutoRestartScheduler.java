@@ -256,7 +256,7 @@ public class AutoRestartScheduler {
 
     private void updateBossBarCountdown(AutoRestartConfig autoRestartConfig) {
         if (autoRestartConfig.bossBarCountdownEnabled && bossBarCountdown != null) {
-            long seconds = Duration.between(ZonedDateTime.now(), restartTime).getSeconds();
+            long seconds = Duration.between(ZonedDateTime.now(), restartTime).getSeconds() + 1;
 
             if (seconds <= 0) {
                 Audience.audience(Bukkit.getOnlinePlayers()).hideBossBar(bossBarCountdown);
