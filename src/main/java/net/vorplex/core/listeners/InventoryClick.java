@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+@Deprecated(since = "2.7", forRemoval = true)
 public class InventoryClick implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
