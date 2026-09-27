@@ -13,6 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
+@Deprecated(since = "2.7", forRemoval = true)
 public class PlayerJoin implements Listener {
 
     private final VorplexCore plugin = VorplexCore.getInstance();
@@ -29,7 +30,6 @@ public class PlayerJoin implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoinHighest(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        //TODO fetcher update give fetchers their own listener
         if (plugin.getConfig().getBoolean("Hub.enabled")) {
             Location location;
 //            if (plugin.essentials) {
