@@ -39,7 +39,18 @@ public class AutoRestartScheduler {
         this.plugin = plugin;
     }
 
-    public void start(AutoRestartConfig autoRestartConfig) {
+    private @NonNull StdSchedulerFactory getQuartzSchedulerFactory() throws SchedulerException {
+        Properties quartzProperties = new Properties();
+        quartzProperties.setProperty("org.quartz.scheduler.instanceName", "VorplexCore-AutoRestart");
+        quartzProperties.setProperty("org.quartz.threadPool.class", "net.vorplex.core.lib.quartz.simpl.SimpleThreadPool");
+        quartzProperties.setProperty("org.quartz.threadPool.threadCount", "1");
+        quartzProperties.setProperty("org.quartz.threadPool.threadPriority", "5");
+        quartzProperties.setProperty("org.quartz.jobStore.class", "net.vorplex.core.lib.quartz.simpl.RAMJobStore");
+
+        return new StdSchedulerFactory(quartzProperties);
+    }
+
+    public void init(AutoRestartConfig autoRestartConfig) {
         if (!autoRestartConfig.valid) return;
 
         plugin.autoRestartConfig = autoRestartConfig;
@@ -47,11 +58,21 @@ public class AutoRestartScheduler {
         try {
             quartzScheduler = getQuartzSchedulerFactory().getScheduler();
             quartzScheduler.start();
+        } catch (SchedulerException e) {
+            plugin.getComponentLogger().error("Failed to initialize AutoRestart Quartz scheduler", e);
+        }
 
-            Date now = new Date();
-            ZonedDateTime nextRestart = null;
+        start();
+    }
 
-            for (String cron : autoRestartConfig.schedule) {
+    public void start() {
+        if (restartTime != null) return;
+
+        Date now = new Date();
+        ZonedDateTime nextRestart = null;
+
+        try {
+            for (String cron : plugin.autoRestartConfig.schedule) {
                 CronExpression cronExpression = new CronExpression(cron);
                 Date nextFireTime = cronExpression.getNextValidTimeAfter(now);
 
@@ -66,21 +87,9 @@ public class AutoRestartScheduler {
 
             if (nextRestart != null)
                 scheduleRestart(nextRestart);
-
-        } catch (ParseException | SchedulerException e) {
-            plugin.getComponentLogger().error("Failed to start AutoRestart Quartz scheduler", e);
+        } catch (ParseException e) {
+            plugin.getComponentLogger().error("Failed to schedule AutoRestart from config", e);
         }
-    }
-
-    private @NonNull StdSchedulerFactory getQuartzSchedulerFactory() throws SchedulerException {
-        Properties quartzProperties = new Properties();
-        quartzProperties.setProperty("org.quartz.scheduler.instanceName", "VorplexCore-AutoRestart");
-        quartzProperties.setProperty("org.quartz.threadPool.class", "net.vorplex.core.lib.quartz.simpl.SimpleThreadPool");
-        quartzProperties.setProperty("org.quartz.threadPool.threadCount", "1");
-        quartzProperties.setProperty("org.quartz.threadPool.threadPriority", "5");
-        quartzProperties.setProperty("org.quartz.jobStore.class", "net.vorplex.core.lib.quartz.simpl.RAMJobStore");
-
-        return new StdSchedulerFactory(quartzProperties);
     }
 
     public void cancelRestart() {
@@ -109,7 +118,6 @@ public class AutoRestartScheduler {
             plugin.getComponentLogger().error("Failed to cancel AutoRestart Quartz jobs", e);
         }
     }
-
 
     public void shutdown() {
         try {
