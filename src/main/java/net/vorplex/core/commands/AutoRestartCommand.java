@@ -99,7 +99,7 @@ public class AutoRestartCommand {
     private static int startScheduler(final CommandContext<CommandSourceStack> ctx) {
         final CommandSender sender = ctx.getSource().getSender();
         if (autoRestartScheduler.getRestartTime() == null) {
-            autoRestartScheduler.start(new AutoRestartConfig());
+            autoRestartScheduler.start();
             sender.sendRichMessage(plugin.getPrefix() + "<green>Started all auto reboot tasks!");
             AutoRestartLogger.warning(sender.getName() + " has STARTED the auto restart scheduler!");
         } else
